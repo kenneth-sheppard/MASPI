@@ -8,6 +8,7 @@ class Territory:
         self.factory = False
         self.num_tanks = 0
         self.num_ships = 0
+        self.is_water = False
 
     def get_name(self):
         return self.name
@@ -40,3 +41,9 @@ class Territory:
 
     def set_num_ships(self, s):
         self.num_ships = s
+
+    def get_is_water(self):
+        return self.is_water
+
+    def set_is_water(self, w):
+        self.is_water = w
