@@ -1,0 +1,110 @@
+
+
+class Country:
+    def __init__(self):
+        self.tank_pool = 0
+        self.ship_pool = 0
+        self.bonds = []
+        self.treasury = 0
+        self.available_tank_factories = 0
+        self.available_ship_factories = 0
+        self.controller = None
+        self.power = 0
+        self.controlled_neutral_countries = []
+
+    def get_tank_pool(self):
+        return self.tank_pool
+
+    def remove_tank_from_pool(self):
+        if self.tank_pool <= 0:
+            return False
+        else:
+            self.tank_pool -= 1
+            return True
+
+    def add_tank_to_pool(self):
+        self.tank_pool += 1
+
+    def get_ship_pool(self):
+        return self.ship_pool
+
+    def remove_ship_from_pool(self):
+        if self.ship_pool <= 0:
+            return False
+        else:
+            self.ship_pool -= 1
+            return True
+
+    def add_ship_to_pool(self):
+        self.ship_pool += 1
+
+    def get_bonds(self):
+        return self.bonds
+
+    def add_bond(self, bond):
+        self.bonds.append(bond)
+
+    def remove_bond(self, bond):
+        self.bonds.remove(bond)
+
+    def get_treasury(self):
+        return self.treasury
+
+    def add_money(self, amount):
+        self.treasury += amount
+
+    def remove_money(self, amount):
+        if self.treasury >= amount:
+            self.treasury -= amount
+            return True
+
+        return False
+
+    def get_available_tank_factories(self):
+        return self.available_tank_factories
+
+    def remove_tank_factory_from_supply(self):
+        if self.available_tank_factories <= 0:
+            return False
+        else:
+            self.available_tank_factories -= 1
+            return True
+
+    def add_tank_factory_to_supply(self):
+        self.available_tank_factories += 1
+
+    def get_available_ship_factories(self):
+        return self.available_ship_factories
+
+    def remove_ship_factory_from_supply(self):
+        if self.available_ship_factories <= 0:
+            return False
+        else:
+            self.available_ship_factories -= 1
+            return True
+
+    def add_ship_factory_to_supply(self):
+        self.available_ship_factories += 1
+
+    def get_controller(self):
+        return self.controller
+
+    def set_controller(self, player):
+        self.controller = player
+
+    def get_power(self):
+        return self.power
+
+    def add_power(self, amount):
+        self.power += amount
+        if self.power > 25:
+            self.power = 25
+
+    def get_controlled_neutral_countries(self):
+        return self.controlled_neutral_countries
+
+    def add_controlled_neutral_country(self, country):
+        self.controlled_neutral_countries.append(country)
+
+    def remove_controlled_neutral_country(self, country):
+        self.controlled_neutral_countries.remove(country)
