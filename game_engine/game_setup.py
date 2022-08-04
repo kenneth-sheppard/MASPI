@@ -20,7 +20,6 @@ def setup():
 
     # Create bonds for each country
     for country in new_game_state.get_countries():
-        print(country.get_name())
         new_game_state.update_country(country, make_bonds_for(country))
 
     return new_game_state

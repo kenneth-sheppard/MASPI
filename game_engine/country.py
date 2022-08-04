@@ -14,6 +14,9 @@ class Country:
         self.power = 0
         self.controlled_neutral_countries = []
 
+    def __str__(self):
+        return self.name
+
     def get_id(self):
         return self.id
 

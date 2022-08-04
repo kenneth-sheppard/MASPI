@@ -27,8 +27,9 @@ class GameState:
         self.countries.remove(c)
 
     def update_country(self, old_c, new_c):
-        self.countries.remove(old_c)
-        self.countries.append(new_c)
+        for i in range(0, len(self.countries)):
+            if self.countries[i] is old_c:
+                self.countries[i] = new_c
 
     def get_countries(self):
         return self.countries
