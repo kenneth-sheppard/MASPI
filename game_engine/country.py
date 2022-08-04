@@ -1,7 +1,9 @@
 
 
 class Country:
-    def __init__(self):
+    def __init__(self, name, c_id):
+        self.name = name
+        self.id = c_id
         self.tank_pool = 0
         self.ship_pool = 0
         self.bonds = []
@@ -11,6 +13,12 @@ class Country:
         self.controller = None
         self.power = 0
         self.controlled_neutral_countries = []
+
+    def get_id(self):
+        return self.id
+
+    def get_name(self):
+        return self.name
 
     def get_tank_pool(self):
         return self.tank_pool

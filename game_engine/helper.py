@@ -21,6 +21,8 @@ def make_bonds_for(country):
     # 30 million
     country.add_bond(Bond(country, 30, 9))
 
+    return country
+
 
 def tax_chart(tax_amount):
     if tax_amount < 6:
@@ -50,6 +52,15 @@ def tax_chart(tax_amount):
 def power_chart(power_value):
     return power_value // 5
 
+
+country_id_and_names = {
+    0: 'Russia',
+    1: 'China',
+    2: 'India',
+    3: 'Brazil',
+    4: 'America',
+    5: 'European Union'
+}
 
 territory_id_and_names = {
     0: 'San Fransisco',
