@@ -14,6 +14,9 @@ class ActionSpace:
     def set_next_action(self, na):
         self.next_action = na
 
+    def action(self):
+        pass
+
 
 class Investor(ActionSpace):
     def __init__(self):
@@ -42,4 +45,8 @@ class Taxation(ActionSpace):
 
 class Factory(ActionSpace):
     def __init__(self):
-        pass
+        ActionSpace()
+        self.name = 'Factory'
+
+    def action(self, territory):
+        territory.build_factory()
