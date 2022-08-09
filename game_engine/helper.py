@@ -53,6 +53,23 @@ def power_chart(power_value):
     return power_value // 5
 
 
+def get_territory_id_from_name(t_name):
+    return territory_names_and_id.get(t_name)
+
+
+def get_territory_name_from_id(t_id):
+    return territory_id_and_names.get(t_id)
+
+
+list_of_land_factories = ['Chicago', 'Manaus', 'Brazilia', 'Paris', 'Berlin', 'Moscow', 'Novosibirsk', 'Urumqi',
+                          'Beijing', 'Chonqing', 'New Delhi', 'Chennai']
+
+list_of_sea_factories = ['San Fransisco', 'New Orleans', 'New York', 'Fortaleza', 'Rio de Janeiro', 'London', 'Rome',
+                         'Mumbai', 'Murmansk', 'Kolkata', 'Shanghai', 'Vladivostok']
+
+list_of_starting_factories = ['Chicago', 'New Orleans', 'Brazilia', 'Rio de Janeiro', 'London', 'Paris', 'Moscow',
+                              'Beijing', 'Shanghai', 'Vladivostok', 'New Delhi', 'Mumbai']
+
 country_id_and_names = {
     0: 'Russia',
     1: 'China',
@@ -125,6 +142,71 @@ territory_id_and_names = {
     59: 'Sea of Japan',
     60: 'China Sea',
     61: 'Tasman Sea'
+}
+
+territory_names_and_id = {
+    'San Fransisco': 0,
+    'Chicago': 1,
+    'New Orleans': 2,
+    'New York': 3,
+    'Alaska': 4,
+    'Canada': 5,
+    'Quebec': 6,
+    'Mexico': 7,
+    'Colombia': 8,
+    'Peru': 9,
+    'Argentina': 10,
+    'Manaus': 11,
+    'Brazilia': 12,
+    'Fortaleza': 13,
+    'Rio de Janeiro': 14,
+    'London': 15,
+    'Paris': 16,
+    'Berlin': 17,
+    'Rome': 18,
+    'Murmansk': 19,
+    'Moscow': 20,
+    'Novosibirsk': 21,
+    'Vladivostok': 22,
+    'Ukraine': 23,
+    'Turkey': 24,
+    'Near East': 25,
+    'Iran': 26,
+    'Afghanistan': 27,
+    'Kazakhstan': 28,
+    'Mongolia': 29,
+    'Korea': 30,
+    'Japan': 31,
+    'Indochina': 32,
+    'Beijing': 33,
+    'Shanghai': 34,
+    'Chongqing': 35,
+    'Urumqi': 36,
+    'Chennai': 37,
+    'Mumbai': 38,
+    'Kolkata': 39,
+    'New Delhi': 40,
+    'Philippines': 41,
+    'Indonesia': 42,
+    'Australia': 43,
+    'New Zealand': 44,
+    'North Africa': 45,
+    'Guinea': 46,
+    'Nigeria': 47,
+    'East Africa': 48,
+    'Congo': 49,
+    'South Africa': 50,
+    'North Pacific': 51,
+    'South Pacific': 52,
+    'North Atlantic': 53,
+    'The Caribbean Sea': 54,
+    'South Atlantic': 55,
+    'Gulf of Guinea': 56,
+    'Mediterranean Sea': 57,
+    'Indian Ocean': 58,
+    'Sea of Japan': 59,
+    'China Sea': 60,
+    'Tasman Sea': 61
 }
 
 territory_adjacency_matrix = [
