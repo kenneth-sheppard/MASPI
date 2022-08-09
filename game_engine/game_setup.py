@@ -4,6 +4,8 @@ from game_engine.helper import country_id_and_names
 from game_engine.territory import Territory
 from game_engine.country import Country
 from game_engine.helper import make_bonds_for
+from game_engine.helper import list_of_starting_factories
+from game_engine.helper import get_territory_id_from_name
 
 
 # Returns a GameState object to the game engine
@@ -21,5 +23,9 @@ def setup():
     # Create bonds for each country
     for country in new_game_state.get_countries():
         new_game_state.update_country(country, make_bonds_for(country))
+
+    # Build starting factories
+    for t_name in list_of_starting_factories:
+        new_game_state.get_territory(get_territory_id_from_name(t_name)).build_factory()
 
     return new_game_state

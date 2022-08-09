@@ -17,7 +17,6 @@ class GameState:
         for territory in self.territories:
             if territory.id == t_id:
                 return territory
-
         return None
 
     def add_country(self, c):
@@ -30,6 +29,7 @@ class GameState:
         for i in range(0, len(self.countries)):
             if self.countries[i] is old_c:
                 self.countries[i] = new_c
+        return None
 
     def get_countries(self):
         return self.countries
