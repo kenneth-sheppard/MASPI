@@ -12,7 +12,8 @@ class Country:
         self.available_ship_factories = 0
         self.controller = None
         self.power = 0
-        self.controlled_neutral_countries = []
+        self.controlled_neutral_territories = []
+        self.home_territories = []
 
     def __str__(self):
         return self.name
@@ -111,11 +112,17 @@ class Country:
         if self.power > 25:
             self.power = 25
 
-    def get_controlled_neutral_countries(self):
-        return self.controlled_neutral_countries
+    def get_controlled_neutral_territories(self):
+        return self.controlled_neutral_territories
 
-    def add_controlled_neutral_country(self, country):
-        self.controlled_neutral_countries.append(country)
+    def add_controlled_neutral_territory(self, territory):
+        self.controlled_neutral_territories.append(territory)
 
-    def remove_controlled_neutral_country(self, country):
-        self.controlled_neutral_countries.remove(country)
+    def remove_controlled_neutral_territory(self, territory):
+        self.controlled_neutral_territories.remove(territory)
+        
+    def get_home_territories(self):
+        return self.home_territories
+
+    def set_home_territories(self, territories):
+        self.home_territories = territories

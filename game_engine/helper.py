@@ -70,6 +70,27 @@ list_of_sea_factories = ['San Fransisco', 'New Orleans', 'New York', 'Fortaleza'
 list_of_starting_factories = ['Chicago', 'New Orleans', 'Brazilia', 'Rio de Janeiro', 'London', 'Paris', 'Moscow',
                               'Beijing', 'Shanghai', 'Vladivostok', 'New Delhi', 'Mumbai']
 
+home_territories = {
+    'Russia': ['Moscow', 'Novosibirsk', 'Murmansk', 'Vladivostok'],
+    'China': ['Urumqi', 'Beijing', 'Chongqing', 'Shanghai'],
+    'India': ['New Delhi', 'Chennai', 'Mumbai', 'Kolkata'],
+    'Brazil': ['Manaus', 'Brazilia', 'Fortaleza', 'Rio de Janeiro'],
+    'America': ['Chicago', 'San Fransisco', 'New Orleans', 'New York'],
+    'European Union': ['London', 'Paris', 'Rome', 'Berlin']
+}
+
+russia_home_territories = ['Moscow', 'Novosibirsk', 'Murmansk', 'Vladivostok']
+
+china_home_territories = ['Urumqi', 'Beijing', 'Chongqing', 'Shanghai']
+
+india_home_territories = ['New Delhi', 'Chennai', 'Mumbai', 'Kolkata']
+
+brazil_home_territories = ['Manaus', 'Brazilia', 'Fortaleza', 'Rio de Janeiro']
+
+america_home_territories = ['Chicago', 'San Fransisco', 'New Orleans', 'New York']
+
+european_union_home_territories = ['London', 'Paris', 'Rome', 'Berlin']
+
 country_id_and_names = {
     0: 'Russia',
     1: 'China',
