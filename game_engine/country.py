@@ -4,6 +4,8 @@ class Country:
     def __init__(self, name, c_id):
         self.name = name
         self.id = c_id
+        self.starting_tanks = 0
+        self.starting_ships = 0
         self.tank_pool = 0
         self.ship_pool = 0
         self.bonds = []
@@ -126,3 +128,7 @@ class Country:
 
     def set_home_territories(self, territories):
         self.home_territories = territories
+
+    def get_placed_units(self):
+        return (self.starting_tanks - self.tank_pool) + (self.starting_ships - self.ship_pool)
+
