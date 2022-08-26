@@ -49,6 +49,38 @@ def tax_chart(tax_amount):
         return 5, 10
 
 
+# bonds are the cost of the bond
+def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
+    # Find bonds
+    b_t_b = None
+    b_t_t = None
+    for bond in country.get_bonds():
+        if bond.get_cost() == bond_to_buy:
+            b_t_b = bond
+    if bond_to_trade is not None:
+        for bond in player.get_bonds():
+            if bond.get_cost() == bond_to_trade:
+                b_t_t = bond
+        if player.get_money() < bond_to_buy - bond_to_trade or b_t_b is None or b_t_t is None:
+            return False
+        else:
+            player.remove_money(bond_to_buy - bond_to_trade)
+            country.add_money(bond_to_buy - bond_to_trade)
+
+            player.swap_bonds(b_t_b, b_t_t)
+            country.add_bond(b_t_t)
+            country.remove_bond(b_t_b)
+    else:
+        if player.get_money() < bond_to_buy or b_t_b is None:
+            return False
+        else:
+            player.remove_money(bond_to_buy)
+            country.add_money(bond_to_buy)
+
+            player.add_bond(b_t_b)
+            country.remove_bond(b_t_b)
+
+
 def power_chart(power_value):
     return power_value // 5
 

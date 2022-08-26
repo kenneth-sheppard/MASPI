@@ -36,3 +36,9 @@ class GameState:
 
     def set_countries(self, sc):
         self.countries = sc
+
+    def add_player(self, p):
+        self.players.append(p)
+
+    def get_players(self):
+        return self.players
