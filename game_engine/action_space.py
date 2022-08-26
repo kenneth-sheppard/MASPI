@@ -24,7 +24,13 @@ class ActionSpace:
 class Investor(ActionSpace):
     def __init__(self):
         super().__init__()
-        pass
+        self.name = 'Investor'
+
+    def action(self, country):
+        # Make a dictionary of what people are owed
+        for bond in country.get_bonds():
+            if bond.get_owner() is not None:
+                pass
 
 
 class Import(ActionSpace):
