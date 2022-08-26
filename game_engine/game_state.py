@@ -37,6 +37,11 @@ class GameState:
     def set_countries(self, sc):
         self.countries = sc
 
+    def get_country(self, c_name):
+        for country in self.countries:
+            if country.get_name() is c_name:
+                return country
+
     def add_player(self, p):
         self.players.append(p)
 

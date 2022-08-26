@@ -93,6 +93,10 @@ def get_territory_name_from_id(t_id):
     return territory_id_and_names.get(t_id)
 
 
+starting_distributions = [[['Russia', 9], ['European Union', 2]], [['China', 9], ['America', 2]],
+                          [['India', 9], ['Brazil', 2]], [['Brazil', 9], ['China', 2]],
+                          [['America', 9], ['Russia', 2]], [['European Union', 9], ['India', 2]]]
+
 list_of_land_factories = ['Chicago', 'Manaus', 'Brazilia', 'Paris', 'Berlin', 'Moscow', 'Novosibirsk', 'Urumqi',
                           'Beijing', 'Chonqing', 'New Delhi', 'Chennai']
 
