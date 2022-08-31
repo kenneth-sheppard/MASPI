@@ -25,6 +25,23 @@ def setup():
         for home_t in home_territories.get(name):
             h_t_list.append(new_game_state.get_territory(get_territory_id_from_name(home_t)))
         c.set_home_territories(h_t_list)
+        # add starting factories, 2 tank for China, 2 ship for America, 1 and 1 otherwise
+        # also piece counts
+        # China 10 tanks, 6 ships
+        # America 6 tanks, 10 ships
+        # Others 8 and 8
+        if name == 'China':
+            c.starting_tanks = 10
+            c.starting_ships = 6
+        elif name == 'America':
+            c.starting_tanks = 6
+            c.starting_ships = 10
+        else:
+            c.starting_tanks = 8
+            c.starting_ships = 8
+
+        # all countries get 15 flags
+        c.flag_count = 15
         new_game_state.add_country(c)
 
     # Create bonds for each country

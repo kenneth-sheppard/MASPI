@@ -10,12 +10,11 @@ class Country:
         self.ship_pool = 0
         self.bonds = []
         self.treasury = 0
-        self.available_tank_factories = 0
-        self.available_ship_factories = 0
         self.controller = None
         self.power = 0
         self.controlled_neutral_territories = []
         self.home_territories = []
+        self.flag_count = 0
 
     def __str__(self):
         return self.name
@@ -73,32 +72,6 @@ class Country:
             return True
 
         return False
-
-    def get_available_tank_factories(self):
-        return self.available_tank_factories
-
-    def remove_tank_factory_from_supply(self):
-        if self.available_tank_factories <= 0:
-            return False
-        else:
-            self.available_tank_factories -= 1
-            return True
-
-    def add_tank_factory_to_supply(self):
-        self.available_tank_factories += 1
-
-    def get_available_ship_factories(self):
-        return self.available_ship_factories
-
-    def remove_ship_factory_from_supply(self):
-        if self.available_ship_factories <= 0:
-            return False
-        else:
-            self.available_ship_factories -= 1
-            return True
-
-    def add_ship_factory_to_supply(self):
-        self.available_ship_factories += 1
 
     def get_controller(self):
         return self.controller
