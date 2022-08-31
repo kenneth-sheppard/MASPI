@@ -21,6 +21,8 @@ def make_bonds_for(country):
     # 30 million
     country.add_bond(Bond(country, 30, 9))
 
+    return country
+
 
 def tax_chart(tax_amount):
     if tax_amount < 6:
@@ -47,9 +49,92 @@ def tax_chart(tax_amount):
         return 5, 10
 
 
+# bonds are the cost of the bond
+def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
+    # Find bonds
+    b_t_b = None
+    b_t_t = None
+    for bond in country.get_bonds():
+        if bond.get_cost() == bond_to_buy:
+            b_t_b = bond
+    if bond_to_trade is not None:
+        for bond in player.get_bonds():
+            if bond.get_cost() == bond_to_trade:
+                b_t_t = bond
+        if player.get_money() < bond_to_buy - bond_to_trade or b_t_b is None or b_t_t is None:
+            return False
+        else:
+            player.remove_money(bond_to_buy - bond_to_trade)
+            country.add_money(bond_to_buy - bond_to_trade)
+
+            player.swap_bonds(b_t_b, b_t_t)
+            country.add_bond(b_t_t)
+            country.remove_bond(b_t_b)
+    else:
+        if player.get_money() < bond_to_buy or b_t_b is None:
+            return False
+        else:
+            player.remove_money(bond_to_buy)
+            country.add_money(bond_to_buy)
+
+            player.add_bond(b_t_b)
+            country.remove_bond(b_t_b)
+
+
 def power_chart(power_value):
     return power_value // 5
 
+
+def get_territory_id_from_name(t_name):
+    return territory_names_and_id.get(t_name)
+
+
+def get_territory_name_from_id(t_id):
+    return territory_id_and_names.get(t_id)
+
+
+starting_distributions = [[['Russia', 9], ['European Union', 2]], [['China', 9], ['America', 2]],
+                          [['India', 9], ['Brazil', 2]], [['Brazil', 9], ['China', 2]],
+                          [['America', 9], ['Russia', 2]], [['European Union', 9], ['India', 2]]]
+
+list_of_land_factories = ['Chicago', 'Manaus', 'Brazilia', 'Paris', 'Berlin', 'Moscow', 'Novosibirsk', 'Urumqi',
+                          'Beijing', 'Chonqing', 'New Delhi', 'Chennai']
+
+list_of_sea_factories = ['San Fransisco', 'New Orleans', 'New York', 'Fortaleza', 'Rio de Janeiro', 'London', 'Rome',
+                         'Mumbai', 'Murmansk', 'Kolkata', 'Shanghai', 'Vladivostok']
+
+list_of_starting_factories = ['Chicago', 'New Orleans', 'Brazilia', 'Rio de Janeiro', 'London', 'Paris', 'Moscow',
+                              'Beijing', 'Shanghai', 'Vladivostok', 'New Delhi', 'Mumbai']
+
+home_territories = {
+    'Russia': ['Moscow', 'Novosibirsk', 'Murmansk', 'Vladivostok'],
+    'China': ['Urumqi', 'Beijing', 'Chongqing', 'Shanghai'],
+    'India': ['New Delhi', 'Chennai', 'Mumbai', 'Kolkata'],
+    'Brazil': ['Manaus', 'Brazilia', 'Fortaleza', 'Rio de Janeiro'],
+    'America': ['Chicago', 'San Fransisco', 'New Orleans', 'New York'],
+    'European Union': ['London', 'Paris', 'Rome', 'Berlin']
+}
+
+russia_home_territories = ['Moscow', 'Novosibirsk', 'Murmansk', 'Vladivostok']
+
+china_home_territories = ['Urumqi', 'Beijing', 'Chongqing', 'Shanghai']
+
+india_home_territories = ['New Delhi', 'Chennai', 'Mumbai', 'Kolkata']
+
+brazil_home_territories = ['Manaus', 'Brazilia', 'Fortaleza', 'Rio de Janeiro']
+
+america_home_territories = ['Chicago', 'San Fransisco', 'New Orleans', 'New York']
+
+european_union_home_territories = ['London', 'Paris', 'Rome', 'Berlin']
+
+country_id_and_names = {
+    0: 'Russia',
+    1: 'China',
+    2: 'India',
+    3: 'Brazil',
+    4: 'America',
+    5: 'European Union'
+}
 
 territory_id_and_names = {
     0: 'San Fransisco',
@@ -114,6 +199,71 @@ territory_id_and_names = {
     59: 'Sea of Japan',
     60: 'China Sea',
     61: 'Tasman Sea'
+}
+
+territory_names_and_id = {
+    'San Fransisco': 0,
+    'Chicago': 1,
+    'New Orleans': 2,
+    'New York': 3,
+    'Alaska': 4,
+    'Canada': 5,
+    'Quebec': 6,
+    'Mexico': 7,
+    'Colombia': 8,
+    'Peru': 9,
+    'Argentina': 10,
+    'Manaus': 11,
+    'Brazilia': 12,
+    'Fortaleza': 13,
+    'Rio de Janeiro': 14,
+    'London': 15,
+    'Paris': 16,
+    'Berlin': 17,
+    'Rome': 18,
+    'Murmansk': 19,
+    'Moscow': 20,
+    'Novosibirsk': 21,
+    'Vladivostok': 22,
+    'Ukraine': 23,
+    'Turkey': 24,
+    'Near East': 25,
+    'Iran': 26,
+    'Afghanistan': 27,
+    'Kazakhstan': 28,
+    'Mongolia': 29,
+    'Korea': 30,
+    'Japan': 31,
+    'Indochina': 32,
+    'Beijing': 33,
+    'Shanghai': 34,
+    'Chongqing': 35,
+    'Urumqi': 36,
+    'Chennai': 37,
+    'Mumbai': 38,
+    'Kolkata': 39,
+    'New Delhi': 40,
+    'Philippines': 41,
+    'Indonesia': 42,
+    'Australia': 43,
+    'New Zealand': 44,
+    'North Africa': 45,
+    'Guinea': 46,
+    'Nigeria': 47,
+    'East Africa': 48,
+    'Congo': 49,
+    'South Africa': 50,
+    'North Pacific': 51,
+    'South Pacific': 52,
+    'North Atlantic': 53,
+    'The Caribbean Sea': 54,
+    'South Atlantic': 55,
+    'Gulf of Guinea': 56,
+    'Mediterranean Sea': 57,
+    'Indian Ocean': 58,
+    'Sea of Japan': 59,
+    'China Sea': 60,
+    'Tasman Sea': 61
 }
 
 territory_adjacency_matrix = [
