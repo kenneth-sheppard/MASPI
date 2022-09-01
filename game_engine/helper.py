@@ -136,6 +136,20 @@ country_id_and_names = {
     5: 'European Union'
 }
 
+sea_territories = {
+    51: 'North Pacific',
+    52: 'South Pacific',
+    53: 'North Atlantic',
+    54: 'The Caribbean Sea',
+    55: 'South Atlantic',
+    56: 'Gulf of Guinea',
+    57: 'Mediterranean Sea',
+    58: 'Indian Ocean',
+    59: 'Sea of Japan',
+    60: 'China Sea',
+    61: 'Tasman Sea'
+}
+
 territory_id_and_names = {
     0: 'San Fransisco',
     1: 'Chicago',

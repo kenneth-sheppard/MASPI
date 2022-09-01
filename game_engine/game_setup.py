@@ -5,7 +5,8 @@ from game_engine.game_state import GameState
 from game_engine.territory import Territory
 from game_engine.country import Country
 from game_engine.helper import make_bonds_for, list_of_starting_factories, get_territory_id_from_name, \
-    country_id_and_names, territory_id_and_names, starting_distributions, buy_bond
+    country_id_and_names, territory_id_and_names, starting_distributions, buy_bond, sea_territories, \
+    list_of_sea_factories
 from game_engine.helper import home_territories as home_territories
 from game_engine.player import Player
 
@@ -17,6 +18,12 @@ def setup():
     # Create territories
     for t_id, name in territory_id_and_names.items():
         new_game_state.add_territory(Territory(name, t_id))
+
+    for t_id in sea_territories:
+        new_game_state.get_territory(t_id).is_water = True
+
+    for t_name in list_of_sea_factories:
+        new_game_state.get_territory(get_territory_id_from_name(t_name)).factory_is_sea = True
 
     # Create countries
     for c_id, name in country_id_and_names.items():

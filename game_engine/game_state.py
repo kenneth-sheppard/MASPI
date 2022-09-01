@@ -19,6 +19,9 @@ class GameState:
                 return territory
         return None
 
+    def get_territories(self):
+        return self.territories
+
     def add_country(self, c):
         self.countries.append(c)
 
@@ -47,3 +50,15 @@ class GameState:
 
     def get_players(self):
         return self.players
+
+    def update(self):
+        # Update each territory and check for new flag
+        self.__update_territories()
+        # Update each country checking for new controller
+        # Update each player checking for change in swiss bank
+        pass
+
+    def __update_territories(self):
+        for territory in self.territories:
+            players_in_territory = []
+
