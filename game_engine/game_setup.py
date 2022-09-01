@@ -31,6 +31,8 @@ def setup():
         h_t_list = []
         for home_t in home_territories.get(name):
             h_t_list.append(new_game_state.get_territory(get_territory_id_from_name(home_t)))
+        for territory in h_t_list:
+            territory.is_neutral = False
         c.set_home_territories(h_t_list)
         # add starting factories, 2 tank for China, 2 ship for America, 1 and 1 otherwise
         # also piece counts

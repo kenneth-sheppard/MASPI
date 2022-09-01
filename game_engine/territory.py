@@ -7,6 +7,7 @@ class Territory:
         self.controller = None
         self.factory = False
         self.factory_is_sea = False
+        self.is_neutral = True
         self.tanks = {
             'Russia': 0,
             'China': 0,

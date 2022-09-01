@@ -61,4 +61,7 @@ class GameState:
     def __update_territories(self):
         for territory in self.territories:
             players_in_territory = []
+            if territory.is_neutral:
+                pass
+
 
