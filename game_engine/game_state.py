@@ -77,8 +77,16 @@ class GameState:
                     c_name = players_in_territory[0]
                     if self.get_country(c_name).place_flag():
                         territory.controller = c_name
-
-
-
-
-
+            # Territory is not neutral
+            else:
+                # If more than two people are in territory is occupied
+                if len(players_in_territory) > 1:
+                    self.get_country(territory.get_in_country()).is_occupied = True
+                # If one player must check which
+                elif len(players_in_territory) == 1:
+                    territory.controller = players_in_territory[0]
+                    if territory.get_in_country().get_name() != players_in_territory[0]:
+                        self.get_country(territory.get_in_country()).is_occupied = True
+                # If zero no action required
+                else:
+                    pass

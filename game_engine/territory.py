@@ -8,6 +8,7 @@ class Territory:
         self.factory = False
         self.factory_is_sea = False
         self.is_neutral = True
+        self.in_country = None
         self.tanks = {
             'Russia': 0,
             'China': 0,
@@ -70,3 +71,6 @@ class Territory:
 
     def set_is_water(self, w):
         self.is_water = w
+
+    def get_in_country(self):
+        return self.in_country

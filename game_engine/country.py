@@ -15,6 +15,7 @@ class Country:
         self.controlled_neutral_territories = []
         self.home_territories = []
         self.flag_count = 0
+        self.is_occupied = False
 
     def __str__(self):
         return self.name
