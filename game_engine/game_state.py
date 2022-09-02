@@ -92,5 +92,23 @@ class GameState:
                 else:
                     pass
 
+        return 0
+
     def __update_countries(self):
-        pass
+        for country in self.get_countries():
+            bond_owners = dict([(i, 0) for i in self.get_players()])
+            bond_owners[None] = 0
+            for bond in country.get_bonds():
+                bond_owners[bond.get_owner()] += bond.get_cost()
+
+            bond_owners[None] = 0
+            curr_owner = max(bond_owners, key=bond_owners.get)
+            for player, amount_owned in bond_owners.items():
+                if amount_owned == bond_owners[curr_owner] and player is not curr_owner:
+                    # do nothing
+                    return 0
+            if bond_owners[curr_owner] > 0:
+                if country.get_controller() is not curr_owner:
+                    country.set_controller(curr_owner)
+
+        return 0
