@@ -9,5 +9,5 @@ if __name__ == '__main__':
 
     gs.update()
 
-    for country in gs.get_countries():
-        print(country.get_controller())
+    for player in gs.get_players():
+        print(player.get_controlled_countries())

@@ -57,7 +57,9 @@ class GameState:
         # Update each country checking for new controller
         self.__update_countries()
         # Update each player checking for change in swiss bank
-        pass
+        self.__update_players()
+
+        return 0
 
     def __update_territories(self):
         for territory in self.territories:
@@ -110,5 +112,20 @@ class GameState:
             if bond_owners[curr_owner] > 0:
                 if country.get_controller() is not curr_owner:
                     country.set_controller(curr_owner)
+
+        return 0
+
+    def __update_players(self):
+        # Reset country ownership
+        for player in self.get_players():
+            player.reset_controlled_countries()
+        # Go through the list of countries and assign them to their owners
+        for country in self.get_countries():
+            if country.get_controller():
+                country.get_controller().add_controlled_country(country.name)
+        # Check for swiss banks
+        for player in self.get_players():
+            if not player.get_controlled_countries():
+                player.set_is_swiss_bank(True)
 
         return 0

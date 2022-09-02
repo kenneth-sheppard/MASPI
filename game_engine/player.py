@@ -27,6 +27,9 @@ class Player:
     def remove_controlled_country(self, country):
         self.controlled_countries.remove(country)
 
+    def reset_controlled_countries(self):
+        self.controlled_countries = []
+
     def get_money(self):
         return self.money
 
