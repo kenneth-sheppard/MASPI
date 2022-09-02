@@ -68,8 +68,8 @@ def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
             country.add_money(bond_to_buy - bond_to_trade)
 
             player.swap_bonds(b_t_b, b_t_t)
-            country.add_bond(b_t_t)
-            country.remove_bond(b_t_b)
+            country.reclaim_bond(b_t_t)
+            country.sell_bond(b_t_b, player)
     else:
         if player.get_money() < bond_to_buy or b_t_b is None:
             return False
@@ -78,7 +78,7 @@ def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
             country.add_money(bond_to_buy)
 
             player.add_bond(b_t_b)
-            country.remove_bond(b_t_b)
+            country.sell_bond(b_t_b, player)
 
 
 def power_chart(power_value):

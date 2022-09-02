@@ -8,7 +8,7 @@ class Country:
         self.starting_ships = 0
         self.tank_pool = 0
         self.ship_pool = 0
-        self.bonds = []
+        self.bonds = {}
         self.treasury = 0
         self.controller = None
         self.power = 0
@@ -53,13 +53,13 @@ class Country:
         self.ship_pool += 1
 
     def get_bonds(self):
-        return self.bonds
+        return self.bonds.values()
 
     def add_bond(self, bond):
-        self.bonds.append(bond)
+        self.bonds[bond.cost] = bond
 
     def remove_bond(self, bond):
-        self.bonds.remove(bond)
+        self.bonds[bond.cost] = None
 
     def get_treasury(self):
         return self.treasury
@@ -111,4 +111,10 @@ class Country:
             self.flag_count -= 1
             return True
         return False
+
+    def sell_bond(self, bond, player):
+        self.bonds[bond.cost].set_owner(player)
+
+    def reclaim_bond(self, bond):
+        self.bonds[bond.cost].set_owner(None)
 

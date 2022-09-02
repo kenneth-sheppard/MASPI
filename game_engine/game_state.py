@@ -55,6 +55,7 @@ class GameState:
         # Update each territory and check for new flag
         self.__update_territories()
         # Update each country checking for new controller
+        self.__update_countries()
         # Update each player checking for change in swiss bank
         pass
 
@@ -90,3 +91,6 @@ class GameState:
                 # If zero no action required
                 else:
                     pass
+
+    def __update_countries(self):
+        pass
