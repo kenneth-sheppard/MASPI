@@ -61,7 +61,24 @@ class GameState:
     def __update_territories(self):
         for territory in self.territories:
             players_in_territory = []
+            if territory.is_water:
+                # Count ships
+                for c_name, c_pieces in territory.get_ships().items():
+                    if c_pieces > 0:
+                        players_in_territory.append(c_name)
+            else:
+                # Count tanks
+                for c_name, c_pieces in territory.get_tanks().items():
+                    if c_pieces > 0:
+                        players_in_territory.append(c_name)
+            # Update flag if there is exactly one country in neutral territory
             if territory.is_neutral:
-                pass
+                if len(players_in_territory) == 1:
+                    c_name = players_in_territory[0]
+                    if self.get_country(c_name).place_flag():
+                        territory.controller = c_name
+
+
+
 
 

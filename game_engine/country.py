@@ -105,3 +105,9 @@ class Country:
     def get_placed_units(self):
         return (self.starting_tanks - self.tank_pool) + (self.starting_ships - self.ship_pool)
 
+    def place_flag(self):
+        if self.flag_count > 0:
+            self.flag_count -= 1
+            return True
+        return False
+
