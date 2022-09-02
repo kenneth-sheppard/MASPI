@@ -17,20 +17,56 @@ class ActionSpace:
     def set_next_action(self, na):
         self.next_action = na
 
-    def action(self):
-        pass
-
 
 class Investor(ActionSpace):
     def __init__(self):
         super().__init__()
         self.name = 'Investor'
+        self.players = None
 
     def action(self, country):
         # Make a dictionary of what people are owed
+        owed = dict([(i, 0) for i in self.players])
         for bond in country.get_bonds():
             if bond.get_owner() is not None:
-                pass
+                owed[bond.get_owner()] += bond.get_interest_rate()
+
+        while owed:
+            next_up = (min(owed, key=owed.get), owed.get(min(owed, key=owed.get)))
+            # If the player is owed money
+            if next_up[1] > 0:
+                # If the country has enough money to pay
+                if country.get_treasury() >= next_up[1]:
+                    country.remove_money(next_up[1])
+                    next_up[0].add_money(next_up[1])
+                # If the country doesn't have enough but has more than zero
+                elif next_up[1] > country.get_treasury() > 0:
+                    # Pay out rest of what country has
+                    next_up[0].add_money(country.get_treasury())
+                    owed[next_up[0]] -= country.get_treasury()
+                    country.remove_money(country.get_treasury())
+                    # Check if country controller is the player being paid
+                    if country.get_controller() is not next_up[0]:
+                        # get amount available
+                        aa = country.get_controller().get_money()
+                        if next_up[1] < aa:
+                            next_up[0].add_money(next_up[1])
+                            country.get_controller().remove_money(next_up[1])
+                        else:
+                            next_up[0].add_money(aa)
+                            country.get_controller().remove_money(aa)
+                # Country is broke, player must pay
+                else:
+                    if country.get_controller() is not next_up[0]:
+                        aa = country.get_controller().get_money()
+                        if next_up[1] < aa:
+                            next_up[0].add_money(next_up[1])
+                            country.get_controller().remove_money(next_up[1])
+                        else:
+                            next_up[0].add_money(aa)
+                            country.get_controller().remove_money(aa)
+
+            del owed[next_up[0]]
 
 
 class Import(ActionSpace):
