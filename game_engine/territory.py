@@ -74,3 +74,11 @@ class Territory:
 
     def get_in_country(self):
         return self.in_country
+
+    def is_occupied(self):
+        if self.in_country:
+            for c_name, count in self.tanks.items():
+                if count > 0 and c_name != self.in_country.get_name():
+                    return True
+
+        return False
