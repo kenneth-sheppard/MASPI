@@ -1,3 +1,4 @@
+import random
 
 
 class Player:
@@ -7,6 +8,7 @@ class Player:
         self.money = 0
         self.has_investor_card = False
         self.is_swiss_bank = False
+        self.banana = 0
 
     def get_bonds(self):
         return self.bonds
@@ -50,3 +52,11 @@ class Player:
 
     def set_is_swiss_bank(self, is_swiss):
         self.is_swiss_bank = is_swiss
+
+    def make_choice(self, options):
+        self.banana = 2
+        for i in enumerate(options):
+            print('{} - Tanks: {}, Ships: {}, Territory: {}'.format(i[0], i[1][0].get('Tanks'), i[1][0].get('Ships'),
+                                                                    i[1][1]))
+
+        return options[int(input('Choose: '))]

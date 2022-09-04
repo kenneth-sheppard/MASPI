@@ -10,19 +10,13 @@ if __name__ == '__main__':
 
     gs.update()
 
-    investor = game_engine.action_space.Investor()
-    investor.players = gs.get_players()
-    for country in gs.get_countries():
-        investor.action(country)
+    print(gs.get_countries()[0].get_treasury())
 
-    for country in gs.get_countries():
-        investor.action(country)
+    import_action = game_engine.action_space.Import()
 
-    for country in gs.get_countries():
-        investor.action(country)
+    import_action.action(gs.get_countries()[0], gs.get_players()[0])
 
-    for country in gs.get_countries():
-        investor.action(country)
+    for territory in gs.get_countries()[0].get_home_territories():
+        print(f'{territory.get_name()} - {territory.get_tanks()} - {territory.get_ships()}')
 
-    for country in gs.get_countries():
-        investor.action(country)
+    print(gs.get_countries()[0].get_treasury())

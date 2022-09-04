@@ -74,6 +74,40 @@ class Import(ActionSpace):
         super().__init__()
         pass
 
+    def action(self, country, player):
+        # How many units can they get
+        max_units_to_get = min(3, country.get_treasury())
+        # Check which unit combinations are legal
+        boat_territories = [i for i in country.get_home_territories() if not i.is_occupied() and i.get_factory_is_sea()]
+        tank_territories = [i for i in country.get_home_territories() if not i.is_occupied()]
+        unit_combinations = []
+        for i in range(0, max_units_to_get + 1):
+            for j in range(max_units_to_get - i, -1, -1):
+                unit_combinations.append({'Tanks': i, 'Ships': j})
+
+        possibilities = []
+        # All units to one location
+        for c in unit_combinations:
+            for territory in country.get_home_territories():
+                if not territory.is_occupied():
+                    if c.get('Ships') == 0 or territory.get_factory_is_sea():
+                        possibilities.append((c, territory))
+
+        choice = player.make_choice(possibilities)
+        for k in range(0, choice[0].get('Tanks')):
+            country.remove_tank_from_pool()
+            choice[1].add_tank(country.get_name())
+            country.remove_money(1)
+
+        for l in range(0, choice[0].get('Ships')):
+            country.remove_ship_from_pool()
+            choice[1].add_ship(country.get_name())
+            country.remove_money(1)
+
+        # Query the player as to what the player would like to choose
+        # Execute choice
+        return 0
+
 
 class Production(ActionSpace):
     def __init__(self):

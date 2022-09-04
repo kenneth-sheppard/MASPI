@@ -28,6 +28,9 @@ class Territory:
         self.is_water = False
         self.is_costal = False
 
+    def __str__(self):
+        return self.name
+
     def get_name(self):
         return self.name
 
@@ -51,6 +54,9 @@ class Territory:
     def get_tanks(self):
         return self.tanks
 
+    def add_tank(self, country_name):
+        self.tanks[country_name] += 1
+
     def get_num_tanks(self, country_name):
         return self.tanks[country_name]
 
@@ -59,6 +65,9 @@ class Territory:
 
     def get_ships(self):
         return self.ships
+
+    def add_ship(self, country_name):
+        self.ships[country_name] += 1
 
     def get_num_ships(self, country_name):
         return self.ships[country_name]
@@ -82,3 +91,6 @@ class Territory:
                     return True
 
         return False
+
+    def get_factory_is_sea(self):
+        return self.factory_is_sea
