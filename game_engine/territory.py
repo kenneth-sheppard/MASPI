@@ -57,6 +57,9 @@ class Territory:
     def add_tank(self, country_name):
         self.tanks[country_name] += 1
 
+    def remove_tank(self, country_name):
+        self.tanks[country_name] -= 1
+
     def get_num_tanks(self, country_name):
         return self.tanks[country_name]
 
@@ -68,6 +71,9 @@ class Territory:
 
     def add_ship(self, country_name):
         self.ships[country_name] += 1
+
+    def remove_ship(self, country_name):
+        self.ships[country_name] -= 1
 
     def get_num_ships(self, country_name):
         return self.ships[country_name]

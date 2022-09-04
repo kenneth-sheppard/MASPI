@@ -2,22 +2,22 @@
 
 class GameState:
     def __init__(self):
-        self.territories = []
+        self.territories = {}
         self.countries = []
         self.players = []
         self.investor_card = None
 
     def add_territory(self, t):
-        self.territories.append(t)
+        self.territories[t.get_id()] = t
 
     def remove_territory(self, t):
-        self.territories.remove(t)
+        self.territories.pop(t.get_id())
 
     def get_territory(self, t_id):
-        for territory in self.territories:
-            if territory.id == t_id:
-                return territory
-        return None
+        return self.territories.get(t_id)
+
+    def update_territory(self, t):
+        self.territories[t.get_id()] = t
 
     def get_territories(self):
         return self.territories
