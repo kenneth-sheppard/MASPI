@@ -77,26 +77,26 @@ class Import(ActionSpace):
         pass
 
     def action(self, country, player, game_state):
-        # # How many units can they get
-        # max_units_to_get = min(3, country.get_treasury())
-        # # Check which unit combinations are legal
-        # boat_territories = [i for i in country.get_home_territories() if not i.is_occupied() and i.get_factory_is_sea()]
-        # tank_territories = [i for i in country.get_home_territories() if not i.is_occupied()]
-        # unit_combinations = []
-        # for i in range(0, max_units_to_get + 1):
-        #     for j in range(max_units_to_get - i, -1, -1):
-        #         unit_combinations.append({'Tanks': i, 'Ships': j})
-        #
-        # possibilities = []
-        # # All units to one location
-        # for c in unit_combinations:
-        #     for territory in country.get_home_territories():
-        #         if not territory.is_occupied():
-        #             if c.get('Ships') == 0 or territory.get_factory_is_sea():
-        #                 possibilities.append((c, territory))
+        # How many units can they get
+        max_units_to_get = min(3, country.get_treasury())
+        # Check which unit combinations are legal
+        boat_territories = [i for i in country.get_home_territories() if not i.is_occupied() and i.get_factory_is_sea()]
+        tank_territories = [i for i in country.get_home_territories() if not i.is_occupied()]
+        unit_combinations = []
+        for i in range(0, max_units_to_get + 1):
+            for j in range(max_units_to_get - i, -1, -1):
+                unit_combinations.append({'Tanks': i, 'Ships': j})
+
+        possibilities = []
+        # All units to one location
+        for c in unit_combinations:
+            for territory in country.get_home_territories():
+                if not territory.is_occupied():
+                    if c.get('Ships') == 0 or territory.get_factory_is_sea():
+                        possibilities.append((c, territory))
 
         # Query the player as to what the player would like to choose
-        choice = player.make_choice(game_state)
+        choice = player.make_choice(possibilities, game_state)
 
         # Execute choice
         for k in range(0, choice[0].get('Tanks')):
@@ -151,46 +151,63 @@ class Maneuver(ActionSpace):
             if command[0] is 'Tank' and t_from.get_ships().get(country.get_name()) != 0:
                 t_from.remove_ship(country.get_name())
                 t_to.add_ship(country.get_name())
+            self.battle(country, player, game_state, command[2], command[0])
 
         return 0
 
     def battle(self, country, player, game_state, territory, unit_type):
-        present = []
-        if unit_type is 'Ship':
-            for country_name, piece_count in territory.get_ships().items():
-                if piece_count > 0:
-                    present.append(country_name)
-        if unit_type is 'Tank':
-            for country_name, piece_count in territory.get_tanks().items():
-                if piece_count > 0:
-                    present.append(country_name)
-
-        if len(present) == 2:
-            do_fight = player.make_choice(game_state)
-            other_country = None
-            if not do_fight:
+        present = get_present(territory, unit_type)
+        no_peace = True
+        while len(present) >= 2 and no_peace:
+            present.append(None)
+            to_fight = player.make_choice([i for i in present if not country.get_name()], game_state)
+            if to_fight is not None:
+                do_battle(country, to_fight, territory, unit_type)
+                present = get_present(territory, unit_type)
+            else:
+                no_peace = False
                 for country_name in present:
                     if game_state.get_country(country_name).get_controller() is not None and \
-                       game_state.get_country(country_name) is not country:
-                        do_fight = game_state.get_country(country_name).get_controller().make_choice(game_state)
-                        other_country = country_name
+                            game_state.get_country(country_name) is not country:
+                        to_fight = game_state.get_country(country_name).get_controller().make_choice([country.get_name()
+                                                                                                      , None],
+                                                                                                     game_state)
+                        if to_fight is not None:
+                            no_peace = True
+                            do_battle(country, to_fight, territory, unit_type)
+                            present = get_present(territory, unit_type)
+                        else:
+                            no_peace = no_peace or False
 
-            if do_fight:
-                if unit_type is 'Ship':
-                    territory.remove_ship(country.get_name())
-                    territory.remove_ship(other_country)
-                if unit_type is 'Tank':
-                    territory.remove_tank(country.get_name())
-                    territory.remove_tank(other_country)
-
-        if len(present) > 2:
-            do_fight = player.make_choice(game_state)
+        # If there is only one army in the region, do nothing
+        # If there are more than one then
+        # Ask the active player if they want to fight any players represented as (Country1, Country2)
+        # If yes resolve the fight
 
         return 0
 
 
+def get_present(territory, unit_type):
+    present = []
+    if unit_type is 'Ship':
+        for country_name, piece_count in territory.get_ships().items():
+            if piece_count > 0:
+                present.append(country_name)
+    if unit_type is 'Tank':
+        for country_name, piece_count in territory.get_tanks().items():
+            if piece_count > 0:
+                present.append(country_name)
+
+    return present
 
 
+def do_battle(country, to_fight, territory, unit_type):
+    if unit_type is 'Ship':
+        territory.remove_ship(country.get_name())
+        territory.remove_ship(to_fight)
+    if unit_type is 'Tank':
+        territory.remove_tank(country.get_name())
+        territory.remove_tank(to_fight)
 
 
 class Taxation(ActionSpace):
@@ -241,4 +258,3 @@ class Factory(ActionSpace):
                     return 0
 
         return 1
-
