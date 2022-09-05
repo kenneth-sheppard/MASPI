@@ -1,6 +1,8 @@
 from game_engine.helper import list_of_sea_factories
 from game_engine.helper import list_of_land_factories
 from game_engine.helper import tax_chart
+from game_engine.helper import territory_adjacency_matrix
+from game_engine.helper import get_territory_id_from_name
 
 
 class ActionSpace:
@@ -141,6 +143,13 @@ class Maneuver(ActionSpace):
     def action(self, country, player, game_state):
         choice = player.make_choice(game_state)
 
+        # Check that moves are to adjacent territories
+        for elem in choice:
+            (t_u, tmf, tmt) = elem
+            if territory_adjacency_matrix[get_territory_id_from_name(game_state.get_territory(tmf))][
+                 get_territory_id_from_name(game_state.get_territory(tmt))] != 1:
+                choice.remove(elem)
+
         # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
         for command in choice:
             t_from = game_state.get_territory(command[1])
@@ -170,7 +179,7 @@ class Maneuver(ActionSpace):
                     if game_state.get_country(country_name).get_controller() is not None and \
                             game_state.get_country(country_name) is not country:
                         to_fight = game_state.get_country(country_name).get_controller().make_choice([country.get_name()
-                                                                                                      , None],
+                                                                                                         , None],
                                                                                                      game_state)
                         if to_fight is not None:
                             no_peace = True
