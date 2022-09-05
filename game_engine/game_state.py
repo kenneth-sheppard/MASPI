@@ -3,7 +3,7 @@
 class GameState:
     def __init__(self):
         self.territories = {}
-        self.countries = []
+        self.countries = {}
         self.players = []
         self.investor_card = None
 
@@ -23,16 +23,13 @@ class GameState:
         return self.territories
 
     def add_country(self, c):
-        self.countries.append(c)
+        self.countries[c.get_name()] = c
 
     def remove_country(self, c):
-        self.countries.remove(c)
+        self.countries.pop(c.get_name())
 
     def update_country(self, old_c, new_c):
-        for i in range(0, len(self.countries)):
-            if self.countries[i] is old_c:
-                self.countries[i] = new_c
-        return None
+        self.countries[old_c.get_name()] = new_c
 
     def get_countries(self):
         return self.countries
@@ -41,9 +38,7 @@ class GameState:
         self.countries = sc
 
     def get_country(self, c_name):
-        for country in self.countries:
-            if country.get_name() is c_name:
-                return country
+        return self.countries[c_name]
 
     def add_player(self, p):
         self.players.append(p)
@@ -60,6 +55,13 @@ class GameState:
         self.__update_players()
 
         return 0
+
+    def is_over(self):
+        for country in self.countries:
+            if country.get_power() == 25:
+                return True
+
+        return False
 
     def __update_territories(self):
         for territory in self.territories:
