@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     import_action = game_engine.action_space.Import()
 
-    import_action.action(gs.get_countries()[0], gs.get_players()[0])
+    import_action.action(country=gs.get_countries()[0], player=gs.get_players()[0], game_state=gs)
 
     for territory in gs.get_countries()[0].get_home_territories():
         print(f'{territory.get_name()} - {territory.get_tanks()} - {territory.get_ships()}')

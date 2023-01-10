@@ -53,7 +53,7 @@ class Player:
     def set_is_swiss_bank(self, is_swiss):
         self.is_swiss_bank = is_swiss
 
-    def make_choice(self, options):
+    def make_choice(self, options, game_state):
         self.banana = 2
         for i in enumerate(options):
             print('{} - Tanks: {}, Ships: {}, Territory: {}'.format(i[0], i[1][0].get('Tanks'), i[1][0].get('Ships'),

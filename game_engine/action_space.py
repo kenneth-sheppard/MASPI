@@ -19,6 +19,9 @@ class ActionSpace:
     def set_next_action(self, na):
         self.next_action = na
 
+    def action(self, country, player, game_state):
+        pass
+
 
 class Investor(ActionSpace):
     def __init__(self):
@@ -26,7 +29,7 @@ class Investor(ActionSpace):
         self.name = 'Investor'
         self.players = None
 
-    def action(self, country):
+    def action(self, country, player, game_state):
         # Make a dictionary of what people are owed
         owed = dict([(i, 0) for i in self.players])
         for bond in country.get_bonds():
@@ -119,7 +122,7 @@ class Production(ActionSpace):
         super().__init__()
         self.name = 'Production'
 
-    def action(self, country):
+    def action(self, country, player, game_state):
         # Might want a helper action for adding pieces to a territory that can automatically resolve conflicts
         # Will eventually need a priority system in case not enough pieces probably
         for territory in country.get_home_territories():
@@ -224,7 +227,7 @@ class Taxation(ActionSpace):
         super().__init__()
         self.name = 'Taxation'
 
-    def action(self, country):
+    def action(self, country, player, game_state):
         amount = 0
         for territory in country.get_home_territories():
             if territory.get_controller() is country and territory.has_factory():
@@ -253,7 +256,8 @@ class Factory(ActionSpace):
         super().__init__()
         self.name = 'Factory'
 
-    def action(self, country, territory):
+    def action(self, country, player, game_state):
+        territory = player.make_choice(game_state)
         if territory in country.get_home_territories():
             if country.get_treasury() >= 5:
                 if not territory.has_factory():

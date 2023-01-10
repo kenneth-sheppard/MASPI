@@ -1,5 +1,6 @@
 
 
+
 class GameState:
     def __init__(self):
         self.territories = {}
@@ -32,7 +33,7 @@ class GameState:
         self.countries[old_c.get_name()] = new_c
 
     def get_countries(self):
-        return self.countries
+        return list(self.countries.values())
 
     def set_countries(self, sc):
         self.countries = sc
@@ -64,7 +65,7 @@ class GameState:
         return False
 
     def __update_territories(self):
-        for territory in self.territories:
+        for territory in self.territories.values():
             players_in_territory = []
             if territory.is_water:
                 # Count ships
