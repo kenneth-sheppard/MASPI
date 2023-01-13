@@ -144,6 +144,43 @@ class Maneuver(ActionSpace):
         self.name = 'Maneuver'
 
     def action(self, country, player, game_state):
+        # Step 1 move ships
+
+        # Create a list of all territories that have ships of the active country
+        active_ship_territories = [i for i in game_state.get_territories().values() if i.get_ships().get(country.get_name()) > 0]
+        # Create a list of all legal moves for each of those ships
+        legal_moves = []
+
+        multiple_ships_handler = {}
+
+        for ast in active_ship_territories:
+            multiple_ships_handler[ast] = ast.get_num_ships(country_name=country.get_name())
+
+        input(multiple_ships_handler)
+
+        for ship_territory in active_ship_territories:
+            # Legal territories are adjacent to the current one (the current one is also classified as adjacent
+            # And must be water or the port that the ship is currently in
+            adjacent_territories = [t for t in game_state.get_territories().values() if
+                                    territory_adjacency_matrix[ship_territory.get_id()][t.get_id()] == 1
+                                    and (t.is_water() or t == ship_territory)]
+
+            for adjacent_ship_territory in adjacent_territories:
+                legal_moves.append(('Ship', ship_territory, adjacent_ship_territory))
+            # Get the decision from the player
+            choice = player.make_choice(options=legal_moves, game_state=game_state)
+
+            # Execute the move
+
+            # Remove that ship from the list of territories that have ships of the active country
+
+            # Update the list of all legal moves for each remaining ship
+
+        # Repeat
+
+        # Step 2 do the same for tanks
+
+        # Get the decision from the player
         choice = player.make_choice(game_state)
 
         # Check that moves are to adjacent territories
@@ -157,10 +194,10 @@ class Maneuver(ActionSpace):
         for command in choice:
             t_from = game_state.get_territory(command[1])
             t_to = game_state.get_territory(command[2])
-            if command[0] is 'Ship' and t_from.get_ships().get(country.get_name()) != 0:
+            if command[0] == 'Ship' and t_from.get_ships().get(country.get_name()) != 0:
                 t_from.remove_ship(country.get_name())
                 t_to.add_ship(country.get_name())
-            if command[0] is 'Tank' and t_from.get_ships().get(country.get_name()) != 0:
+            if command[0] == 'Tank' and t_from.get_ships().get(country.get_name()) != 0:
                 t_from.remove_ship(country.get_name())
                 t_to.add_ship(country.get_name())
             self.battle(country, player, game_state, command[2], command[0])
@@ -201,11 +238,11 @@ class Maneuver(ActionSpace):
 
 def get_present(territory, unit_type):
     present = []
-    if unit_type is 'Ship':
+    if unit_type == 'Ship':
         for country_name, piece_count in territory.get_ships().items():
             if piece_count > 0:
                 present.append(country_name)
-    if unit_type is 'Tank':
+    if unit_type == 'Tank':
         for country_name, piece_count in territory.get_tanks().items():
             if piece_count > 0:
                 present.append(country_name)
@@ -214,10 +251,10 @@ def get_present(territory, unit_type):
 
 
 def do_battle(country, to_fight, territory, unit_type):
-    if unit_type is 'Ship':
+    if unit_type == 'Ship':
         territory.remove_ship(country.get_name())
         territory.remove_ship(to_fight)
-    if unit_type is 'Tank':
+    if unit_type == 'Tank':
         territory.remove_tank(country.get_name())
         territory.remove_tank(to_fight)
 
