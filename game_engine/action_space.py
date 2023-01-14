@@ -360,7 +360,7 @@ class Factory(ActionSpace):
         self.name = 'Factory'
 
     def action(self, country, player, game_state):
-        territory = player.make_choice(game_state)
+        territory = player.make_factory_choice([i for i in country.get_home_territories() if not i.has_factory()], game_state)
         if territory in country.get_home_territories():
             if country.get_treasury() >= 5:
                 if not territory.has_factory():

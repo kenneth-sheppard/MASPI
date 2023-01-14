@@ -81,3 +81,10 @@ class Player:
             print(f'{i[0]} - {i[1]}')
 
         return options[int(input('Choose: '))]
+
+    def make_factory_choice(self, options, game_state):
+        self.banana = 6
+        for i in enumerate(options):
+            print(f'{i[0]} - {i[1]}')
+
+        return options[int(input('Choose: '))]
