@@ -27,17 +27,17 @@ class GameEngine:
 
     def __next_active_country(self):
         if self.active_country is 'European Union' or self.active_country is None:
-            self.active_country = 'Russia'
+            self.active_country = self.state.get_country('Russia')
         elif self.active_country is 'Russia':
-            self.active_country = 'China'
+            self.active_country = self.state.get_country('China')
         elif self.active_country is 'China':
-            self.active_country = 'India'
+            self.active_country = self.state.get_country('India')
         elif self.active_country is 'India':
-            self.active_country = 'Brazil'
+            self.active_country = self.state.get_country('Brazil')
         elif self.active_country is 'Brazil':
-            self.active_country = 'America'
+            self.active_country = self.state.get_country('America')
         elif self.active_country is 'America':
-            self.active_country = 'European Union'
+            self.active_country = self.state.get_country('European Union')
 
     def __move_tax(self, ntm):
         # TODO cannot go negative in money
