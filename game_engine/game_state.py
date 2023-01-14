@@ -1,6 +1,5 @@
 
 
-
 class GameState:
     def __init__(self):
         self.territories = {}
@@ -58,7 +57,7 @@ class GameState:
         return 0
 
     def is_over(self):
-        for country in self.countries:
+        for country in self.countries.values():
             if country.get_power() == 25:
                 return True
 

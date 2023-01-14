@@ -13,7 +13,7 @@ class GameEngine:
             # Get the active country
             self.__next_active_country()
             # Get the active player of the active country
-            self.active_player = self.state.get_country(self.active_country).get_controller
+            self.active_player = self.state.get_country(self.active_country).get_controller()
             # Ask that player to choose how far on the rondel they want to go
             ntm = self.active_player.make_rondel_choice(range(1, 7), self.state)
             # Tax the player if moving too far
