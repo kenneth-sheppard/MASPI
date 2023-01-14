@@ -155,7 +155,7 @@ class Maneuver(ActionSpace):
         no_peace = True
         while len(present) >= 2 and no_peace:
             present.append(None)
-            to_fight = player.make_choice([i for i in present if not country.get_name()], game_state)
+            to_fight = player.make_battle_choice([i for i in present if not country.get_name()], game_state)
             if to_fight is not None:
                 do_battle(country, to_fight, territory, unit_type)
                 present = get_present(territory, unit_type)
@@ -249,7 +249,7 @@ class Maneuver(ActionSpace):
                     for territory in adjacent_territories:
                         q = self.__find_convoy(country, territory, game_state)
                         if q is not None:
-                            if q is list:
+                            if type(q) is list:
                                 for elem in q:
                                     temp.append(elem)
                             else:

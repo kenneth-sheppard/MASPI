@@ -60,3 +60,24 @@ class Player:
                                                                     i[1][1]))
 
         return options[int(input('Choose: '))]
+
+    def make_maneuver_choice(self, options, game_state):
+        self.banana = 3
+        for i in enumerate(options):
+            print(f'{i[0]} - {i[1][0]} from {i[1][1]} to {i[1][2]}')
+
+        return options[int(input('Choose: '))]
+
+    def make_battle_choice(self, options, game_state):
+        self.banana = 4
+        for i in enumerate(options):
+            print(f'{i[0]} - {i[1]}')
+
+        return options[int(input('Choose: '))]
+
+    def make_rondel_choice(self, options, game_state):
+        self.banana = 5
+        for i in enumerate(options):
+            print(f'{i[0]} - {i[1]}')
+
+        return options[int(input('Choose: '))]
