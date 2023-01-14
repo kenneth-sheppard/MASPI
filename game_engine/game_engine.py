@@ -1,4 +1,5 @@
 import game_engine.game_setup
+import helper
 
 
 class GameEngine:
@@ -37,4 +38,11 @@ class GameEngine:
             self.active_country = 'America'
         elif self.active_country is 'America':
             self.active_country = 'European Union'
+
+    def __move_tax(self, ntm):
+        # TODO cannot go negative in money
+        if ntm > 3:
+            self.active_player.remove_money((ntm - 3) * (1 + helper.power_chart(self.active_country.get_power())))
+
+        return
         
