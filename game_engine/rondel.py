@@ -20,7 +20,7 @@ class RondelSpace:
     def next(self):
         return self.next_space
 
-    def action(self):
+    def get_action(self):
         return self.action
 
 
