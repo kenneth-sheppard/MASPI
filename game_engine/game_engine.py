@@ -1,5 +1,5 @@
 import game_engine.game_setup
-import helper
+import game_engine.helper
 
 
 class GameEngine:
