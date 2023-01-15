@@ -50,6 +50,13 @@ def setup():
             c.starting_tanks = 8
             c.starting_ships = 8
 
+        # Add ships and tanks to their respective pools
+        for t in range(0, c.starting_tanks):
+            c.add_tank_to_pool()
+
+        for s in range(0, c.starting_ships):
+            c.add_ship_to_pool()
+
         # all countries get 15 flags
         c.flag_count = 15
         new_game_state.add_country(c)
