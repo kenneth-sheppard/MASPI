@@ -129,10 +129,10 @@ class Production(ActionSpace):
                 if territory.has_factory():
                     if territory.get_name() in list_of_land_factories:
                         if country.remove_tank_from_pool():
-                            territory.set_num_tanks(territory.get_num_tanks() + 1)
+                            territory.set_num_tanks(country.get_name(), territory.get_num_tanks(country.get_name()) + 1)
                     elif territory.get_name() in list_of_sea_factories:
                         if country.remove_ship_from_pool():
-                            territory.set_num_ships(territory.get_num_ships() + 1)
+                            territory.set_num_ships(country.get_name(), territory.get_num_ships(country.get_name()) + 1)
             else:
                 return 1
 
