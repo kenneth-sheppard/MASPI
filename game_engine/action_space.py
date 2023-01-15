@@ -220,7 +220,7 @@ class Maneuver(ActionSpace):
 
     def __move_tanks(self, country, player, game_state):
         num_tanks_to_move = 0
-        # Create a list of all territories that have ships of the active country
+        # Create a list of all territories that have tanks of the active country
         active_tank_territories = [i for i in game_state.get_territories().values() if
                                    i.get_tanks().get(country.get_name()) > 0]
 
@@ -232,11 +232,11 @@ class Maneuver(ActionSpace):
 
         while num_tanks_to_move > 0:
 
-            # Create a list of all legal moves for each of those ships
+            # Create a list of all legal moves for each of those tanks
             legal_moves = []
 
             for tank_territory in active_tank_territories:
-                # Skip territories whose ships have all been moved
+                # Skip territories whose tanks have all been moved
                 if multiple_tanks_handler[tank_territory] >= 0:
                     # Legal territories are adjacent to the current one
                     adjacent_territories = [t for t in game_state.get_territories().values() if
@@ -270,7 +270,7 @@ class Maneuver(ActionSpace):
 
     def __find_convoy(self, country, territory, game_state):
         if not territory.get_is_water():
-            return territory
+            return [territory]
 
         elif territory.get_num_ships(country_name=country.get_name()) == 0:
             return
@@ -282,7 +282,8 @@ class Maneuver(ActionSpace):
                         territory.get_id() != adjacent_territory.get_id():
                     res = self.__find_convoy(country, adjacent_territory, game_state)
                     if res is not None:
-                        possible_convoys.append(self.__find_convoy(country, adjacent_territory, game_state))
+                        for path in res:
+                            possible_convoys.append(path.append(territory))
 
             return possible_convoys
 
