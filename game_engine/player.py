@@ -78,7 +78,7 @@ class Player:
     def make_rondel_choice(self, options, game_state):
         self.banana = 5
         for i in enumerate(options):
-            print(f'{i[0]} - {i[1]}')
+            print(f'{i[0]} - {i[1][1]}')
 
         return options[int(input('Choose: '))]
 
