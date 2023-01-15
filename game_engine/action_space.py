@@ -2,7 +2,6 @@ from game_engine.helper import list_of_sea_factories
 from game_engine.helper import list_of_land_factories
 from game_engine.helper import tax_chart
 from game_engine.helper import territory_adjacency_matrix
-from game_engine.helper import get_territory_id_from_name
 
 
 class ActionSpace:
@@ -128,10 +127,10 @@ class Production(ActionSpace):
         for territory in country.get_home_territories():
             if territory.get_controller() is country or territory.get_controller() is None:
                 if territory.has_factory():
-                    if territory in list_of_land_factories:
+                    if territory.get_name() in list_of_land_factories:
                         if country.remove_tank_from_pool():
                             territory.set_num_tanks(territory.get_num_tanks() + 1)
-                    elif territory in list_of_sea_factories:
+                    elif territory.get_name() in list_of_sea_factories:
                         if country.remove_ship_from_pool():
                             territory.set_num_ships(territory.get_num_ships() + 1)
             else:
