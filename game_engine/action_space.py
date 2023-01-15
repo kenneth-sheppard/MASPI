@@ -79,7 +79,7 @@ class Investor(ActionSpace):
 class Import(ActionSpace):
     def __init__(self):
         super().__init__()
-        pass
+        self.name = 'Import'
 
     def action(self, country, player, game_state):
         # How many units can they get

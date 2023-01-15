@@ -23,6 +23,9 @@ class RondelSpace:
     def get_action(self):
         return self.action
 
+    def get_name(self):
+        return self.action.get_name()
+
 
 def advance(rondel_space, num_to_move):
     for i in range(0, num_to_move):
