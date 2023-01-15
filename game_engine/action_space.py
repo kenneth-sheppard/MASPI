@@ -283,7 +283,13 @@ class Maneuver(ActionSpace):
                     res = self.__find_convoy(country, adjacent_territory, game_state)
                     if res is not None:
                         for path in res:
-                            possible_convoys.append(path.append(territory))
+                            if type(path) is list:
+                                path.append(territory)
+                                possible_convoys.append(path)
+                            else:
+                                res.append(territory)
+                                possible_convoys.append(res)
+                                break
 
             return possible_convoys
 
