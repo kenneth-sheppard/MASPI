@@ -155,24 +155,24 @@ class Maneuver(ActionSpace):
         no_peace = True
         while len(present) >= 2 and no_peace:
             present.append(None)
-            to_fight = player.make_battle_choice([i for i in present if not country.get_name()], game_state)
+            to_fight = player.make_battle_choice([i for i in present if i is not country.get_name()], game_state)
             if to_fight is not None:
                 do_battle(country, to_fight, territory, unit_type)
                 present = get_present(territory, unit_type)
             else:
                 no_peace = False
                 for country_name in present:
-                    if game_state.get_country(country_name).get_controller() is not None and \
-                            game_state.get_country(country_name) is not country:
-                        to_fight = game_state.get_country(country_name).get_controller().make_choice([country.get_name()
-                                                                                                         , None],
-                                                                                                     game_state)
-                        if to_fight is not None:
-                            no_peace = True
-                            do_battle(country, to_fight, territory, unit_type)
-                            present = get_present(territory, unit_type)
-                        else:
-                            no_peace = no_peace or False
+                    if country_name is not None:
+                        if game_state.get_country(country_name).get_controller() is not None and \
+                                game_state.get_country(country_name) is not country:
+                            to_fight = game_state.get_country(country_name).get_controller().make_choice(
+                                [country.get_name(), None], game_state)
+                            if to_fight is not None:
+                                no_peace = True
+                                do_battle(country, to_fight, territory, unit_type)
+                                present = get_present(territory, unit_type)
+                            else:
+                                no_peace = no_peace or False
 
         # If there is only one army in the region, do nothing
         # If there are more than one then
@@ -365,6 +365,8 @@ class Taxation(ActionSpace):
 
         power_up, owner_payout = tax_chart(amount)
 
+        print(f'Taxation by {country.get_name()} for {power_up} at {amount}')
+
         amount -= country.get_placed_units()
 
         if amount < 0:
@@ -385,6 +387,9 @@ class Factory(ActionSpace):
         self.name = 'Factory'
 
     def action(self, country, player, game_state):
+        if len([i for i in country.get_home_territories() if not i.has_factory()]) == 0:
+            return
+
         territory = player.make_factory_choice([i for i in country.get_home_territories() if not i.has_factory()], game_state)
         if territory in country.get_home_territories():
             if country.get_treasury() >= 5:
