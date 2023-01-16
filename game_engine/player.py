@@ -100,24 +100,24 @@ class RandPlayer(Player):
     def make_choice(self, options, game_state):
         self.banana = 2
 
-        return options[random.randint(0, len(options))]
+        return options[int(random.random() * len(options))]
 
     def make_maneuver_choice(self, options, game_state):
         self.banana = 3
 
-        return options[random.randint(0, len(options))]
+        return options[int(random.random() * len(options))]
 
     def make_battle_choice(self, options, game_state):
         self.banana = 4
 
-        return options[random.randint(0, len(options))]
+        return options[int(random.random() * len(options))]
 
     def make_rondel_choice(self, options, game_state):
         self.banana = 5
 
-        return options[random.randint(0, len(options))]
+        return options[int(random.random() * len(options))]
 
     def make_factory_choice(self, options, game_state):
         self.banana = 6
 
-        return options[random.randint(0, len(options))]
+        return options[int(random.random() * len(options))]
