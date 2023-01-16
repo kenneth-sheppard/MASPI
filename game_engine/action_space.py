@@ -230,6 +230,16 @@ class Maneuver(ActionSpace):
             multiple_tanks_handler[ast] = ast.get_num_tanks(country_name=country.get_name())
             num_tanks_to_move += ast.get_num_tanks(country_name=country.get_name())
 
+        # Handle convoying
+        active_ship_territories = [i for i in game_state.get_territories().values() if
+                                   i.get_ships().get(country.get_name()) > 0]
+
+        convoy_ships = []
+
+        for territory in active_ship_territories:
+            for i in range(0, territory.get_num_ships(country.get_name())):
+                convoy_ships.append(territory)
+
         while num_tanks_to_move > 0:
 
             # Create a list of all legal moves for each of those tanks
@@ -246,7 +256,7 @@ class Maneuver(ActionSpace):
                     temp = []
 
                     for territory in adjacent_territories:
-                        q = self.__find_convoy(country, territory, game_state)
+                        q = self.__find_convoy(country, territory, game_state, convoy_ships)
                         if q is not None:
                             if type(q) is list:
                                 for elem in q:
@@ -261,18 +271,25 @@ class Maneuver(ActionSpace):
                     # Get the decision from the player
                     choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
 
+                    if type(choice[2]) is list:
+                        for t in choice[2]:
+                            if t in convoy_ships:
+                                convoy_ships.remove(t)
+
+                        choice = (choice[0], choice[1], choice[2][0])
+
                     # Execute the move
                     self.__move_piece(choice, country, player, game_state)
 
-                    # Remove that ship from the list of territories that have ships of the active country
+                    # Remove that tank from the list of territories that have tanks of the active country
                     multiple_tanks_handler[choice[1]] = multiple_tanks_handler[choice[1]] - 1
                     num_tanks_to_move -= 1
 
-    def __find_convoy(self, country, territory, game_state):
+    def __find_convoy(self, country, territory, game_state, available_ships):
         if not territory.get_is_water():
             return [territory]
 
-        elif territory.get_num_ships(country_name=country.get_name()) == 0:
+        elif territory.get_num_ships(country_name=country.get_name()) == 0 or territory not in available_ships:
             return
 
         else:
@@ -280,7 +297,7 @@ class Maneuver(ActionSpace):
             for adjacent_territory in game_state.get_territories().values():
                 if territory_adjacency_matrix[territory.get_id()][adjacent_territory.get_id()] == 1 and \
                         territory.get_id() != adjacent_territory.get_id():
-                    res = self.__find_convoy(country, adjacent_territory, game_state)
+                    res = self.__find_convoy(country, adjacent_territory, game_state, available_ships)
                     if res is not None:
                         for path in res:
                             if type(path) is list:
