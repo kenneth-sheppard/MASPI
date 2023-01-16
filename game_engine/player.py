@@ -64,7 +64,10 @@ class Player:
     def make_maneuver_choice(self, options, game_state):
         self.banana = 3
         for i in enumerate(options):
-            print(f'{i[0]} - {i[1][0]} from {i[1][1]} to {i[1][2]}')
+            if type(i[1][2]) is list:
+                print(f'{i[0]} - {i[1][0]} from {i[1][1]} to {i[1][2][0]}')
+            else:
+                print(f'{i[0]} - {i[1][0]} from {i[1][1]} to {i[1][2]}')
 
         return options[int(input('Choose: '))]
 
