@@ -295,6 +295,7 @@ class Maneuver(ActionSpace):
 
         else:
             possible_convoys = []
+            available_ships.remove(territory)
             for adjacent_territory in game_state.get_territories().values():
                 if territory_adjacency_matrix[territory.get_id()][adjacent_territory.get_id()] == 1 and \
                         territory.get_id() != adjacent_territory.get_id():
