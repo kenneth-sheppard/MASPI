@@ -91,3 +91,33 @@ class Player:
             print(f'{i[0]} - {i[1]}')
 
         return options[int(input('Choose: '))]
+
+
+class RandPlayer(Player):
+    def __init__(self):
+        super().__init__()
+
+    def make_choice(self, options, game_state):
+        self.banana = 2
+
+        return options[random.randint(0, len(options))]
+
+    def make_maneuver_choice(self, options, game_state):
+        self.banana = 3
+
+        return options[random.randint(0, len(options))]
+
+    def make_battle_choice(self, options, game_state):
+        self.banana = 4
+
+        return options[random.randint(0, len(options))]
+
+    def make_rondel_choice(self, options, game_state):
+        self.banana = 5
+
+        return options[random.randint(0, len(options))]
+
+    def make_factory_choice(self, options, game_state):
+        self.banana = 6
+
+        return options[random.randint(0, len(options))]
