@@ -28,6 +28,9 @@ class GameEngine:
             # Update the game state
             self.state.update()
 
+        for country in self.state.get_countries():
+            print(f'{country.get_name()} - {country.get_power()}')
+
     def __next_active_country(self):
         if self.active_country is None or self.active_country.get_name() == 'European Union':
             self.active_country = self.state.get_country('Russia')

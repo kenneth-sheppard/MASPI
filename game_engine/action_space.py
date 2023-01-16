@@ -29,6 +29,7 @@ class Investor(ActionSpace):
         self.players = None
 
     def action(self, country, player, game_state):
+        self.players = game_state.get_players()
         # Make a dictionary of what people are owed
         owed = dict([(i, 0) for i in self.players])
         for bond in country.get_bonds():
