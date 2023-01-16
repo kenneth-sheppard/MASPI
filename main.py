@@ -1,22 +1,8 @@
 import game_engine.action_space
-from game_engine import game_setup
+from game_engine.game_engine import GameEngine
 
 
 if __name__ == '__main__':
-    gs = game_setup.setup()
-    for player in gs.get_players():
-        for bond in player.get_bonds():
-            pass
+    ge = GameEngine()
 
-    gs.update()
-
-    print(gs.get_countries()[0].get_treasury())
-
-    import_action = game_engine.action_space.Import()
-
-    import_action.action(country=gs.get_countries()[0], player=gs.get_players()[0], game_state=gs)
-
-    for territory in gs.get_countries()[0].get_home_territories():
-        print(f'{territory.get_name()} - {territory.get_tanks()} - {territory.get_ships()}')
-
-    print(gs.get_countries()[0].get_treasury())
+    ge.play()
