@@ -7,9 +7,17 @@ class GameEngine:
         self.state = game_engine.game_setup.setup()
         self.active_country = None
         self.active_player = None
+        self.turns = 0
 
     def play(self):
         while not self.state.is_over():
+            self.turns += 1
+
+            if self.turns % 6 == 0:
+                print(f'Turn - {self.turns // 6}')
+                for country in self.state.get_countries():
+                    print(f'{country.get_name()} - {country.get_power()} ', end='')
+                print()
             # Get the active country
             self.__next_active_country()
             # Get the active player of the active country
