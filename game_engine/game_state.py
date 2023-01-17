@@ -14,7 +14,7 @@ class GameState:
         output += '\n'
         for player in self.players:
             output += f'Player controlling {" ".join([c_name for c_name in player.get_controlled_countries()])} ' \
-                      f'current worth {player.get_worth()}'
+                      f'current worth {player.get_worth()}\nPlayer bonds are {" ".join([str(b) for b in player.get_bonds()])}'
             output += '\n'
 
         return output

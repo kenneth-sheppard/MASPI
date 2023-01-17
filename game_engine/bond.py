@@ -8,7 +8,7 @@ class Bond:
         self.interest_rate = interest_rate
 
     def __str__(self):
-        return '{} - {}({})'.format(self.country.get_name(), self.cost, self.interest_rate)
+        return f'{self.country.get_name()} - {self.cost}({self.interest_rate})'
 
     def get_country(self):
         return self.country
