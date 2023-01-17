@@ -33,7 +33,8 @@ class InvestorCard:
         # Create a list of all potential options
 
         # Available bonds with no controller direct buy
-        options = []
+        # Start with default option of buying no bonds
+        options = [[0, None, None]]
         for country in game_state.get_countries():
             for bond in country.get_bonds():
                 # Do not do the bonds that cannot be paid for
@@ -54,7 +55,8 @@ class InvestorCard:
 
         choice = self.controller.get_player().make_investment_choice(options, game_state)
 
-        self.controller.get_player().buy_bond(choice[1], choice[2])
+        if choice[1] is not None:
+            self.controller.get_player().buy_bond(choice[1], choice[2])
 
         # Pass the card to the next player
         self.set_controller(self.get_controller().get_next())
