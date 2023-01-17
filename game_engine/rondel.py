@@ -27,9 +27,12 @@ class RondelSpace:
         return self.action.get_name()
 
 
-def advance(rondel_space, num_to_move):
+def advance(rondel_space, num_to_move, game_state):
     for i in range(0, num_to_move):
         rondel_space = rondel_space.next()
+        # If passing investor space trigger investor card in game_state
+        if rondel_space is investor:
+            game_state.do_investor_space()
 
     return rondel_space
 

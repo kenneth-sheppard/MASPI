@@ -124,7 +124,7 @@ class Country:
         if self.rondel_space is None:
             self.rondel_space = game_engine.rondel.start(num_to_advance)
         else:
-            self.rondel_space = game_engine.rondel.advance(self.rondel_space, num_to_advance)
+            self.rondel_space = game_engine.rondel.advance(self.rondel_space, num_to_advance, game_state)
 
     def hypothetical_advance(self, num_to_advance):
         if self.rondel_space is None:

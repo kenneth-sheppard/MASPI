@@ -143,3 +143,6 @@ class GameState:
                 player.set_is_swiss_bank(True)
 
         return 0
+
+    def do_investor_card(self):
+        pass
