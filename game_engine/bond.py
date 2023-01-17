@@ -24,3 +24,6 @@ class Bond:
 
     def set_owner(self, o):
         self.owner = o
+
+    def get_value(self):
+        return self.interest_rate * self.country.get_power()

@@ -53,6 +53,13 @@ class Player:
     def set_is_swiss_bank(self, is_swiss):
         self.is_swiss_bank = is_swiss
 
+    def get_worth(self):
+        value = self.get_money()
+        for bond in self.get_bonds():
+            value += bond.get_value()
+
+        return value
+
     def make_choice(self, options, game_state):
         self.banana = 2
         for i in enumerate(options):
