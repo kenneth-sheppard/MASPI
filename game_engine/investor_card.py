@@ -23,6 +23,13 @@ class InvestorCard:
             new_player.set_next(self.ICPlayer(p))
 
     def done_adding_players(self):
+        # set the last player to loop back to the first
+        last_player = self.controller
+        while last_player.get_next() is not None:
+            last_player = last_player.get_next()
+
+        last_player.set_next(self.controller)
+
         # now that done adding player move control to the Russia controller
         while 'Russia' not in self.controller.get_player().get_controlled_countries():
             print('Next')
