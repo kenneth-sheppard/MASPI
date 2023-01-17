@@ -7,6 +7,18 @@ class GameState:
         self.players = []
         self.investor_card = None
 
+    def __str__(self):
+        output = ''
+        for country in self.countries.values():
+            output += f'{country.get_name()} - {country.get_power()} '
+        output += '\n'
+        for player in self.players:
+            output += f'Player controlling {" ".join([c_name for c_name in player.get_controlled_countries()])} ' \
+                      f'current worth {player.get_worth()}'
+            output += '\n'
+
+        return output
+
     def add_territory(self, t):
         self.territories[t.get_id()] = t
 
