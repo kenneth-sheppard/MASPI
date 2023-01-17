@@ -8,6 +8,7 @@ class ActionSpace:
     def __init__(self):
         self.name = None
         self.next_action = None
+        self.times_activated = 0
 
     def get_name(self):
         return self.name
@@ -19,7 +20,10 @@ class ActionSpace:
         self.next_action = na
 
     def action(self, country, player, game_state):
-        pass
+        self.times_activated += 1
+
+    def get_times_activated(self):
+        return self.times_activated
 
 
 class Investor(ActionSpace):
@@ -29,6 +33,7 @@ class Investor(ActionSpace):
         self.players = None
 
     def action(self, country, player, game_state):
+        super(Investor, self).action(country, player, game_state)
         self.players = game_state.get_players()
         # Make a dictionary of what people are owed
         owed = dict([(i, 0) for i in self.players])
@@ -82,6 +87,7 @@ class Import(ActionSpace):
         self.name = 'Import'
 
     def action(self, country, player, game_state):
+        super(Import, self).action(country, player, game_state)
         # How many units can they get
         max_units_to_get = min(3, country.get_treasury())
         # Check which unit combinations are legal
@@ -123,6 +129,7 @@ class Production(ActionSpace):
         self.name = 'Production'
 
     def action(self, country, player, game_state):
+        super(Production, self).action(country, player, game_state)
         # Might want a helper action for adding pieces to a territory that can automatically resolve conflicts
         # Will eventually need a priority system in case not enough pieces probably
         for territory in country.get_home_territories():
@@ -144,6 +151,7 @@ class Maneuver(ActionSpace):
         self.name = 'Maneuver'
 
     def action(self, country, player, game_state):
+        super(Maneuver, self).action(country, player, game_state)
         # Step 1 is to move all ships
         self.__move_ships(country, player, game_state)
 
@@ -356,6 +364,7 @@ class Taxation(ActionSpace):
         self.name = 'Taxation'
 
     def action(self, country, player, game_state):
+        super(Taxation, self).action(country, player, game_state)
         amount = 0
         for territory in country.get_home_territories():
             if not territory.is_occupied() and territory.has_factory():
@@ -387,6 +396,7 @@ class Factory(ActionSpace):
         self.name = 'Factory'
 
     def action(self, country, player, game_state):
+        super(Factory, self).action(country, player, game_state)
         if len([i for i in country.get_home_territories() if not i.has_factory()]) == 0:
             return
 
