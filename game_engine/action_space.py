@@ -374,8 +374,6 @@ class Taxation(ActionSpace):
 
         power_up, owner_payout = tax_chart(amount)
 
-        print(f'Taxation by {country.get_name()} for {power_up} at {amount}')
-
         amount -= country.get_placed_units()
 
         if amount < 0:
