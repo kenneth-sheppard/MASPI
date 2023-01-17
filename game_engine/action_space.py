@@ -358,7 +358,7 @@ class Taxation(ActionSpace):
     def action(self, country, player, game_state):
         amount = 0
         for territory in country.get_home_territories():
-            if territory.get_controller() is country and territory.has_factory():
+            if not territory.is_occupied() and territory.has_factory():
                 amount += 2
 
         amount += len(country.get_controlled_neutral_territories())
