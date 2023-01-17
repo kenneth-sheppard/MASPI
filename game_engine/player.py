@@ -67,6 +67,7 @@ class Player:
 
         self.money -= bond_to_buy.get_cost()
         bond_to_buy.set_owner(self)
+        self.bonds.append(bond_to_buy)
 
     def make_choice(self, options, game_state):
         self.banana = 2
