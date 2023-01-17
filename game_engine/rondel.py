@@ -37,6 +37,14 @@ def advance(rondel_space, num_to_move, game_state):
     return rondel_space
 
 
+# Hypothetical advance does not trigger the investor space
+def hypothetical_advance(rondel_space, num_to_move):
+    for i in range(0, num_to_move):
+        rondel_space = rondel_space.next()
+
+    return rondel_space
+
+
 investor = RondelSpace(action_space.Investor())
 imports = RondelSpace(action_space.Import())
 production1 = RondelSpace(action_space.Production())
