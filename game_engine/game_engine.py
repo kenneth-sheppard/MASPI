@@ -15,9 +15,7 @@ class GameEngine:
 
             if self.turns % 6 == 0:
                 print(f'Turn - {self.turns // 6}')
-                for country in self.state.get_countries():
-                    print(f'{country.get_name()} - {country.get_power()} ', end='')
-                print()
+                print(self.state)
             # Get the active country
             self.__next_active_country()
             # Get the active player of the active country
