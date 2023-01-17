@@ -9,6 +9,7 @@ from game_engine.helper import make_bonds_for, list_of_starting_factories, get_t
     list_of_sea_factories
 from game_engine.helper import home_territories as home_territories
 from game_engine.player import Player, RandPlayer
+from game_engine.investor_card import InvestorCard
 
 
 # Returns a GameState object to the game engine
@@ -69,6 +70,9 @@ def setup():
     for t_name in list_of_starting_factories:
         new_game_state.get_territory(get_territory_id_from_name(t_name)).build_factory()
 
+    # Investor card
+    i_card = InvestorCard()
+
     # Setup players
     for i in range(0, game_engine.settings.num_players):
         temp_player = RandPlayer()
@@ -85,5 +89,11 @@ def setup():
             starting_distributions.remove(starting_distributions[k])
 
         new_game_state.add_player(temp_player)
+
+        i_card.add_player(temp_player)
+
+    new_game_state.update()
+
+    i_card.done_adding_players()
 
     return new_game_state
