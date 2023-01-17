@@ -120,7 +120,7 @@ class Country:
     def reclaim_bond(self, bond):
         self.bonds[bond.cost].set_owner(None)
 
-    def advance(self, num_to_advance):
+    def advance(self, num_to_advance, game_state):
         if self.rondel_space is None:
             self.rondel_space = game_engine.rondel.start(num_to_advance)
         else:

@@ -21,14 +21,10 @@ class GameEngine:
             # Get the active player of the active country
             self.active_player = self.active_country.get_controller()
             # Ask that player to choose how far on the rondel they want to go
-            ntm = self.active_player.make_rondel_choice(
-                [[o, self.active_country.hypothetical_advance(o).get_name()] for o in range(1, 7)],
-                self.state
-            )[0]
             # Tax the player if moving too far
             ntm = self.__move_query()
             # Advance that many spaces on the rondel
-            self.active_country.advance(ntm)
+            self.active_country.advance(ntm, self.state)
             # Activate that action space on the rondel
             self.active_country.get_rondel_space().get_action().action(self.active_country, self.active_player, self.state)
             # Update the game state
@@ -41,6 +37,8 @@ class GameEngine:
         for i in range(0, 8):
             print(f'{space.get_name()} - {space.get_action().get_times_activated()} times')
             space = space.next()
+
+        print(self.state)
 
     def __next_active_country(self):
         if self.active_country is None or self.active_country.get_name() == 'European Union':
