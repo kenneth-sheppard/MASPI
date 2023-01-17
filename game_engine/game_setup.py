@@ -96,4 +96,6 @@ def setup():
 
     i_card.done_adding_players()
 
+    new_game_state.investor_card = i_card
+
     return new_game_state

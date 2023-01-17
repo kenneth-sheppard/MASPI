@@ -32,7 +32,7 @@ def advance(rondel_space, num_to_move, game_state):
         rondel_space = rondel_space.next()
         # If passing investor space trigger investor card in game_state
         if rondel_space is investor:
-            game_state.do_investor_space()
+            game_state.do_investor_card()
 
     return rondel_space
 

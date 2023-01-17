@@ -145,4 +145,4 @@ class GameState:
         return 0
 
     def do_investor_card(self):
-        pass
+        self.investor_card.do_investor_card(self)

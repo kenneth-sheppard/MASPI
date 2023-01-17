@@ -60,6 +60,14 @@ class Player:
 
         return value
 
+    def buy_bond(self, bond_to_buy, bond_to_sell=None):
+        if bond_to_sell is not None:
+            self.money += bond_to_sell.get_cost()
+            bond_to_sell.set_owner(None)
+
+        self.money -= bond_to_buy.get_cost()
+        bond_to_buy.set_owner(self)
+
     def make_choice(self, options, game_state):
         self.banana = 2
         for i in enumerate(options):
@@ -99,6 +107,13 @@ class Player:
 
         return options[int(input('Choose: '))]
 
+    def make_investment_choice(self, options, game_state):
+        self.banana = 7
+        for i in enumerate(options):
+            print(f'{i[0]} - {i[1]}')
+
+        return options[int(input('Choose: '))]
+
 
 class RandPlayer(Player):
     def __init__(self):
@@ -126,5 +141,10 @@ class RandPlayer(Player):
 
     def make_factory_choice(self, options, game_state):
         self.banana = 6
+
+        return options[int(random.random() * len(options))]
+
+    def make_investment_choice(self, options, game_state):
+        self.banana = 7
 
         return options[int(random.random() * len(options))]
