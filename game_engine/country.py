@@ -76,10 +76,10 @@ class Country:
 
         return False
 
-    def get_controller(self):
+    def get_country_controller(self):
         return self.controller
 
-    def set_controller(self, player):
+    def set_country_controller(self, player):
         self.controller = player
 
     def get_power(self):

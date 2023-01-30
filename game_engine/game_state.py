@@ -17,6 +17,10 @@ class GameState:
                       f'current worth {player.get_worth()}\nPlayer bonds are {" ".join([str(b) for b in player.get_bonds()])}'
             output += '\n'
 
+        for territory in self.territories:
+            # output += f'{territory.get_name()} with flag of {territory.get_controller()}'
+            pass
+
         return output
 
     def add_territory(self, t):
@@ -93,7 +97,7 @@ class GameState:
                 if len(players_in_territory) == 1:
                     c_name = players_in_territory[0]
                     if self.get_country(c_name).place_flag():
-                        territory.controller = c_name
+                        territory.set_territory_controller(c_name)
             # Territory is not neutral
             else:
                 # If more than two people are in territory is occupied
@@ -101,7 +105,7 @@ class GameState:
                     self.get_country(territory.get_in_country()).is_occupied = True
                 # If one player must check which
                 elif len(players_in_territory) == 1:
-                    territory.controller = players_in_territory[0]
+                    territory.set_territory_controller(players_in_territory[0])
                     if territory.get_in_country().get_name() != players_in_territory[0]:
                         self.get_country(territory.get_in_country()).is_occupied = True
                 # If zero no action required
@@ -124,8 +128,8 @@ class GameState:
                     # do nothing
                     return 0
             if bond_owners[curr_owner] > 0:
-                if country.get_controller() is not curr_owner:
-                    country.set_controller(curr_owner)
+                if country.get_country_controller() is not curr_owner:
+                    country.set_country_controller(curr_owner)
 
         return 0
 
@@ -135,8 +139,8 @@ class GameState:
             player.reset_controlled_countries()
         # Go through the list of countries and assign them to their owners
         for country in self.get_countries():
-            if country.get_controller():
-                country.get_controller().add_controlled_country(country.name)
+            if country.get_country_controller():
+                country.get_country_controller().add_controlled_country(country.name)
         # Check for swiss banks
         for player in self.get_players():
             if not player.get_controlled_countries():

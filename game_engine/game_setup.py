@@ -85,7 +85,7 @@ def setup():
                      starting_distributions[k][0][1])
             buy_bond(temp_player, new_game_state.get_country(starting_distributions[k][1][0]),
                      starting_distributions[k][1][1])
-            new_game_state.get_country(starting_distributions[k][0][0]).set_controller(temp_player)
+            new_game_state.get_country(starting_distributions[k][0][0]).set_country_controller(temp_player)
             starting_distributions.remove(starting_distributions[k])
 
         new_game_state.add_player(temp_player)

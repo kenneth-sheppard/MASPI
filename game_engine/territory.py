@@ -37,10 +37,10 @@ class Territory:
     def get_id(self):
         return self.id
 
-    def get_controller(self):
+    def get_territory_controller(self):
         return self.controller
 
-    def set_controller(self, c):
+    def set_territory_controller(self, c):
         self.controller = c
 
     def has_factory(self):

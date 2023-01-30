@@ -56,25 +56,25 @@ class Investor(ActionSpace):
                     owed[next_up[0]] -= country.get_treasury()
                     country.remove_money(country.get_treasury())
                     # Check if country controller is the player being paid
-                    if country.get_controller() is not next_up[0]:
+                    if country.get_country_controller() is not next_up[0]:
                         # get amount available
-                        aa = country.get_controller().get_money()
+                        aa = country.get_country_controller().get_money()
                         if next_up[1] < aa:
                             next_up[0].add_money(next_up[1])
-                            country.get_controller().remove_money(next_up[1])
+                            country.get_country_controller().remove_money(next_up[1])
                         else:
                             next_up[0].add_money(aa)
-                            country.get_controller().remove_money(aa)
+                            country.get_country_controller().remove_money(aa)
                 # Country is broke, player must pay
                 else:
-                    if country.get_controller() is not next_up[0]:
-                        aa = country.get_controller().get_money()
+                    if country.get_country_controller() is not next_up[0]:
+                        aa = country.get_country_controller().get_money()
                         if next_up[1] < aa:
                             next_up[0].add_money(next_up[1])
-                            country.get_controller().remove_money(next_up[1])
+                            country.get_country_controller().remove_money(next_up[1])
                         else:
                             next_up[0].add_money(aa)
-                            country.get_controller().remove_money(aa)
+                            country.get_country_controller().remove_money(aa)
 
             del owed[next_up[0]]
 
@@ -133,7 +133,7 @@ class Production(ActionSpace):
         # Might want a helper action for adding pieces to a territory that can automatically resolve conflicts
         # Will eventually need a priority system in case not enough pieces probably
         for territory in country.get_home_territories():
-            if territory.get_controller() is country or territory.get_controller() is None:
+            if territory.get_territory_controller() is country.get_name() or territory.get_territory_controller() is None:
                 if territory.has_factory():
                     if territory.get_name() in list_of_land_factories:
                         if country.remove_tank_from_pool():
@@ -171,9 +171,9 @@ class Maneuver(ActionSpace):
                 no_peace = False
                 for country_name in present:
                     if country_name is not None:
-                        if game_state.get_country(country_name).get_controller() is not None and \
+                        if game_state.get_country(country_name).get_country_controller() is not None and \
                                 game_state.get_country(country_name) is not country:
-                            to_fight = game_state.get_country(country_name).get_controller().make_choice(
+                            to_fight = game_state.get_country(country_name).get_country_controller().make_choice(
                                 [country.get_name(), None], game_state)
                             if to_fight is not None:
                                 no_peace = True
@@ -265,6 +265,14 @@ class Maneuver(ActionSpace):
                     temp = []
 
                     for territory in adjacent_territories:
+                        w = self.__find_railroad(country, territory, game_state, convoy_ships, [])
+                        if w is not None:
+                            if type(w) is list:
+                                for elem in w:
+                                    temp.append(elem)
+                            else:
+                                temp.append(w)
+
                         q = self.__find_convoy(country, territory, game_state, convoy_ships)
                         if q is not None:
                             if type(q) is list:
@@ -319,6 +327,33 @@ class Maneuver(ActionSpace):
                                 break
 
             return possible_convoys
+
+    def __find_railroad(self, country, territory, game_state, available_ships, visited_territories):
+        if territory.is_occupied() or territory in visited_territories:
+            return None
+        elif not territory.get_in_country() == country and not territory.get_is_water():
+            return [territory]
+        elif not territory.get_in_country() == country and territory.get_is_water():
+            return self.__find_convoy(country, territory, game_state, available_ships)
+
+        else:
+            possible_railways = []
+            visited_territories.append(territory)
+            for adjacent_territory in game_state.get_territories().values():
+                if territory_adjacency_matrix[territory.get_id()][adjacent_territory.get_id()] == 1 and \
+                        territory.get_id() != adjacent_territory.get_id():
+                    res = self.__find_railroad(country, adjacent_territory, game_state, available_ships, visited_territories)
+                    if res is not None:
+                        for path in res:
+                            if type(path) is list:
+                                path.append(territory)
+                                possible_railways.append(path)
+                            else:
+                                res.append(territory)
+                                possible_railways.append(res)
+                                break
+
+            return possible_railways
 
     def __move_piece(self, command, country, player, game_state):
         # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
@@ -381,7 +416,7 @@ class Taxation(ActionSpace):
 
         country.add_power(power_up)
         # Give money to controller
-        country.get_controller().add_money(owner_payout)
+        country.get_country_controller().add_money(owner_payout)
 
         country.add_money(amount)
 
