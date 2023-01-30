@@ -256,7 +256,7 @@ class Maneuver(ActionSpace):
 
             for tank_territory in active_tank_territories:
                 # Skip territories whose tanks have all been moved
-                if multiple_tanks_handler[tank_territory] >= 0:
+                if multiple_tanks_handler[tank_territory] > 0:
                     # Legal territories are adjacent to the current one
                     adjacent_territories = [t for t in game_state.get_territories().values() if
                                             territory_adjacency_matrix[tank_territory.get_id()][t.get_id()] == 1]
@@ -284,7 +284,8 @@ class Maneuver(ActionSpace):
                     adjacent_territories = temp
 
                     for adjacent_tank_territory in adjacent_territories:
-                        legal_moves.append(('Tank', tank_territory, adjacent_tank_territory))
+                        if ('Tank', tank_territory, adjacent_tank_territory) not in legal_moves:
+                            legal_moves.append(('Tank', tank_territory, adjacent_tank_territory))
                     # Get the decision from the player
                     choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
 
@@ -335,7 +336,6 @@ class Maneuver(ActionSpace):
             return [territory]
         elif not territory.get_in_country() == country and territory.get_is_water():
             return self.__find_convoy(country, territory, game_state, available_ships)
-
         else:
             possible_railways = []
             visited_territories.append(territory)
@@ -367,8 +367,9 @@ class Maneuver(ActionSpace):
             t_from.remove_tank(country.get_name())
             t_to.add_tank(country.get_name())
         else:
-            print(f'Whoops! Was {command[0]} and {command[1].get_tanks()}')
-            print(game_state)
+            if command[0] == 'Tank':
+                print(f'Whoops! Was {command[0]} and {command[1].get_tanks()}')
+                print(game_state)
         self.battle(country, player, game_state, command[2], command[0])
 
         return 0
