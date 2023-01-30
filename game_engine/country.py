@@ -97,7 +97,10 @@ class Country:
         self.controlled_neutral_territories.append(territory)
 
     def remove_controlled_neutral_territory(self, territory):
-        self.controlled_neutral_territories.remove(territory)
+        if territory in self.controlled_neutral_territories:
+            self.controlled_neutral_territories.remove(territory)
+            return True
+        return False
         
     def get_home_territories(self):
         return self.home_territories
@@ -113,6 +116,9 @@ class Country:
             self.flag_count -= 1
             return True
         return False
+
+    def pickup_flag(self):
+        self.flag_count += 1
 
     def sell_bond(self, bond, player):
         self.bonds[bond.cost].set_owner(player)

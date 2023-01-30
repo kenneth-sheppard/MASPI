@@ -359,12 +359,16 @@ class Maneuver(ActionSpace):
         # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
         t_from = command[1]
         t_to = command[2]
+        print(f'From {command[1]} to {command[2]}')
         if command[0] == 'Ship' and t_from.get_ships().get(country.get_name()) != 0:
             t_from.remove_ship(country.get_name())
             t_to.add_ship(country.get_name())
-        if command[0] == 'Tank' and t_from.get_ships().get(country.get_name()) != 0:
-            t_from.remove_ship(country.get_name())
-            t_to.add_ship(country.get_name())
+        elif command[0] == 'Tank' and t_from.get_tanks().get(country.get_name()) != 0:
+            t_from.remove_tank(country.get_name())
+            t_to.add_tank(country.get_name())
+        else:
+            print(f'Whoops! Was {command[0]} and {command[1].get_tanks()}')
+            print(game_state)
         self.battle(country, player, game_state, command[2], command[0])
 
         return 0

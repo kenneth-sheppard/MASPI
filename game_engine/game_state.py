@@ -17,9 +17,8 @@ class GameState:
                       f'current worth {player.get_worth()}\nPlayer bonds are {" ".join([str(b) for b in player.get_bonds()])}'
             output += '\n'
 
-        for territory in self.territories:
-            # output += f'{territory.get_name()} with flag of {territory.get_controller()}'
-            pass
+        for territory in self.territories.values():
+            output += f'{territory.get_name()} with flag of {territory.get_territory_controller()} and tanks {territory.get_tanks()}\n'
 
         return output
 
@@ -54,7 +53,12 @@ class GameState:
         self.countries = sc
 
     def get_country(self, c_name):
-        return self.countries[c_name]
+        try:
+            return self.countries[c_name]
+        except KeyError as e:
+            print(e)
+            print(c_name)
+            input()
 
     def add_player(self, p):
         self.players.append(p)
@@ -82,7 +86,7 @@ class GameState:
     def __update_territories(self):
         for territory in self.territories.values():
             players_in_territory = []
-            if territory.is_water:
+            if territory.get_is_water():
                 # Count ships
                 for c_name, c_pieces in territory.get_ships().items():
                     if c_pieces > 0:
@@ -94,20 +98,25 @@ class GameState:
                         players_in_territory.append(c_name)
             # Update flag if there is exactly one country in neutral territory
             if territory.is_neutral:
+                for country in self.countries.values():
+                    if country.remove_controlled_neutral_territory(territory):
+                        country.pickup_flag()
                 if len(players_in_territory) == 1:
                     c_name = players_in_territory[0]
                     if self.get_country(c_name).place_flag():
                         territory.set_territory_controller(c_name)
+                        self.get_country(c_name).add_controlled_neutral_territory(territory)
+
             # Territory is not neutral
             else:
                 # If more than two people are in territory is occupied
                 if len(players_in_territory) > 1:
-                    self.get_country(territory.get_in_country()).is_occupied = True
+                    self.get_country(territory.get_in_country().get_name()).is_occupied = True
                 # If one player must check which
                 elif len(players_in_territory) == 1:
                     territory.set_territory_controller(players_in_territory[0])
                     if territory.get_in_country().get_name() != players_in_territory[0]:
-                        self.get_country(territory.get_in_country()).is_occupied = True
+                        self.get_country(territory.get_in_country().get_name()).is_occupied = True
                 # If zero no action required
                 else:
                     pass
