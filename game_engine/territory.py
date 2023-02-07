@@ -58,7 +58,10 @@ class Territory:
         self.tanks[country_name] += 1
 
     def remove_tank(self, country_name):
-        self.tanks[country_name] -= 1
+        if self.tanks[country_name] > 0:
+            self.tanks[country_name] -= 1
+        else:
+            raise ValueError('There are no tanks to remove!')
 
     def get_num_tanks(self, country_name):
         return self.tanks[country_name]
@@ -73,7 +76,10 @@ class Territory:
         self.ships[country_name] += 1
 
     def remove_ship(self, country_name):
-        self.ships[country_name] -= 1
+        if self.ships[country_name] > 0:
+            self.ships[country_name] -= 1
+        else:
+            raise ValueError('There are no ships to remove!')
 
     def get_num_ships(self, country_name):
         return self.ships[country_name]

@@ -159,14 +159,13 @@ class Maneuver(ActionSpace):
         self.__move_tanks(country, player, game_state)
 
     def battle(self, country, player, game_state, territory, unit_type):
-        present = get_present(territory, unit_type)
         no_peace = True
-        while len(present) >= 2 and no_peace:
+        while len(get_present(territory, unit_type)) >= 2 and no_peace and country.get_name() in get_present(territory, unit_type):
+            present = get_present(territory, unit_type)
             present.append(None)
-            to_fight = player.make_battle_choice([i for i in present if i is not country.get_name()], game_state)
+            to_fight = player.make_battle_choice([i for i in present if i != country.get_name()], game_state)
             if to_fight is not None:
                 do_battle(country, to_fight, territory, unit_type)
-                present = get_present(territory, unit_type)
             else:
                 no_peace = False
                 for country_name in present:
@@ -177,8 +176,7 @@ class Maneuver(ActionSpace):
                                 [country.get_name(), None], game_state)
                             if to_fight is not None:
                                 no_peace = True
-                                do_battle(country, to_fight, territory, unit_type)
-                                present = get_present(territory, unit_type)
+                                do_battle(country, country_name, territory, unit_type)
                             else:
                                 no_peace = no_peace or False
 
@@ -208,7 +206,7 @@ class Maneuver(ActionSpace):
 
             for ship_territory in active_ship_territories:
                 # Skip territories whose ships have all been moved
-                if multiple_ships_handler[ship_territory] >= 0:
+                if multiple_ships_handler[ship_territory] > 0:
                     # Legal territories are adjacent to the current one (the current one is also classified as adjacent
                     # And must be water or the port that the ship is currently in
                     adjacent_territories = [t for t in game_state.get_territories().values() if
@@ -217,15 +215,17 @@ class Maneuver(ActionSpace):
 
                     for adjacent_ship_territory in adjacent_territories:
                         legal_moves.append(('Ship', ship_territory, adjacent_ship_territory))
-                    # Get the decision from the player
-                    choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
+            # Get the decision from the player
+            choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
 
-                    # Execute the move
-                    self.__move_piece(choice, country, player, game_state)
+            # Execute the move
+            self.__move_piece(choice, country, player, game_state)
 
-                    # Remove that ship from the list of territories that have ships of the active country
-                    multiple_ships_handler[choice[1]] = multiple_ships_handler[choice[1]] - 1
-                    num_ships_to_move -= 1
+            # Remove that ship from the list of territories that have ships of the active country
+            multiple_ships_handler[choice[1]] = multiple_ships_handler[choice[1]] - 1
+            if multiple_ships_handler[choice[1]] == 0:
+                active_ship_territories.remove(choice[1])
+            num_ships_to_move -= 1
 
     def __move_tanks(self, country, player, game_state):
         num_tanks_to_move = 0
@@ -265,7 +265,10 @@ class Maneuver(ActionSpace):
                     temp = []
 
                     for territory in adjacent_territories:
-                        w = self.__find_railroad(country, territory, game_state, convoy_ships, [])
+                        if territory.get_in_country() == country:
+                            w = self.__find_railroad(country, territory, game_state, convoy_ships, [])
+                        else:
+                            w = None
                         if w is not None:
                             if type(w) is list:
                                 for elem in w:
@@ -286,22 +289,26 @@ class Maneuver(ActionSpace):
                     for adjacent_tank_territory in adjacent_territories:
                         if ('Tank', tank_territory, adjacent_tank_territory) not in legal_moves:
                             legal_moves.append(('Tank', tank_territory, adjacent_tank_territory))
-                    # Get the decision from the player
-                    choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
+            # Get the decision from the player
+            choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
 
-                    if type(choice[2]) is list:
-                        for t in choice[2]:
-                            if t in convoy_ships:
-                                convoy_ships.remove(t)
+            choice_to_pass = choice
 
-                        choice = (choice[0], choice[1], choice[2][0])
+            if type(choice[2]) is list:
+                for t in choice[2]:
+                    if t in convoy_ships:
+                        convoy_ships.remove(t)
 
-                    # Execute the move
-                    self.__move_piece(choice, country, player, game_state)
+                choice_to_pass = (choice[0], choice[1], choice[2][0])
 
-                    # Remove that tank from the list of territories that have tanks of the active country
-                    multiple_tanks_handler[choice[1]] = multiple_tanks_handler[choice[1]] - 1
-                    num_tanks_to_move -= 1
+            # Execute the move
+            self.__move_piece(choice_to_pass, country, player, game_state)
+
+            # Remove that tank from the list of territories that have tanks of the active country
+            multiple_tanks_handler[choice[1]] = multiple_tanks_handler[choice[1]] - 1
+            if multiple_tanks_handler[choice[1]] == 0:
+                active_tank_territories.remove(choice[1])
+            num_tanks_to_move -= 1
 
     def __find_convoy(self, country, territory, game_state, available_ships):
         if not territory.get_is_water():
@@ -359,7 +366,6 @@ class Maneuver(ActionSpace):
         # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
         t_from = command[1]
         t_to = command[2]
-        print(f'From {command[1]} to {command[2]}')
         if command[0] == 'Ship' and t_from.get_ships().get(country.get_name()) != 0:
             t_from.remove_ship(country.get_name())
             t_to.add_ship(country.get_name())
@@ -367,9 +373,8 @@ class Maneuver(ActionSpace):
             t_from.remove_tank(country.get_name())
             t_to.add_tank(country.get_name())
         else:
-            if command[0] == 'Tank':
-                print(f'Whoops! Was {command[0]} and {command[1].get_tanks()}')
-                print(game_state)
+            if command[1] != command[2]:
+                raise ValueError(f'Oops! That\'s not right... -> {command[0]} - {command[1]} - {command[2]}')
         self.battle(country, player, game_state, command[2], command[0])
 
         return 0
