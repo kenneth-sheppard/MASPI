@@ -224,8 +224,15 @@ class Maneuver(ActionSpace):
 
             # Remove that ship from the list of territories that have ships of the active country
             multiple_ships_handler[choice[1]] = multiple_ships_handler[choice[1]] - 1
-            if multiple_ships_handler[choice[1]] == 0:
-                active_ship_territories.remove(choice[1])
+            # If a new unit moving into a peaceful territory causes combat to occur that removes the piece already
+            # in the territory, the old piece cannot be moved and should not be a part of msh anymore
+            for key in multiple_ships_handler.keys():
+                if key.get_num_ships(country.get_name()) < multiple_ships_handler[key]:
+                    num_ships_to_move -= multiple_ships_handler[key] - key.get_num_ships(country.get_name())
+                    multiple_ships_handler[key] = key.get_num_ships(country.get_name())
+                if multiple_ships_handler[key] == 0 and key in active_ship_territories:
+                    active_ship_territories.remove(key)
+
             num_ships_to_move -= 1
 
     def __move_tanks(self, country, player, game_state):
@@ -307,8 +314,14 @@ class Maneuver(ActionSpace):
 
             # Remove that tank from the list of territories that have tanks of the active country
             multiple_tanks_handler[choice[1]] = multiple_tanks_handler[choice[1]] - 1
-            if multiple_tanks_handler[choice[1]] == 0:
-                active_tank_territories.remove(choice[1])
+
+            for key in multiple_tanks_handler.keys():
+                if key.get_num_tanks(country.get_name()) < multiple_tanks_handler[key]:
+                    num_tanks_to_move -= multiple_tanks_handler[key] - key.get_num_tanks(country.get_name())
+                    multiple_tanks_handler[key] = key.get_num_tanks(country.get_name())
+                if multiple_tanks_handler[key] == 0 and key in active_tank_territories:
+                    active_tank_territories.remove(key)
+
             num_tanks_to_move -= 1
 
     def __find_convoy(self, country, territory, game_state, available_ships):
