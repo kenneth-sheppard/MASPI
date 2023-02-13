@@ -32,8 +32,11 @@ class InvestorCard:
 
         # now that done adding player move control to the Russia controller
         while 'Russia' not in self.controller.get_player().get_controlled_countries():
-            print('Next')
+            # print('Next')
             self.controller = self.controller.get_next()
+
+        # card starts with the player next in turn order the Russia controller
+        self.controller = self.controller.get_next()
 
     def do_investor_card(self, game_state):
         self.controller.get_player().add_money(2)

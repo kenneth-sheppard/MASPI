@@ -80,13 +80,14 @@ def setup():
         for j in range(0, 6 // game_engine.settings.num_players):
             # Assign a set of starting bonds to each player from list
             # Choose random available option
-            k = random.randint(0, len(starting_distributions) - 1)
-            buy_bond(temp_player, new_game_state.get_country(starting_distributions[k][0][0]),
-                     starting_distributions[k][0][1])
-            buy_bond(temp_player, new_game_state.get_country(starting_distributions[k][1][0]),
-                     starting_distributions[k][1][1])
-            new_game_state.get_country(starting_distributions[k][0][0]).set_country_controller(temp_player)
-            starting_distributions.remove(starting_distributions[k])
+            temp_dists = starting_distributions.copy()
+            k = random.randint(0, len(temp_dists) - 1)
+            buy_bond(temp_player, new_game_state.get_country(temp_dists[k][0][0]),
+                     temp_dists[k][0][1])
+            buy_bond(temp_player, new_game_state.get_country(temp_dists[k][1][0]),
+                     temp_dists[k][1][1])
+            new_game_state.get_country(temp_dists[k][0][0]).set_country_controller(temp_player)
+            temp_dists.remove(temp_dists[k])
 
         new_game_state.add_player(temp_player)
 

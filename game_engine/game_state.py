@@ -17,8 +17,8 @@ class GameState:
                       f'current worth {player.get_worth()}\nPlayer bonds are {" ".join([str(b) for b in player.get_bonds()])}'
             output += '\n'
 
-        for territory in self.territories.values():
-            output += f'{territory.get_name()} with flag of {territory.get_territory_controller()} and tanks {territory.get_tanks()}\n'
+        # for territory in self.territories.values():
+        #     output += f'{territory.get_name()} with flag of {territory.get_territory_controller()} and tanks {territory.get_tanks()} and ships {territory.get_ships()}\n'
 
         return output
 

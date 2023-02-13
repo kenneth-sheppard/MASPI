@@ -14,7 +14,8 @@ class GameEngine:
             self.turns += 1
 
             if self.turns % 6 == 0:
-                print(f'Turn - {self.turns // 6}')
+                pass
+                # print(f'Turn - {self.turns // 6}')
                 # print(self.state)
             # Get the active country
             self.__next_active_country()
@@ -22,20 +23,22 @@ class GameEngine:
             self.active_player = self.active_country.get_country_controller()
             # Ask that player to choose how far on the rondel they want to go
             # Tax the player if moving too far
-            ntm = self.__move_query()
+            if self.active_player is not None:
+                ntm = self.__move_query()
             # Advance that many spaces on the rondel
-            self.active_country.advance(ntm, self.state)
+                self.active_country.advance(ntm, self.state)
             # Activate that action space on the rondel
-            self.active_country.get_rondel_space().get_action().action(self.active_country, self.active_player, self.state)
+                self.active_country.get_rondel_space().get_action().action(self.active_country, self.active_player, self.state)
             # Update the game state
             self.state.update()
 
         for country in self.state.get_countries():
-            print(f'{country.get_name()} - {country.get_power()}')
+            pass
+            # print(f'{country.get_name()} - {country.get_power()}')
 
         space = self.active_country.get_rondel_space()
         for i in range(0, 8):
-            print(f'{space.get_name()} - {space.get_action().get_times_activated()} times')
+            # print(f'{space.get_name()} - {space.get_action().get_times_activated()} times')
             space = space.next()
 
         print(self.state)
