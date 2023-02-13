@@ -355,6 +355,8 @@ class Maneuver(ActionSpace):
             return None
         elif not territory.get_in_country() == country and not territory.get_is_water():
             return [territory]
+        elif len(visited_territories) > 0 and visited_territories[0].get_in_country() != country:
+            return [territory]
         elif not territory.get_in_country() == country and territory.get_is_water():
             return self.__find_convoy(country, territory, game_state, available_ships)
         else:
