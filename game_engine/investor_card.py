@@ -30,10 +30,21 @@ class InvestorCard:
 
         last_player.set_next(self.controller)
 
+        found = True
+
         # now that done adding player move control to the Russia controller
         while 'Russia' not in self.controller.get_player().get_controlled_countries():
             # print('Next')
             self.controller = self.controller.get_next()
+            if self.controller == last_player:
+                found = False
+                break
+
+        if not found:
+            while 'China' not in self.controller.get_player().get_controlled_countries():
+                self.controller = self.controller.get_next()
+                if self.controller == last_player:
+                    break
 
         # card starts with the player next in turn order the Russia controller
         self.controller = self.controller.get_next()

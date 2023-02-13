@@ -177,6 +177,7 @@ class Maneuver(ActionSpace):
                             if to_fight is not None:
                                 no_peace = True
                                 do_battle(country, country_name, territory, unit_type)
+                                break
                             else:
                                 no_peace = no_peace or False
 
