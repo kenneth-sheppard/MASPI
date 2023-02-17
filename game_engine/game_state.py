@@ -159,3 +159,6 @@ class GameState:
 
     def do_investor_card(self):
         self.investor_card.do_investor_card(self)
+
+    def get_countries_sorted_by_power(self):
+        return sorted(self.countries.values(), key=lambda country: country.power)
