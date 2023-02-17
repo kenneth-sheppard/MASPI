@@ -75,7 +75,10 @@ def setup():
 
     # Setup players
     for i in range(0, game_engine.settings.num_players):
-        temp_player = GreedyPlayer()
+        if i == 0:
+            temp_player = GreedyPlayer()
+        else:
+            temp_player = RandPlayer()
         temp_player.add_money(13 * (6 // game_engine.settings.num_players))
         for j in range(0, 6 // game_engine.settings.num_players):
             # Assign a set of starting bonds to each player from list

@@ -57,6 +57,9 @@ class Country:
     def get_bonds(self):
         return self.bonds.values()
 
+    def get_bond(self, bond_cost):
+        return self.bonds[bond_cost]
+
     def add_bond(self, bond):
         self.bonds[bond.cost] = bond
 

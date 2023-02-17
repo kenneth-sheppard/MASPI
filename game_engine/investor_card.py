@@ -55,13 +55,13 @@ class InvestorCard:
 
         # Available bonds with no controller direct buy
         # Start with default option of buying no bonds
-        options = [[0, None, None]]
+        options = [[0, None, None, self.controller.get_player().get_id()]]
         for country in game_state.get_countries():
             for bond in country.get_bonds():
                 # Do not do the bonds that cannot be paid for
                 if bond.get_owner() is None and bond.get_cost() <= self.controller.get_player().get_money():
                     # options are structured as amount to pay, bond to buy, bond to trade in
-                    options.append([bond.get_cost(), bond, None])
+                    options.append([bond.get_cost(), bond, None, self.controller.get_player().get_id()])
         # Available bonds through trade in
         for country in game_state.get_countries():
             for bond in country.get_bonds():
@@ -72,7 +72,7 @@ class InvestorCard:
                         if owned_bond.get_owner() == bond.get_owner() and bond.get_cost() - owned_bond.get_cost() <= \
                                 self.controller.get_player().get_money():
                             # options are structured as bond to buy then bond to trade in
-                            options.append([bond.get_cost() - owned_bond.get_cost(), bond, owned_bond])
+                            options.append([bond.get_cost() - owned_bond.get_cost(), bond, owned_bond, self.controller.get_player().get_id()])
 
         choice = self.controller.get_player().make_investment_choice(options, game_state)
 

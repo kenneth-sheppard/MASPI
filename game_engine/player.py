@@ -87,7 +87,7 @@ class Player:
         bond_to_buy.set_owner(self)
         self.bonds.append(bond_to_buy)
 
-    def make_choice(self, options, game_state):
+    def make_import_choice(self, options, game_state):
         self.banana = 2
         for i in enumerate(options):
             print('{} - Tanks: {}, Ships: {}, Territory: {}'.format(i[0], i[1][0].get('Tanks'), i[1][0].get('Ships'),
@@ -138,7 +138,7 @@ class RandPlayer(Player):
     def __init__(self):
         super().__init__()
 
-    def make_choice(self, options, game_state):
+    def make_import_choice(self, options, game_state):
         self.banana = 2
 
         return options[int(random.random() * len(options))]
@@ -183,7 +183,7 @@ class GreedyPlayer(Player):
 
         return value
 
-    def make_choice(self, options, game_state):
+    def make_import_choice(self, options, game_state):
         self.banana = 2
 
         return options[int(random.random() * len(options))]
@@ -230,6 +230,13 @@ class GreedyPlayer(Player):
         return best_option
 
     def make_investment_choice(self, options, game_state):
-        self.banana = 7
+        best_option = None
+        best_value = None
+        for option in options:
+            new_state = action_space.hypothetical_investment(option, copy.deepcopy(game_state))
+            new_eval = self.__evaluate_game_state(new_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(random.random() * len(options))]
+        return best_option

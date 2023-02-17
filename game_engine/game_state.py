@@ -60,6 +60,9 @@ class GameState:
             print(c_name)
             input()
 
+    def get_bond(self, bond):
+        return self.get_country(bond.get_country().get_name()).get_bond(bond.get_cost())
+
     def add_player(self, p):
         self.players.append(p)
 

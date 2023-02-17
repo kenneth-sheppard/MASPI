@@ -84,6 +84,15 @@ class Investor(ActionSpace):
         return 0
 
 
+def hypothetical_investment(choice, game_state):
+    if choice[1] is not None:
+        if choice[2] is not None:
+            game_state.get_player(choice[3]).buy_bond(game_state.get_bond(choice[1]), game_state.get_bond(choice[2]))
+        else:
+            game_state.get_player(choice[3]).buy_bond(game_state.get_bond(choice[1]))
+    return game_state
+
+
 class Import(ActionSpace):
     def __init__(self):
         super().__init__()
@@ -111,7 +120,7 @@ class Import(ActionSpace):
 
         if len(possibilities) > 0:
             # Query the player as to what the player would like to choose
-            choice = player.make_choice(possibilities, game_state)
+            choice = player.make_import_choice(possibilities, game_state)
 
             # Execute choice
             for k in range(0, choice[0].get('Tanks')):
