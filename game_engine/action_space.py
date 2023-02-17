@@ -106,19 +106,20 @@ class Import(ActionSpace):
                     if c.get('Ships') == 0 or territory.get_factory_is_sea():
                         possibilities.append((c, territory))
 
-        # Query the player as to what the player would like to choose
-        choice = player.make_choice(possibilities, game_state)
+        if len(possibilities) > 0:
+            # Query the player as to what the player would like to choose
+            choice = player.make_choice(possibilities, game_state)
 
-        # Execute choice
-        for k in range(0, choice[0].get('Tanks')):
-            country.remove_tank_from_pool()
-            choice[1].add_tank(country.get_name())
-            country.remove_money(1)
+            # Execute choice
+            for k in range(0, choice[0].get('Tanks')):
+                country.remove_tank_from_pool()
+                choice[1].add_tank(country.get_name())
+                country.remove_money(1)
 
-        for m in range(0, choice[0].get('Ships')):
-            country.remove_ship_from_pool()
-            choice[1].add_ship(country.get_name())
-            country.remove_money(1)
+            for m in range(0, choice[0].get('Ships')):
+                country.remove_ship_from_pool()
+                choice[1].add_ship(country.get_name())
+                country.remove_money(1)
 
         return 0
 
