@@ -41,7 +41,8 @@ class GameEngine:
             # print(f'{space.get_name()} - {space.get_action().get_times_activated()} times')
             space = space.next()
 
-        print(self.state)
+    def get_state(self):
+        return self.state
 
     def __next_active_country(self):
         if self.active_country is None or self.active_country.get_name() == 'European Union':
