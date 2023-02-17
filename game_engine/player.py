@@ -20,6 +20,14 @@ class Player:
         self.bonds.remove(bond_out)
         self.bonds.append(bond_in)
 
+    def get_investment_in_country(self, country):
+        amount = 0
+        for bond in self.bonds:
+            if bond.get_country() == country:
+                amount += bond.get_cost()
+
+        return amount
+
     def get_controlled_countries(self):
         return self.controlled_countries
 
