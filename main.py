@@ -1,13 +1,19 @@
-import os.path
 
 from game_engine.game_engine import GameEngine
+from statistics_observer.game_results import GameStateObserver
 from statistics_observer.player_observer import PlayerObserver
 
 if __name__ == '__main__':
     op = []
+    go = None
 
-    for i in range(5000):
+    for i in range(100):
         ge = GameEngine()
+
+        if go is None:
+            go = GameStateObserver(ge.get_state())
+        else:
+            go.update_game_state(ge.get_state())
 
         if len(op) == 0:
             for j in range(len(ge.get_state().get_players())):
@@ -42,12 +48,17 @@ if __name__ == '__main__':
 
         winner.was_winner()
 
+        go.game_end()
+
         for player_observer in op:
             player_observer.game_end()
 
     for player_observer in op:
         print(player_observer)
 
+    print(go)
+
     with open('recorded_results.txt', 'wt') as f:
         for player_observer in op:
             f.write(player_observer.__str__())
+        f.write(go.__str__())
