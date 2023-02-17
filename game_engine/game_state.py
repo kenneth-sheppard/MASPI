@@ -66,6 +66,11 @@ class GameState:
     def get_players(self):
         return self.players
 
+    def get_player(self, p_id):
+        for player in self.players:
+            if player.get_id() == p_id:
+                return player
+
     def update(self):
         # Update each territory and check for new flag
         self.__update_territories()

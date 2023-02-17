@@ -2,6 +2,8 @@ import copy
 import random
 import game_engine.action_space as action_space
 
+id_count = 0
+
 
 class Player:
     def __init__(self):
@@ -11,6 +13,12 @@ class Player:
         self.has_investor_card = False
         self.is_swiss_bank = False
         self.banana = 0
+        global id_count
+        self.id = id_count
+        id_count += 1
+
+    def get_id(self):
+        return self.id
 
     def get_bonds(self):
         return self.bonds
@@ -181,9 +189,16 @@ class GreedyPlayer(Player):
         return options[int(random.random() * len(options))]
 
     def make_maneuver_choice(self, options, game_state):
-        self.banana = 3
+        best_option = None
+        best_value = None
+        for option in options:
+            new_state = action_space.hypothetical_move_piece(option, copy.deepcopy(game_state))
+            new_eval = self.__evaluate_game_state(new_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(random.random() * len(options))]
+        return best_option
 
     def make_battle_choice(self, options, game_state):
         best_option = None

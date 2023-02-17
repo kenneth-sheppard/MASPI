@@ -224,7 +224,7 @@ class Maneuver(ActionSpace):
                                             and (t.get_is_water() or t == ship_territory)]
 
                     for adjacent_ship_territory in adjacent_territories:
-                        legal_moves.append(('Ship', ship_territory, adjacent_ship_territory))
+                        legal_moves.append(('Ship', ship_territory, adjacent_ship_territory, country, player))
             # Get the decision from the player
             choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
 
@@ -305,7 +305,7 @@ class Maneuver(ActionSpace):
 
                     for adjacent_tank_territory in adjacent_territories:
                         if ('Tank', tank_territory, adjacent_tank_territory) not in legal_moves:
-                            legal_moves.append(('Tank', tank_territory, adjacent_tank_territory))
+                            legal_moves.append(('Tank', tank_territory, adjacent_tank_territory, country, player))
             # Get the decision from the player
             choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
 
@@ -405,6 +405,29 @@ class Maneuver(ActionSpace):
         return 0
 
 
+def hypothetical_move_piece(command, game_state):
+    # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
+    t_from = game_state.get_territory(command[1].get_id())
+    if type(command[2]) is list:
+        t_to = game_state.get_territory(command[2][0].get_id())
+    else:
+        t_to = game_state.get_territory(command[2].get_id())
+    country = game_state.get_country(command[3].get_name())
+    player = game_state.get_player(command[4].get_id())
+    if command[0] == 'Ship' and t_from.get_ships().get(country.get_name()) != 0:
+        t_from.remove_ship(country.get_name())
+        t_to.add_ship(country.get_name())
+    elif command[0] == 'Tank' and t_from.get_tanks().get(country.get_name()) != 0:
+        t_from.remove_tank(country.get_name())
+        t_to.add_tank(country.get_name())
+    else:
+        if command[1] != command[2]:
+            raise ValueError(f'Oops! That\'s not right... -> {command[0]} - {command[1]} - {command[2]}')
+    Maneuver.battle(Maneuver(), country, player, game_state, t_to, command[0])
+
+    return game_state
+
+
 def get_present(territory, unit_type):
     present = []
     if unit_type == 'Ship':
@@ -482,14 +505,14 @@ class Factory(ActionSpace):
                 if not territory.has_factory():
                     options.append((territory, country))
 
-        choice = player.make_factory_choice(options, game_state)
-        # Might need a check in case the territory is occupied by hostiles
-        choice[1].remove_money(5)
-        choice[0].build_factory()
-        if choice[0] in list_of_land_factories:
-            choice[1].remove_tank_factory_from_supply()
-        elif choice[0] in list_of_sea_factories:
-            choice[1].remove_ship_factory_from_supply()
+            choice = player.make_factory_choice(options, game_state)
+            # Might need a check in case the territory is occupied by hostiles
+            choice[1].remove_money(5)
+            choice[0].build_factory()
+            if choice[0] in list_of_land_factories:
+                choice[1].remove_tank_factory_from_supply()
+            elif choice[0] in list_of_sea_factories:
+                choice[1].remove_ship_factory_from_supply()
 
         return 0
 
