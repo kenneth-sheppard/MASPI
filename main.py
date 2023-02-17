@@ -7,7 +7,7 @@ if __name__ == '__main__':
     op = []
     go = None
 
-    for i in range(100):
+    for i in range(1):
         ge = GameEngine()
 
         if go is None:

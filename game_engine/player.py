@@ -1,4 +1,6 @@
+import copy
 import random
+import game_engine.action_space as action_space
 
 
 class Player:
@@ -152,6 +154,65 @@ class RandPlayer(Player):
         self.banana = 6
 
         return options[int(random.random() * len(options))]
+
+    def make_investment_choice(self, options, game_state):
+        self.banana = 7
+
+        return options[int(random.random() * len(options))]
+
+
+class GreedyPlayer(Player):
+    def __init__(self):
+        super().__init__()
+
+    def __evaluate_game_state(self, game_state):
+        value = 0
+        for player in game_state.get_players():
+            if player is self:
+                value += self.get_worth()
+            else:
+                value -= player.get_worth()
+
+        return value
+
+    def make_choice(self, options, game_state):
+        self.banana = 2
+
+        return options[int(random.random() * len(options))]
+
+    def make_maneuver_choice(self, options, game_state):
+        self.banana = 3
+
+        return options[int(random.random() * len(options))]
+
+    def make_battle_choice(self, options, game_state):
+        best_option = None
+        best_value = None
+        for option in options:
+            new_state = action_space.do_battle(option, copy.deepcopy(game_state))
+            new_eval = self.__evaluate_game_state(new_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
+
+        return best_option
+
+    def make_rondel_choice(self, options, game_state):
+        self.banana = 5
+
+        return options[int(random.random() * len(options))]
+
+    def make_factory_choice(self, options, game_state):
+        best_option = None
+        best_value = None
+        for option in options:
+            new_state = action_space.hypothetical_factory(option, copy.deepcopy(game_state))
+            new_eval = self.__evaluate_game_state(new_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
+
+        return best_option
 
     def make_investment_choice(self, options, game_state):
         self.banana = 7

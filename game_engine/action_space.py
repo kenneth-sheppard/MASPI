@@ -22,6 +22,9 @@ class ActionSpace:
     def action(self, country, player, game_state):
         self.times_activated += 1
 
+    def potential_action(self, choice, game_state):
+        pass
+
     def get_times_activated(self):
         return self.times_activated
 
@@ -164,20 +167,25 @@ class Maneuver(ActionSpace):
         while len(get_present(territory, unit_type)) >= 2 and no_peace and country.get_name() in get_present(territory, unit_type):
             present = get_present(territory, unit_type)
             present.append(None)
-            to_fight = player.make_battle_choice([i for i in present if i != country.get_name()], game_state)
-            if to_fight is not None:
-                do_battle(country, to_fight, territory, unit_type)
+            options = []
+            for i in present:
+                if i != country.get_name():
+                    options.append((country, i, territory, unit_type))
+            to_fight = player.make_battle_choice(options, game_state)
+            if to_fight[1] is not None:
+                do_battle(to_fight, game_state)
             else:
                 no_peace = False
                 for country_name in present:
                     if country_name is not None:
                         if game_state.get_country(country_name).get_country_controller() is not None and \
                                 game_state.get_country(country_name) is not country:
-                            to_fight = game_state.get_country(country_name).get_country_controller().make_choice(
-                                [country.get_name(), None], game_state)
-                            if to_fight is not None:
+                            to_fight = game_state.get_country(country_name).get_country_controller().make_battle_choice(
+                                [(country, country_name, territory, unit_type),
+                                 (country, None, territory, unit_type)], game_state)
+                            if to_fight[1] is not None:
                                 no_peace = True
-                                do_battle(country, country_name, territory, unit_type)
+                                do_battle(to_fight, game_state)
                                 break
                             else:
                                 no_peace = no_peace or False
@@ -411,13 +419,21 @@ def get_present(territory, unit_type):
     return present
 
 
-def do_battle(country, to_fight, territory, unit_type):
+def do_battle(choice, game_state):
+    if choice[1] is None:
+        return game_state
+    country = choice[0]
+    to_fight = choice[1]
+    territory = choice[2]
+    unit_type = choice[3]
     if unit_type == 'Ship':
-        territory.remove_ship(country.get_name())
-        territory.remove_ship(to_fight)
+        game_state.get_territory(territory.get_id()).remove_ship(country.get_name())
+        game_state.get_territory(territory.get_id()).remove_ship(to_fight)
     if unit_type == 'Tank':
-        territory.remove_tank(country.get_name())
-        territory.remove_tank(to_fight)
+        game_state.get_territory(territory.get_id()).remove_tank(country.get_name())
+        game_state.get_territory(territory.get_id()).remove_tank(to_fight)
+
+    return game_state
 
 
 class Taxation(ActionSpace):
@@ -460,17 +476,33 @@ class Factory(ActionSpace):
         if len([i for i in country.get_home_territories() if not i.has_factory()]) == 0:
             return
 
-        territory = player.make_factory_choice([i for i in country.get_home_territories() if not i.has_factory()], game_state)
-        if territory in country.get_home_territories():
-            if country.get_treasury() >= 5:
+        options = []
+        if country.get_treasury() >= 5:
+            for territory in country.get_home_territories():
                 if not territory.has_factory():
-                    # Might need a check in case the territory is occupied by hostiles
-                    country.remove_money(5)
-                    territory.build_factory()
-                    if territory in list_of_land_factories:
-                        country.remove_tank_factory_from_supply()
-                    elif territory in list_of_sea_factories:
-                        country.remove_ship_factory_from_supply()
-                    return 0
+                    options.append((territory, country))
 
-        return 1
+        choice = player.make_factory_choice(options, game_state)
+        # Might need a check in case the territory is occupied by hostiles
+        choice[1].remove_money(5)
+        choice[0].build_factory()
+        if choice[0] in list_of_land_factories:
+            choice[1].remove_tank_factory_from_supply()
+        elif choice[0] in list_of_sea_factories:
+            choice[1].remove_ship_factory_from_supply()
+
+        return 0
+
+
+def hypothetical_factory(choice, game_state):
+    # Might need a check in case the territory is occupied by hostiles
+    country = game_state.get_country(choice[1].get_name())
+    territory = game_state.get_territory(choice[0].get_id())
+    country.remove_money(5)
+    territory.build_factory()
+    if territory in list_of_land_factories:
+        country.remove_tank_factory_from_supply()
+    elif territory in list_of_sea_factories:
+        country.remove_ship_factory_from_supply()
+
+    return game_state
