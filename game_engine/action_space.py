@@ -116,7 +116,7 @@ class Import(ActionSpace):
             for territory in country.get_home_territories():
                 if not territory.is_occupied():
                     if c.get('Ships') == 0 or territory.get_factory_is_sea():
-                        possibilities.append((c, territory))
+                        possibilities.append((c, territory, country))
 
         if len(possibilities) > 0:
             # Query the player as to what the player would like to choose
@@ -134,6 +134,23 @@ class Import(ActionSpace):
                 country.remove_money(1)
 
         return 0
+
+
+def hypothetical_import(choice, game_state):
+    country = game_state.get_country(choice[2].get_name())
+    territory = game_state.get_territory(choice[1].get_id())
+
+    for k in range(0, choice[0].get('Tanks')):
+        country.remove_tank_from_pool()
+        territory.add_tank(country.get_name())
+        country.remove_money(1)
+
+    for m in range(0, choice[0].get('Ships')):
+        country.remove_ship_from_pool()
+        territory.add_ship(country.get_name())
+        country.remove_money(1)
+
+    return game_state
 
 
 class Production(ActionSpace):

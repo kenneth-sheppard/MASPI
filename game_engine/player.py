@@ -13,6 +13,7 @@ class Player:
         self.has_investor_card = False
         self.is_swiss_bank = False
         self.banana = 0
+        self.type = 'Human'
         global id_count
         self.id = id_count
         id_count += 1
@@ -22,6 +23,9 @@ class Player:
 
     def get_bonds(self):
         return self.bonds
+
+    def get_type(self):
+        return self.type
 
     def add_bond(self, bond):
         self.bonds.append(bond)
@@ -137,6 +141,7 @@ class Player:
 class RandPlayer(Player):
     def __init__(self):
         super().__init__()
+        self.type = 'Random'
 
     def make_import_choice(self, options, game_state):
         self.banana = 2
@@ -172,6 +177,7 @@ class RandPlayer(Player):
 class GreedyPlayer(Player):
     def __init__(self):
         super().__init__()
+        self.type = 'Greedy'
 
     def __evaluate_game_state(self, game_state):
         value = 0
@@ -179,14 +185,22 @@ class GreedyPlayer(Player):
             if player is self:
                 value += self.get_worth()
             else:
-                value -= player.get_worth()
+                # value -= player.get_worth()
+                pass
 
         return value
 
     def make_import_choice(self, options, game_state):
-        self.banana = 2
+        best_option = None
+        best_value = None
+        for option in options:
+            new_state = action_space.hypothetical_import(option, copy.deepcopy(game_state))
+            new_eval = self.__evaluate_game_state(new_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(random.random() * len(options))]
+        return best_option
 
     def make_maneuver_choice(self, options, game_state):
         best_option = None
