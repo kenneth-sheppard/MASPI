@@ -1,3 +1,5 @@
+import math
+
 from game_engine.bond import Bond
 
 
@@ -82,7 +84,7 @@ def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
 
 
 def power_chart(power_value):
-    return power_value // 5
+    return math.ceil(power_value / 5)
 
 
 def get_territory_id_from_name(t_name):
