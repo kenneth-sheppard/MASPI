@@ -183,8 +183,8 @@ class GreedyPlayer(Player):
     def __evaluate_game_state(self, game_state):
         value = 0
         for player in game_state.get_players():
-            if player is self:
-                value += self.get_worth()
+            if player.get_id() is self.id:
+                value += player.get_worth()
             else:
                 # value -= player.get_worth()
                 pass
