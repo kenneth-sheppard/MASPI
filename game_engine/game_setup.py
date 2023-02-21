@@ -8,7 +8,7 @@ from game_engine.helper import make_bonds_for, list_of_starting_factories, get_t
     country_id_and_names, territory_id_and_names, starting_distributions, buy_bond, sea_territories, \
     list_of_sea_factories
 from game_engine.helper import home_territories as home_territories
-from game_engine.player import Player, RandPlayer, GreedyPlayer
+from game_engine.player import RandPlayer, GreedyPlayer
 from game_engine.investor_card import InvestorCard
 
 
@@ -73,9 +73,11 @@ def setup():
     # Investor card
     i_card = InvestorCard()
 
+    temp_dists = starting_distributions.copy()
+
     # Setup players
     for i in range(0, game_engine.settings.num_players):
-        if i == 0:
+        if i == 2:
             temp_player = GreedyPlayer()
         else:
             temp_player = RandPlayer()
@@ -83,7 +85,6 @@ def setup():
         for j in range(0, 6 // game_engine.settings.num_players):
             # Assign a set of starting bonds to each player from list
             # Choose random available option
-            temp_dists = starting_distributions.copy()
             k = random.randint(0, len(temp_dists) - 1)
             buy_bond(temp_player, new_game_state.get_country(temp_dists[k][0][0]),
                      temp_dists[k][0][1])
