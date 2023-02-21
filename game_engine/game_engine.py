@@ -66,10 +66,20 @@ class GameEngine:
                     (1 + helper.power_chart(self.active_country.get_power())) >= 0:
                 options.append([i, self.active_country.hypothetical_advance(i).get_name()])
 
-        ntm = self.active_player.make_rondel_choice(options, self.state)[0]
+        ntm = self.active_player.make_rondel_choice(options, self)[0]
 
         if ntm > 3:
             self.active_player.remove_money((ntm - 3) * (1 + helper.power_chart(self.active_country.get_power())))
 
         return ntm
-        
+
+
+def potential_advance(choice, game_engine):
+    # Advance that many spaces on the rondel
+    game_engine.active_country.advance(choice[0], game_engine.state)
+    # Activate that action space on the rondel
+    game_engine.active_country.get_rondel_space().get_action().action(game_engine.active_country,
+                                                                      game_engine.active_player,
+                                                                      game_engine.state)
+
+    return game_engine
