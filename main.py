@@ -7,7 +7,8 @@ if __name__ == '__main__':
     op = []
     go = None
 
-    for i in range(1):
+    for i in range(300):
+        print(f'Game {i}')
         ge = GameEngine()
 
         if go is None:
