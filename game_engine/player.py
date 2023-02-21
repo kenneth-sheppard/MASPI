@@ -1,6 +1,7 @@
 import copy
 import random
 import game_engine.action_space as action_space
+import game_engine.game_engine
 
 id_count = 0
 
@@ -116,7 +117,7 @@ class Player:
 
         return options[int(input('Choose: '))]
 
-    def make_rondel_choice(self, options, game_state):
+    def make_rondel_choice(self, options, game_engine):
         self.banana = 5
         for i in enumerate(options):
             print(f'{i[0]} - {i[1][1]}')
@@ -158,7 +159,7 @@ class RandPlayer(Player):
 
         return options[int(random.random() * len(options))]
 
-    def make_rondel_choice(self, options, game_state):
+    def make_rondel_choice(self, options, game_engine):
         self.banana = 5
 
         return options[int(random.random() * len(options))]
@@ -226,10 +227,17 @@ class GreedyPlayer(Player):
 
         return best_option
 
-    def make_rondel_choice(self, options, game_state):
-        self.banana = 5
+    def make_rondel_choice(self, options, engine_game):
+        best_option = None
+        best_value = None
+        for option in options:
+            new_engine = game_engine.game_engine.potential_advance(option, copy.deepcopy(engine_game))
+            new_eval = self.__evaluate_game_state(new_engine.state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(random.random() * len(options))]
+        return best_option
 
     def make_factory_choice(self, options, game_state):
         best_option = None
