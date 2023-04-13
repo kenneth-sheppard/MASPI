@@ -61,5 +61,5 @@ if __name__ == '__main__':
 
     with open('recorded_results.txt', 'wt') as f:
         for player_observer in op:
-            f.write(player_observer.__str__())
+            f.write(player_observer.__str__() + '\n')
         f.write(go.__str__())
