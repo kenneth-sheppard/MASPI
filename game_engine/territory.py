@@ -47,3 +47,6 @@ class Territory:
 
     def set_is_water(self, w):
         self.is_water = w
+
+    def to_numbers(self):
+        return []

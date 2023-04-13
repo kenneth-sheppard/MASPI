@@ -47,3 +47,16 @@ class GameState:
 
     def get_players(self):
         return self.players
+
+    def get_numerical_representation(self):
+        num_list = []
+        for player in self.players:
+            num_list.append(player.to_numbers())
+
+        for country in self.countries:
+            num_list.append(country.to_numbers())
+
+        for territory in self.territories:
+            num_list.append(territory.to_numbers())
+
+        num_list.append(self.investor_card.to_numbers())

@@ -47,3 +47,6 @@ class Player:
 
     def set_is_swiss_bank(self, is_swiss):
         self.is_swiss_bank = is_swiss
+
+    def to_numbers(self):
+        return []

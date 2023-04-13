@@ -105,3 +105,5 @@ class Country:
     def get_placed_units(self):
         return (self.starting_tanks - self.tank_pool) + (self.starting_ships - self.ship_pool)
 
+    def to_numbers(self):
+        return []
