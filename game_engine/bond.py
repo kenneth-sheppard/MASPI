@@ -1,3 +1,4 @@
+import game_engine.helper
 
 
 class Bond:
@@ -8,7 +9,7 @@ class Bond:
         self.interest_rate = interest_rate
 
     def __str__(self):
-        return '{} - {}({})'.format(self.country.get_name(), self.cost, self.interest_rate)
+        return f'{self.country.get_name()} - {self.cost}({self.interest_rate})'
 
     def get_country(self):
         return self.country
@@ -24,3 +25,6 @@ class Bond:
 
     def set_owner(self, o):
         self.owner = o
+
+    def get_value(self):
+        return self.interest_rate * game_engine.helper.power_chart(self.country.get_power())

@@ -1,3 +1,4 @@
+import game_engine.rondel
 
 
 class Country:
@@ -8,13 +9,15 @@ class Country:
         self.starting_ships = 0
         self.tank_pool = 0
         self.ship_pool = 0
-        self.bonds = []
+        self.bonds = {}
         self.treasury = 0
         self.controller = None
         self.power = 0
         self.controlled_neutral_territories = []
         self.home_territories = []
         self.flag_count = 0
+        self.is_occupied = False
+        self.rondel_space = None
 
     def __str__(self):
         return self.name
@@ -52,13 +55,16 @@ class Country:
         self.ship_pool += 1
 
     def get_bonds(self):
-        return self.bonds
+        return self.bonds.values()
+
+    def get_bond(self, bond_cost):
+        return self.bonds[bond_cost]
 
     def add_bond(self, bond):
-        self.bonds.append(bond)
+        self.bonds[bond.cost] = bond
 
     def remove_bond(self, bond):
-        self.bonds.remove(bond)
+        self.bonds[bond.cost] = None
 
     def get_treasury(self):
         return self.treasury
@@ -73,10 +79,10 @@ class Country:
 
         return False
 
-    def get_controller(self):
+    def get_country_controller(self):
         return self.controller
 
-    def set_controller(self, player):
+    def set_country_controller(self, player):
         self.controller = player
 
     def get_power(self):
@@ -94,7 +100,10 @@ class Country:
         self.controlled_neutral_territories.append(territory)
 
     def remove_controlled_neutral_territory(self, territory):
-        self.controlled_neutral_territories.remove(territory)
+        if territory in self.controlled_neutral_territories:
+            self.controlled_neutral_territories.remove(territory)
+            return True
+        return False
         
     def get_home_territories(self):
         return self.home_territories
@@ -105,5 +114,34 @@ class Country:
     def get_placed_units(self):
         return (self.starting_tanks - self.tank_pool) + (self.starting_ships - self.ship_pool)
 
+    def place_flag(self):
+        if self.flag_count > 0:
+            self.flag_count -= 1
+            return True
+        return False
+
+    def pickup_flag(self):
+        self.flag_count += 1
+
+    def sell_bond(self, bond, player):
+        self.bonds[bond.cost].set_owner(player)
+
+    def reclaim_bond(self, bond):
+        self.bonds[bond.cost].set_owner(None)
+
+    def advance(self, num_to_advance, game_state):
+        if self.rondel_space is None:
+            self.rondel_space = game_engine.rondel.start(num_to_advance)
+        else:
+            self.rondel_space = game_engine.rondel.advance(self.rondel_space, num_to_advance, game_state)
+
+    def hypothetical_advance(self, num_to_advance):
+        if self.rondel_space is None:
+            return game_engine.rondel.start(num_to_advance)
+        else:
+            return game_engine.rondel.hypothetical_advance(self.rondel_space, num_to_advance)
+
+    def get_rondel_space(self):
+        return self.rondel_space
     def to_numbers(self):
         return []
