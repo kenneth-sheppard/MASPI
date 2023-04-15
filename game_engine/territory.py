@@ -108,4 +108,32 @@ class Territory:
         return self.factory_is_sea
 
     def to_numbers(self):
-        return []
+        numerical_representation = []
+        if self.controller is 'Russia':
+            numerical_representation.extend([1, 0, 0, 0, 0, 0])
+        elif self.controller is 'China':
+            numerical_representation.extend([0, 1, 0, 0, 0, 0])
+        elif self.controller is 'India':
+            numerical_representation.extend([0, 0, 1, 0, 0, 0])
+        elif self.controller is 'Brazil':
+            numerical_representation.extend([0, 0, 0, 1, 0, 0])
+        elif self.controller is 'America':
+            numerical_representation.extend([0, 0, 0, 0, 1, 0])
+        elif self.controller is 'European Union':
+            numerical_representation.extend([0, 1, 0, 0, 0, 1])
+        if self.factory:
+            numerical_representation.append(1)
+        else:
+            numerical_representation.append(0)
+        if self.is_neutral:
+            numerical_representation.append(1)
+        else:
+            numerical_representation.append(0)
+        if self.is_water:
+            numerical_representation.append(1)
+        else:
+            numerical_representation.append(0)
+        numerical_representation.extend(self.tanks.values())
+        numerical_representation.extend(self.ships.values())
+
+        return numerical_representation

@@ -264,4 +264,4 @@ class GreedyPlayer(Player):
         return best_option
 
     def to_numbers(self):
-        return []
+        return [1, self.money]

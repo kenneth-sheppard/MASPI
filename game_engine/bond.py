@@ -28,3 +28,10 @@ class Bond:
 
     def get_value(self):
         return self.interest_rate * game_engine.helper.power_chart(self.country.get_power())
+
+    def to_numbers(self):
+        numerical_representation = [0, 0, 0, 0, 0, 0, self.cost, self.interest_rate]
+        if self.owner is not None:
+            numerical_representation[self.owner.get_id()] = 1
+
+        return numerical_representation

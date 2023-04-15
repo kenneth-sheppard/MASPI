@@ -173,13 +173,18 @@ class GameState:
 
     def get_numerical_representation(self):
         num_list = []
-        for player in self.players:
-            num_list.append(player.to_numbers())
+        for i in range(6):
+            if i < len(self.players):
+                num_list.extend(self.players[i].to_numbers())
+            else:
+                # Add an array of the same size that is filled with just 0's
+                # This is to handle the case of less than 6 players
+                num_list.extend([0, 0])
 
         for country in self.countries:
-            num_list.append(country.to_numbers())
+            num_list.extend(country.to_numbers())
 
         for territory in self.territories:
-            num_list.append(territory.to_numbers())
+            num_list.extend(territory.to_numbers())
 
-        num_list.append(self.investor_card.to_numbers())
+        num_list.extend(self.investor_card.to_numbers())

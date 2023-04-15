@@ -143,5 +143,9 @@ class Country:
 
     def get_rondel_space(self):
         return self.rondel_space
+
     def to_numbers(self):
-        return []
+        numerical_representation = [self.power, self.treasury, self.tank_pool, self.ship_pool, self.flag_count]
+        for bond in self.bonds:
+            numerical_representation.extend(bond.to_numbers())
+        return numerical_representation
