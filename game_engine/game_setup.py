@@ -16,6 +16,8 @@ from game_engine.investor_card import InvestorCard
 def setup():
     new_game_state = GameState()
 
+    game_engine.player.id_count = 0
+
     # Create territories
     for t_id, name in territory_id_and_names.items():
         new_game_state.add_territory(Territory(name, t_id))
