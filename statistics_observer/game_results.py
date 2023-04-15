@@ -5,6 +5,7 @@ class GameStateObserver:
     def __init__(self, gs):
         self.game_state = gs
         self.countries = {}
+        self.records = []
         for country in self.game_state.get_countries():
             self.countries[country.get_name()] = CountryObserver(country)
 
@@ -17,7 +18,14 @@ class GameStateObserver:
         return result
 
     def observe(self):
-        pass
+        self.records.append(self.game_state.get_numerical_representation())
+
+    def get_turn_by_turn(self):
+        result = ''
+        for record in self.records:
+            result += str(record) + '\n'
+
+        return result
 
     def game_end(self):
         position = 6
