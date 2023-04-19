@@ -146,6 +146,6 @@ class Country:
 
     def to_numbers(self):
         numerical_representation = [self.power, self.treasury, self.tank_pool, self.ship_pool, self.flag_count]
-        for bond in self.bonds:
+        for bond in self.bonds.values():
             numerical_representation.extend(bond.to_numbers())
         return numerical_representation

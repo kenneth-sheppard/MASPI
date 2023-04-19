@@ -138,6 +138,9 @@ class Player:
 
         return options[int(input('Choose: '))]
 
+    def to_numbers(self):
+        return [1, self.money]
+
 
 class RandPlayer(Player):
     def __init__(self):
@@ -262,6 +265,3 @@ class GreedyPlayer(Player):
                 best_option = option
 
         return best_option
-
-    def to_numbers(self):
-        return [1, self.money]

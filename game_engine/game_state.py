@@ -181,10 +181,12 @@ class GameState:
                 # This is to handle the case of less than 6 players
                 num_list.extend([0, 0])
 
-        for country in self.countries:
+        for country in self.countries.values():
             num_list.extend(country.to_numbers())
 
-        for territory in self.territories:
+        for territory in self.territories.values():
             num_list.extend(territory.to_numbers())
 
         num_list.extend(self.investor_card.to_numbers())
+
+        return num_list

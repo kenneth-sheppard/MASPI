@@ -79,7 +79,7 @@ def setup():
 
     # Setup players
     for i in range(0, game_engine.settings.num_players):
-        if i == 2:
+        if i == 5:
             temp_player = GreedyPlayer()
         else:
             temp_player = RandPlayer()

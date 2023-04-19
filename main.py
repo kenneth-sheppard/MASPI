@@ -1,20 +1,20 @@
 
 from game_engine.game_engine import GameEngine
-from statistics_observer.game_results import GameStateObserver
+from statistics_observer.game_results import GameEngineObserver
 from statistics_observer.player_observer import PlayerObserver
 
 if __name__ == '__main__':
     op = []
     go = None
 
-    for i in range(300):
+    for i in range(1):
         print(f'Game {i}')
         ge = GameEngine()
 
         if go is None:
-            go = GameStateObserver(ge.get_state())
+            go = GameEngineObserver(ge)
         else:
-            go.update_game_state(ge.get_state())
+            go.update_game_state(ge)
 
         if len(op) == 0:
             for j in range(len(ge.get_state().get_players())):
@@ -63,3 +63,6 @@ if __name__ == '__main__':
         for player_observer in op:
             f.write(player_observer.__str__())
         f.write(go.__str__())
+
+    with open('game_turns.txt', 'wt') as f:
+        f.write(go.get_turn_by_turn())

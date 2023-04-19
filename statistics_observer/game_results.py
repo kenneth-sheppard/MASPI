@@ -1,12 +1,13 @@
 
 
-class GameStateObserver:
+class GameEngineObserver:
 
-    def __init__(self, gs):
-        self.game_state = gs
+    def __init__(self, ge):
+        self.game_engine = ge
         self.countries = {}
         self.records = []
-        for country in self.game_state.get_countries():
+        self.game_engine.subscribe(self)
+        for country in self.game_engine.get_state().get_countries():
             self.countries[country.get_name()] = CountryObserver(country)
 
     def __str__(self):
@@ -18,7 +19,7 @@ class GameStateObserver:
         return result
 
     def observe(self):
-        self.records.append(self.game_state.get_numerical_representation())
+        self.records.append(self.game_engine.get_state().get_numerical_representation())
 
     def get_turn_by_turn(self):
         result = ''
@@ -29,13 +30,15 @@ class GameStateObserver:
 
     def game_end(self):
         position = 6
-        for country in self.game_state.get_countries_sorted_by_power():
+        for country in self.game_engine.get_state().get_countries_sorted_by_power():
             self.countries[country.get_name()].game_end(position)
             position -= 1
 
-    def update_game_state(self, gs):
-        self.game_state = gs
-        for country in self.game_state.get_countries():
+    def update_game_state(self, ge):
+        self.game_engine.unsubscribe(self)
+        self.game_engine = ge
+        self.game_engine.subscribe(self)
+        for country in self.game_engine.get_state().get_countries():
             self.countries[country.get_name()].update_country(country)
 
 

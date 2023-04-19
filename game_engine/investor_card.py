@@ -10,6 +10,11 @@ class InvestorCard:
     def set_controller(self, c):
         self.controller = c
 
+    def to_numbers(self):
+        result = [0, 0, 0, 0, 0, 0]
+        result[self.controller.get_player().get_id()] = 1
+        return result
+
     def add_player(self, p):
         # if no controller then this player is temporarily the controller
         if self.controller is None:

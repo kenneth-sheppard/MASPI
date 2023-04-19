@@ -5,6 +5,7 @@ import game_engine.helper as helper
 class GameEngine:
     def __init__(self):
         self.state = game_engine.game_setup.setup()
+        self.subscribers = []
         self.active_country = None
         self.active_player = None
         self.turns = 0
@@ -32,6 +33,10 @@ class GameEngine:
             # Update the game state
             self.state.update()
 
+            # if there are subscribed observers, let them observe
+            for subscriber in self.subscribers:
+                subscriber.observe()
+
         for country in self.state.get_countries():
             pass
             # print(f'{country.get_name()} - {country.get_power()}')
@@ -43,6 +48,12 @@ class GameEngine:
 
     def get_state(self):
         return self.state
+
+    def subscribe(self, game_state_observer):
+        self.subscribers.append(game_state_observer)
+
+    def unsubscribe(self, game_state_observer):
+        self.subscribers.remove(game_state_observer)
 
     def __next_active_country(self):
         if self.active_country is None or self.active_country.get_name() == 'European Union':
