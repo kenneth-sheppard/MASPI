@@ -74,6 +74,22 @@ class GameState:
             if player.get_id() == p_id:
                 return player
 
+    def get_winner(self):
+        max = None
+        for player in self.players:
+            if max is None:
+                max = player
+            elif player.get_worth() > max.get_worth():
+                max = player
+            elif player.get_worth() == max.get_worth():
+                # TODO implement tiebreaker rules for scoring here
+                pass
+
+        if max is None:
+            raise RuntimeError('No players were identified in the game')
+
+        return max
+
     def update(self):
         # Update each territory and check for new flag
         self.__update_territories()
@@ -171,6 +187,14 @@ class GameState:
     def get_countries_sorted_by_power(self):
         return sorted(self.countries.values(), key=lambda country: country.power)
 
+    def get_string_of_power_values(self):
+        countries = self.get_countries_sorted_by_power()
+        result = ''
+        for country in countries:
+            result += f'{country.get_name()} : {country.get_power()} '
+
+        return result
+
     def get_numerical_representation(self):
         num_list = []
         for i in range(6):
@@ -190,3 +214,19 @@ class GameState:
         num_list.extend(self.investor_card.to_numbers())
 
         return num_list
+
+    def get_normalized_end_scores(self):
+        winner = self.get_winner()
+        num_list = []
+        for i in range(6):
+            if i < len(self.players):
+                num_list.append(self.players[i].get_worth() / winner.get_worth())
+
+        return num_list
+
+    def get_players_worth(self):
+        result = ''
+        for p in self.players:
+            result += f'{p.get_id()} : {p.get_worth()} '
+
+        return result
