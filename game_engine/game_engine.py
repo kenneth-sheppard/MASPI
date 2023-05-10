@@ -1,3 +1,4 @@
+import time
 import game_engine.game_setup
 import game_engine.helper as helper
 
@@ -12,6 +13,7 @@ class GameEngine:
 
     def play(self):
         while not self.state.is_over():
+            turn_start_time = time.time()
             self.turns += 1
 
             if self.turns % 6 == 0:
@@ -32,6 +34,8 @@ class GameEngine:
                 self.active_country.get_rondel_space().get_action().action(self.active_country, self.active_player, self.state)
             # Update the game state
             self.state.update()
+
+            turn_end_time = time.time()
 
             # if there are subscribed observers, let them observe
             for subscriber in self.subscribers:
