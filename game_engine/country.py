@@ -145,7 +145,15 @@ class Country:
         return self.rondel_space
 
     def to_numbers(self):
-        numerical_representation = [self.power, self.treasury, self.tank_pool, self.ship_pool, self.flag_count]
+        numerical_representation = [self.power, self.treasury, self.tank_pool, self.ship_pool]
+        controller_list = [0, 0, 0, 0, 0, 0]
+        if self.controller is not None:
+            controller_list[self.controller.get_id()] = 1
+        numerical_representation.extend(controller_list)
+        rondel_space_list = [0, 0, 0, 0, 0, 0, 0, 0]
+        if self.rondel_space is not None:
+            rondel_space_list[self.rondel_space.get_id()] = 1
+        numerical_representation.extend(rondel_space_list)
         for bond in self.bonds.values():
             numerical_representation.extend(bond.to_numbers())
         return numerical_representation
