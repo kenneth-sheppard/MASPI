@@ -1,3 +1,4 @@
+import numpy as np
 
 
 class Territory:
@@ -109,31 +110,34 @@ class Territory:
 
     def to_numbers(self):
         numerical_representation = []
-        if self.controller is 'Russia':
+        if self.controller == 'Russia':
             numerical_representation.extend([1, 0, 0, 0, 0, 0])
-        elif self.controller is 'China':
+        elif self.controller == 'China':
             numerical_representation.extend([0, 1, 0, 0, 0, 0])
-        elif self.controller is 'India':
+        elif self.controller == 'India':
             numerical_representation.extend([0, 0, 1, 0, 0, 0])
-        elif self.controller is 'Brazil':
+        elif self.controller == 'Brazil':
             numerical_representation.extend([0, 0, 0, 1, 0, 0])
-        elif self.controller is 'America':
+        elif self.controller == 'America':
             numerical_representation.extend([0, 0, 0, 0, 1, 0])
-        elif self.controller is 'European Union':
-            numerical_representation.extend([0, 1, 0, 0, 0, 1])
-        if self.factory:
-            numerical_representation.append(1)
+        elif self.controller == 'European Union':
+            numerical_representation.extend([0, 0, 0, 0, 0, 1])
         else:
-            numerical_representation.append(0)
-        if self.is_neutral:
-            numerical_representation.append(1)
-        else:
-            numerical_representation.append(0)
-        if self.is_water:
-            numerical_representation.append(1)
-        else:
-            numerical_representation.append(0)
-        numerical_representation.extend(self.tanks.values())
-        numerical_representation.extend(self.ships.values())
+            numerical_representation.extend([0, 0, 0, 0, 0, 0])
+        # if self.factory:
+        #     numerical_representation.append(1)
+        # else:
+        #     numerical_representation.append(0)
+        # if self.is_neutral:
+        #     numerical_representation.append(1)
+        # else:
+        #     numerical_representation.append(0)
+        # if self.is_water:
+        #     numerical_representation.append(1)
+        # else:
+        #     numerical_representation.append(0)
+        numpy_tanks = np.array(list(self.tanks.values()))
+        numpy_ships = np.array(list(self.ships.values()))
+        numerical_representation.extend(np.add(numpy_tanks, numpy_ships).tolist())
 
         return numerical_representation
