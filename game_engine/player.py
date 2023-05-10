@@ -16,8 +16,8 @@ class Player:
         self.banana = 0
         self.type = 'Human'
         global id_count
-        self.id = id_count
-        id_count += 1
+        self.id = id_count % 6
+        id_count = (id_count + 1) % 6
 
     def get_id(self):
         return self.id
@@ -139,7 +139,7 @@ class Player:
         return options[int(input('Choose: '))]
 
     def to_numbers(self):
-        return [1, self.money]
+        return [self.money, int(self.is_swiss_bank)]
 
 
 class RandPlayer(Player):
