@@ -9,10 +9,16 @@ def start(index_to_start):
     return starting_space
 
 
+space_id = 0
+
+
 class RondelSpace:
     def __init__(self, action):
         self.action = action
         self.next_space = None
+        global space_id
+        self.id_count = space_id
+        space_id = (space_id + 1) % 8
 
     def set_next_space(self, rondel_space):
         self.next_space = rondel_space
@@ -25,6 +31,9 @@ class RondelSpace:
 
     def get_name(self):
         return self.action.get_name()
+
+    def get_id(self):
+        return self.id_count
 
 
 def advance(rondel_space, num_to_move, game_state):
