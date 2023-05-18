@@ -17,9 +17,13 @@ class GameEngine:
             self.turns += 1
 
             if self.turns % 6 == 0:
-                pass
-                # print(f'Turn - {self.turns // 6}')
-                # print(self.state)
+                # pass
+                print(f'Turn - {self.turns // 6}')
+                print(self.state)
+
+            if self.turns // 6 == 300:
+                break
+
             # Get the active country
             self.__next_active_country()
             # Get the active player of the active country
@@ -36,6 +40,8 @@ class GameEngine:
             self.state.update()
 
             turn_end_time = time.time()
+
+            print(f'elapsed time {turn_end_time - turn_start_time}s')
 
             # if there are subscribed observers, let them observe
             for subscriber in self.subscribers:
@@ -76,8 +82,8 @@ class GameEngine:
     def __move_query(self):
         options = []
 
-        for i in range(0, 6):
-            if self.active_player.get_money() - (i - 3) * \
+        for i in range(1, 7):
+            if self.active_player.get_money() - max((i - 3), 0) * \
                     (1 + helper.power_chart(self.active_country.get_power())) >= 0:
                 options.append([i, self.active_country.hypothetical_advance(i).get_name()])
 
