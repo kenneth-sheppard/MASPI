@@ -1,10 +1,12 @@
+import csv
+import os
 
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_recall_fscore_support
+# from sklearn.metrics import precision_recall_fscore_support
 from game_engine.game_engine import GameEngine
 from statistics_observer.game_results import GameEngineObserver
 from statistics_observer.player_observer import PlayerObserver
@@ -13,7 +15,12 @@ from statistics_observer.player_observer import PlayerObserver
 def load_data(file_path):
     df = pd.read_csv(file_path, header=None)
     data = df.to_numpy()
-    return np.array(data[:, :-6]), np.array(data[:, -6])
+    x_data = []
+    y_data = []
+    for row in data:
+        x_data.append(row[:-6])
+        y_data.append(row[-6:])
+    return np.array(x_data), np.array(y_data)
 
 
 def load_data_from_file(file_path="game_turns.txt"):
@@ -34,70 +41,10 @@ def load_data_from_file(file_path="game_turns.txt"):
     return np.array(all_the_data)
 
 
-# def format_entries_for_nn(data_array):
-#     updated_data_array_not_numpy_array = []
-#     for data_entry in data_array:
-#         updated_data_array_not_numpy_array.append(format_gamestate_for_nn(data_entry))
-#
-#     return np.array(updated_data_array_not_numpy_array)
-
-
-# def format_gamestate_for_nn(data_entry):
-#     updated_entry_array = []
-#     for i in range(0, len(data_entry)):
-#         if i <= 24:
-#             # adding a piece vector for each position
-#             # < 1, 0, 0, 0, 0 > is an empty space
-#             # < 0, 1, 0, 0, 0 > is a pawn stored as 1 in the gamestate
-#             # < 0, 0, 1, 0, 0 > is a master stored as 2
-#             # < 0, 0, 0, 1, 0 > is a pawn stored as -1
-#             # < 0, 0, 0, 0, 1 > is a master stored as -2
-#             if data_entry[i] == 0:
-#                 updated_entry_array.append(1)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#             if data_entry[i] == 1:
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(1)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#             if data_entry[i] == 2:
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(1)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#             if data_entry[i] == -1:
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(1)
-#                 updated_entry_array.append(0)
-#             if data_entry[i] == -2:
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(0)
-#                 updated_entry_array.append(1)
-#         elif i > 24 and i < 30:
-#             for value in Card.get_card_grid_by_id(data_entry[i]):
-#                 updated_entry_array.append(value)
-#         else:
-#             updated_entry_array.append(data_entry[i])
-#
-#     return updated_entry_array
-
-
 def get_neural_network():
     # this will return a nn
-    # it should be able to have the right weights
-    # currently it does not do that
-    # TODO: be able to import weights
     input_vector = tf.keras.Input(shape=(1302,), dtype=tf.int16)
-    dense1 = tf.keras.layers.Dense(200, activation='gelu')
+    dense1 = tf.keras.layers.Dense(500, activation='gelu')
     output1 = dense1(input_vector)
     dropout1 = tf.keras.layers.Dropout(0.8)
     output2 = dropout1(output1)
@@ -105,9 +52,9 @@ def get_neural_network():
     output3 = dense2(output2)
     dropout2 = tf.keras.layers.Dropout(0.8)
     output4 = dropout2(output3)
-    dense3 = tf.keras.layers.Dense(6, activation='sigmoid')
+    dense5 = tf.keras.layers.Dense(6, activation='sigmoid')
 
-    final_output = dense3(output4)
+    final_output = dense5(output4)
 
     model = tf.keras.Model(inputs=[input_vector], outputs=[final_output])
 
@@ -126,36 +73,88 @@ def training_iteration(iteration_number):
     # also we will run like 100 test games against the old network
     # everything should be stored in some text files
     # return the results against the previous opponent
+    op = []
+    game_observer = None
 
-    # game_observer = None
-    #
-    # for i in range(20):
-    #     game_engine = GameEngine()
-    #
-    #     if game_observer is None:
-    #         game_observer = GameEngineObserver(game_engine)
-    #     else:
-    #         game_observer.update_game_state(game_engine)
-    #
-    #     game_engine.play()
-    #
-    #     game_observer.game_end()
+    for i in range(10):
+        print(f'Game {i}')
+        game_engine = GameEngine()
+
+        if game_observer is None:
+            game_observer = GameEngineObserver(game_engine)
+        else:
+            game_observer.update_game_state(game_engine)
+
+        if len(op) == 0:
+            for j in range(len(game_engine.get_state().get_players())):
+                op.append(PlayerObserver(game_engine.get_state().get_players()[j]))
+        else:
+            for j in range(len(game_engine.get_state().get_players())):
+                op[j].update_player(game_engine.get_state().get_players()[j])
+
+        game_engine.play()
+
+        # calculate a winner
+        winner = op[0]
+
+        for player_observer in op:
+            if player_observer.get_player_info()['money'] > winner.get_player_info()['money']:
+                winner = player_observer
+            elif player_observer.get_player_info()['money'] == winner.get_player_info()['money']:
+                for country in game_engine.get_state().get_countries_sorted_by_power():
+                    if winner.get_player().get_investment_in_country(country) < \
+                            player_observer.get_player().get_investment_in_country(country):
+                        winner = player_observer
+                    elif winner.get_player().get_investment_in_country(country) > \
+                            player_observer.get_player().get_investment_in_country(country):
+                        break
+                    else:
+                        continue
+            else:
+                continue
+
+        winner.was_winner()
+
+        game_observer.game_end()
+
+        for player_observer in op:
+            player_observer.game_end()
+
+    os.mkdir(f'./data/games{iteration_number}')
+
+    with open('recorded_results.txt', 'wt') as f:
+        for player_observer in op:
+            f.write(player_observer.__str__() + ' ')
+        f.write(game_observer.__str__())
+        f.close()
+
+    with open(f'./data/games{iteration_number}/recorded_results.txt', 'wt') as f:
+        for player_observer in op:
+            f.write(player_observer.__str__() + ' ')
+        f.write(game_observer.__str__())
+        f.close()
+
+    with open('game_turns.csv', 'wt') as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerows(game_observer.get_turn_by_turn())
+        f.close()
+
+    with open(f'./data/games{iteration_number}/game_turns.csv', 'wt') as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerows(game_observer.get_turn_by_turn())
+        f.close()
 
     # so first we're just going to pull the data and run it through training and build from there
     data_values, data_class = load_data('game_turns.csv')
 
     x_train, x_test, y_train, y_test = train_test_split(data_values, data_class, test_size=0.25, random_state=5, shuffle=True)
 
-    # model = keras.models.load_model('current_model')
-    model = get_neural_network()
+    model = keras.models.load_model('current_model')
+    # model = get_neural_network()
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, epochs=200, batch_size=250)
+    history = model.fit(x_train, y_train, epochs=200, batch_size=500)
     model.save('current_model')
-    # model.save('./data/models/model' + str(iteration_number))
+    model.save('./models/model' + str(iteration_number))
 
-    # rand_game_engine = Engine.GameEngine(Player.RandomPlayer(), Player.MiniMaxPlayer('current_model'))
-
-    # Engine.play_n_games_and_record(rand_game_engine, 5, True, './data/games/games' + str(iteration_number) + '.csv')
-
-    return None
+    return iteration_number + 1
