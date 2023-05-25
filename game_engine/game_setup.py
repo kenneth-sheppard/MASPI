@@ -8,15 +8,13 @@ from game_engine.helper import make_bonds_for, list_of_starting_factories, get_t
     country_id_and_names, territory_id_and_names, starting_distributions, buy_bond, sea_territories, \
     list_of_sea_factories
 from game_engine.helper import home_territories as home_territories
-from game_engine.player import RandPlayer, GreedyPlayer
+from game_engine.player import RandPlayer, GreedyPlayer, BasicNeuralNetPlayer
 from game_engine.investor_card import InvestorCard
 
 
 # Returns a GameState object to the game engine
 def setup():
     new_game_state = GameState()
-
-    game_engine.player.id_count = 0
 
     # Create territories
     for t_id, name in territory_id_and_names.items():
@@ -79,8 +77,10 @@ def setup():
 
     # Setup players
     for i in range(0, game_engine.settings.num_players):
-        if i == 5:
+        if i % 3 == 1:
             temp_player = GreedyPlayer()
+        elif i == 0:
+            temp_player = BasicNeuralNetPlayer()
         else:
             temp_player = RandPlayer()
         temp_player.add_money(13 * (6 // game_engine.settings.num_players))
