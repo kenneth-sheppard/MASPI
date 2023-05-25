@@ -2,6 +2,7 @@ import copy
 import random
 import game_engine.action_space as action_space
 import game_engine.game_engine
+import tensorflow as tf
 from tensorflow import keras
 
 id_count = 0
@@ -272,10 +273,12 @@ class BasicNeuralNetPlayer(Player):
     def __init__(self):
         super().__init__()
         self.type = 'Basic Neural Net'
-        self.model = keras.models.load_model('current_model')
+        self.model = keras.models.load_model('recent_model')
 
     def __evaluate_game_state(self, game_state):
-        values = self.model.predict(game_state.get_numerical_representation())
+        state = game_state.get_numerical_representation()
+        reshaped_state = tf.reshape(state, (1, 1302))
+        values = self.model.predict(reshaped_state)[0]
 
         return values[self.id]
 
