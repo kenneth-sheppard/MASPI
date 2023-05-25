@@ -1,13 +1,18 @@
 
+import csv
+import time
 from game_engine.game_engine import GameEngine
 from statistics_observer.game_results import GameEngineObserver
 from statistics_observer.player_observer import PlayerObserver
+from neural_network.NeuralNetwork import training_iteration, train_off_data, test_model_directly
 
-if __name__ == '__main__':
+def play_game(amount):
     op = []
     go = None
 
-    for i in range(1):
+    start_time = time.time()
+
+    for i in range(amount):
         print(f'Game {i}')
         ge = GameEngine()
 
@@ -57,12 +62,30 @@ if __name__ == '__main__':
     for player_observer in op:
         print(player_observer)
 
+    end_time = time.time()
+
+    print(end_time - start_time)
+
     print(go)
 
     with open('recorded_results.txt', 'wt') as f:
         for player_observer in op:
-            f.write(player_observer.__str__())
+            f.write(player_observer.__str__() + ' ')
         f.write(go.__str__())
 
-    with open('game_turns.txt', 'wt') as f:
-        f.write(go.get_turn_by_turn())
+    with open('game_turns.csv', 'wt') as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerows(go.get_turn_by_turn())
+
+
+if __name__ == '__main__':
+
+    # for i in range(17, 18):
+    #     training_iteration(i)
+
+    # for i in range(0, 17):
+    #     train_off_data(i)
+
+    play_game(5)
+
+    # test_model_directly()
