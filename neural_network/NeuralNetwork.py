@@ -46,17 +46,19 @@ def get_neural_network():
     input_vector = tf.keras.Input(shape=(1302,), dtype=tf.int16)
     dense1 = tf.keras.layers.Dense(500, activation='gelu')
     output1 = dense1(input_vector)
-    dropout1 = tf.keras.layers.Dropout(0.8)
+    dropout1 = tf.keras.layers.Dropout(0.25)
     output2 = dropout1(output1)
     dense2 = tf.keras.layers.Dense(100, activation='gelu')
     output3 = dense2(output2)
-    dropout2 = tf.keras.layers.Dropout(0.8)
+    dropout2 = tf.keras.layers.Dropout(0.25)
     output4 = dropout2(output3)
     dense5 = tf.keras.layers.Dense(6, activation='sigmoid')
 
     final_output = dense5(output4)
 
     model = tf.keras.Model(inputs=[input_vector], outputs=[final_output])
+
+    model.compile(optimizer='adam', loss='mean_squared_error')
 
     return model
 
@@ -149,12 +151,45 @@ def training_iteration(iteration_number):
 
     x_train, x_test, y_train, y_test = train_test_split(data_values, data_class, test_size=0.25, random_state=5, shuffle=True)
 
-    model = keras.models.load_model('current_model')
-    # model = get_neural_network()
-    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    if iteration_number == 0:
+        model = get_neural_network()
+    else:
+        model = keras.models.load_model('recent_model')
 
-    history = model.fit(x_train, y_train, epochs=200, batch_size=500)
-    model.save('current_model')
-    model.save('./models/model' + str(iteration_number))
+    history = model.fit(x_train, y_train, epochs=100, batch_size=500)
+    model.save('recent_model', save_format='h5')
+    model.save('./models_h5/model' + str(iteration_number), save_format='h5')
 
     return iteration_number + 1
+
+
+def train_off_data(iteration_number):
+    data_values, data_class = load_data(f'./data/games{iteration_number}/game_turns.csv')
+
+    x_train, x_test, y_train, y_test = train_test_split(data_values, data_class, test_size=0.25, random_state=5, shuffle=True)
+
+    if iteration_number == 0:
+        model = get_neural_network()
+    else:
+        model = keras.models.load_model('recent_model')
+
+    history = model.fit(tf.expand_dims(x_train, axis=-1), y_train, epochs=100, batch_size=500)
+    model.save('recent_model', save_format='h5')
+    model.save('./models_h5/model' + str(iteration_number), save_format='h5')
+
+    return iteration_number + 1
+
+
+def test_model_directly():
+    model = keras.models.load_model('recent_model')
+
+    data_values, data_class = load_data('game_turns.csv')
+
+    x_train, x_test, y_train, y_test = train_test_split(data_values, data_class, test_size=0.25, random_state=5, shuffle=True)
+
+    print(x_test.shape)
+
+    results = model.predict(x_test)
+
+    for elem in results:
+        print(elem)
