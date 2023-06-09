@@ -107,9 +107,10 @@ class MASPIPart:
 
 class TerritoryAgent(MASPIPart):
 
-    def __init__(self):
+    def __init__(self, territory):
         super().__init__()
         self.name = 'Territory Agent'
+        self.territory = territory
 
     def pass_up(self):
         # Get all adjacent territories
