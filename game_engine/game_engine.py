@@ -5,6 +5,10 @@ import game_engine.helper as helper
 
 class GameEngine:
     def __init__(self):
+        """
+        A GameEngine is responsible for manipulating the game_state at a macro level.
+        Also holds subscribers watching and gathering information.
+        """
         self.state = game_engine.game_setup.setup()
         self.subscribers = []
         self.active_country = None
@@ -12,6 +16,9 @@ class GameEngine:
         self.turns = 0
 
     def play(self):
+        """
+        Plays the game, ends when a country has reached power 25, or it is turn 300.
+        """
         while not self.state.is_over():
             turn_start_time = time.time()
             self.turns += 1
@@ -57,15 +64,30 @@ class GameEngine:
             space = space.next()
 
     def get_state(self):
+        """
+        getter for the state variable
+        :return: GameState - the stored game state
+        """
         return self.state
 
     def subscribe(self, game_state_observer):
+        """
+        Subscribes a subscriber that will watch and gather data of the gameplay
+        :param game_state_observer: Observer - The Observer that will be added
+        """
         self.subscribers.append(game_state_observer)
 
     def unsubscribe(self, game_state_observer):
+        """
+        Unsubscribes an observer
+        :param game_state_observer: Observer - The Observer that will be removed
+        """
         self.subscribers.remove(game_state_observer)
 
     def __next_active_country(self):
+        """
+        Finds the next active country using Strings and logic (kinda suspect though)
+        """
         if self.active_country is None or self.active_country.get_name() == 'European Union':
             self.active_country = self.state.get_country('Russia')
         elif self.active_country.get_name() == 'Russia':
@@ -80,6 +102,10 @@ class GameEngine:
             self.active_country = self.state.get_country('European Union')
 
     def __move_query(self):
+        """
+        Queries the player how far they want to move, accounting for how much there money allows them to move.
+        :return: int - the number that they can move
+        """
         options = []
 
         for i in range(1, 7):
@@ -96,6 +122,12 @@ class GameEngine:
 
 
 def potential_advance(choice, game_engine):
+    """
+    Used to try and predict future possibilities
+    :param choice: List[int] - how many space to move
+    :param game_engine: GameEngine - the game engine copy that will be acted upon
+    :return: GameEngine - the resulting GameEngine
+    """
     # Advance that many spaces on the rondel
     game_engine.active_country.advance(choice[0], game_engine.state)
     # Activate that action space on the rondel

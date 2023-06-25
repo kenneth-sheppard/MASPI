@@ -4,6 +4,11 @@ from game_engine.bond import Bond
 
 
 def make_bonds_for(country):
+    """
+    helper method to make the full suite of bonds for a country during setup
+    :param country: Country - the country to make bonds for
+    :return: Country - the country now with bonds
+    """
     #  2 million
     country.add_bond(Bond(country, 2, 1))
     #  4 million
@@ -27,6 +32,11 @@ def make_bonds_for(country):
 
 
 def tax_chart(tax_amount):
+    """
+    a helper method that converts a tax amount to the appropriate tax chart values
+    :param tax_amount: int - the amount a country taxed for
+    :return: list[int, int] - the amount paid to the owner and the amount paid total to the country
+    """
     if tax_amount < 6:
         return 0, 0
     elif tax_amount < 8:
@@ -53,6 +63,14 @@ def tax_chart(tax_amount):
 
 # bonds are the cost of the bond
 def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
+    """
+    executes a purchase of a bond by a player.
+    :param player: Player - the player buying the bond
+    :param country: Country - the country associated with the bond
+    :param bond_to_buy: int - the cost (bigger number) of the bond to buy
+    :param bond_to_trade: int - the cost (bigger number) of the bond being traded in (Nullable)
+    :return: boolean - False if operation fails due to insufficient funds
+    """
     # Find bonds
     b_t_b = None
     b_t_t = None
@@ -84,14 +102,29 @@ def buy_bond(player, country, bond_to_buy, bond_to_trade=None):
 
 
 def power_chart(power_value):
+    """
+    converts a power_value to the appropriate place on the power chart
+    :param power_value: int - the power value of a country
+    :return: int - the converted power value
+    """
     return math.ceil(power_value / 5)
 
 
 def get_territory_id_from_name(t_name):
+    """
+    converts a territory name into its id
+    :param t_name: String - the name of a territory
+    :return: int - the id of the same territory
+    """
     return territory_names_and_id.get(t_name)
 
 
 def get_territory_name_from_id(t_id):
+    """
+    converts a territory id into its name
+    :param t_id: int - the id of a territory
+    :return: String - the name of the same territory
+    """
     return territory_id_and_names.get(t_id)
 
 

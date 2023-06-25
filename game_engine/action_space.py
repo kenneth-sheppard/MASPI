@@ -11,21 +11,42 @@ class ActionSpace:
         self.times_activated = 0
 
     def get_name(self):
+        """
+        Action spaces are named, the names match the names on the board
+        Names are used as identifiers
+        :return: String the name of the space
+        """
         return self.name
 
     def get_next_action(self):
+        """
+        Actions spaces have a logical follower, all of them are linked up during setup
+        :return: ActionSpace, the next one in logical order
+        """
         return self.next_action
 
     def set_next_action(self, na):
+        """
+        Sets the next action that logically follows this one
+        :param na: ActionSpace, the next action
+        """
         self.next_action = na
 
     def action(self, country, player, game_state):
+        """
+        Performs the action associated with this space
+        May query the player to make decisions passing the game_state and a list of all possible future game_states
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        """
         self.times_activated += 1
 
-    def potential_action(self, choice, game_state):
-        pass
-
     def get_times_activated(self):
+        """
+        Used for gathering statistics, allows the retrieval of the amount of times this space has been activated
+        :return: int - count of times the space has been activated
+        """
         return self.times_activated
 
 
@@ -36,6 +57,19 @@ class Investor(ActionSpace):
         self.players = None
 
     def action(self, country, player, game_state):
+        """
+        Investor does three things
+        1. Pay out from country treasury to bond-holders
+        2. Give 2M to the holder of the investor card, let them invest
+        3. Ask any swiss banks to invest
+        HOWEVER
+        In this implementation the investor card handles parts 2 and 3 as such the below action is only responsible
+        for paying out appropriately
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :return: 0 - that's it, no return really needed, could be used for status codes eventually
+        """
         super(Investor, self).action(country, player, game_state)
         self.players = game_state.get_players()
         # Make a dictionary of what people are owed
@@ -85,6 +119,13 @@ class Investor(ActionSpace):
 
 
 def hypothetical_investment(choice, game_state):
+    """
+    This was how I wound up managing trying to look forward and get all potential moves
+    Allows users to perform an action on a copied game_state to explore more possibilities
+    :param choice: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
     if choice[1] is not None:
         if choice[2] is not None:
             game_state.get_player(choice[3]).buy_bond(game_state.get_bond(choice[1]), game_state.get_bond(choice[2]))
@@ -99,6 +140,13 @@ class Import(ActionSpace):
         self.name = 'Import'
 
     def action(self, country, player, game_state):
+        """
+
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :return:
+        """
         super(Import, self).action(country, player, game_state)
         # How many units can they get
         max_units_to_get = min(3, country.get_treasury())
@@ -137,6 +185,13 @@ class Import(ActionSpace):
 
 
 def hypothetical_import(choice, game_state):
+    """
+    This was how I wound up managing trying to look forward and get all potential moves
+    Allows users to perform an action on a copied game_state to explore more possibilities
+    :param choice: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
     country = game_state.get_country(choice[2].get_name())
     territory = game_state.get_territory(choice[1].get_id())
 
@@ -159,6 +214,13 @@ class Production(ActionSpace):
         self.name = 'Production'
 
     def action(self, country, player, game_state):
+        """
+
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :return:
+        """
         super(Production, self).action(country, player, game_state)
         # Might want a helper action for adding pieces to a territory that can automatically resolve conflicts
         # Will eventually need a priority system in case not enough pieces probably
@@ -181,6 +243,12 @@ class Maneuver(ActionSpace):
         self.name = 'Maneuver'
 
     def action(self, country, player, game_state):
+        """
+
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        """
         super(Maneuver, self).action(country, player, game_state)
         # Step 1 is to move all ships
         self.__move_ships(country, player, game_state)
@@ -189,6 +257,15 @@ class Maneuver(ActionSpace):
         self.__move_tanks(country, player, game_state)
 
     def battle(self, country, player, game_state, territory, unit_type):
+        """
+        Battle resolves two different countries controlling pieces in the same territory
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :param territory: Territory - the territory that the battle is occurring in
+        :param unit_type: String - either 'ship' or 'tank'
+        :return: int - 0
+        """
         no_peace = True
         while len(get_present(territory, unit_type)) >= 2 and no_peace and country.get_name() in get_present(territory, unit_type):
             present = get_present(territory, unit_type)
@@ -224,6 +301,14 @@ class Maneuver(ActionSpace):
         return 0
 
     def __move_ships(self, country, player, game_state):
+        """
+        Two steps here
+        1. Build up a set of all possible moves
+        2. After querying the player for what move, execute the move on the active game state
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        """
         num_ships_to_move = 0
         # Create a list of all territories that have ships of the active country
         active_ship_territories = [i for i in game_state.get_territories().values() if
@@ -271,6 +356,14 @@ class Maneuver(ActionSpace):
             num_ships_to_move -= 1
 
     def __move_tanks(self, country, player, game_state):
+        """
+        Two steps here
+        1. Build up a set of all possible moves
+        2. After querying the player for what move, execute the move on the active game state
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        """
         num_tanks_to_move = 0
         # Create a list of all territories that have tanks of the active country
         active_tank_territories = [i for i in game_state.get_territories().values() if
@@ -360,6 +453,14 @@ class Maneuver(ActionSpace):
             num_tanks_to_move -= 1
 
     def __find_convoy(self, country, territory, game_state, available_ships):
+        """
+        A recursive method that will build out chains of moves that represent possible moves from a territory
+        :param country: Country - the acting country full object
+        :param territory: Territory - the current territory
+        :param game_state: GameState - the full game state object
+        :param available_ships: int - a count of ships that have not been used in a convoy
+        :return: List - a set of possible convoys
+        """
         if not territory.get_is_water():
             return [territory]
 
@@ -386,6 +487,15 @@ class Maneuver(ActionSpace):
             return possible_convoys
 
     def __find_railroad(self, country, territory, game_state, available_ships, visited_territories):
+        """
+        A recursive method that will build out chains of moves that represent possible moves from a territory
+        :param country: Country - the acting country full object
+        :param territory: Territory - the current territory
+        :param game_state: GameState - the full game state object
+        :param available_ships: int - a count of ships that have not been used in a convoy
+        :param visited_territories: List - a set of territories that have already been checked, helps avoid recursive loops
+        :return: List - a set of possible convoys
+        """
         if territory.is_occupied() or territory in visited_territories:
             return None
         elif not territory.get_in_country() == country and not territory.get_is_water():
@@ -414,6 +524,14 @@ class Maneuver(ActionSpace):
             return possible_railways
 
     def __move_piece(self, command, country, player, game_state):
+        """
+        Helper method that executes a move using a command tuple
+        :param command: Tuple - ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :return: int - 0
+        """
         # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
         t_from = command[1]
         t_to = command[2]
@@ -432,6 +550,13 @@ class Maneuver(ActionSpace):
 
 
 def hypothetical_move_piece(command, game_state):
+    """
+    This was how I wound up managing trying to look forward and get all potential moves
+    Allows users to perform an action on a copied game_state to explore more possibilities
+    :param command: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
     # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
     t_from = game_state.get_territory(command[1].get_id())
     if type(command[2]) is list:
@@ -455,6 +580,12 @@ def hypothetical_move_piece(command, game_state):
 
 
 def get_present(territory, unit_type):
+    """
+    Helper function that fetches if a piece of a specified type is in the territory.
+    :param territory: Territory - The territory to be checked
+    :param unit_type: String - The appropriate type of unit ['Ship', 'Tank']
+    :return: List - A list of country names that have pieces present
+    """
     present = []
     if unit_type == 'Ship':
         for country_name, piece_count in territory.get_ships().items():
@@ -469,6 +600,13 @@ def get_present(territory, unit_type):
 
 
 def do_battle(choice, game_state):
+    """
+    Executes a battle
+    :param choice: List - [Initiating Country, Defending Country, Territory, Type of Unit]
+                          [Country, Country, Territory, String]
+    :param game_state: A full GameState object
+    :return: GameState - the resultant game state
+    """
     if choice[1] is None:
         return game_state
     country = choice[0]
@@ -491,6 +629,13 @@ class Taxation(ActionSpace):
         self.name = 'Taxation'
 
     def action(self, country, player, game_state):
+        """
+
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :return:
+        """
         super(Taxation, self).action(country, player, game_state)
         amount = 0
         for territory in country.get_home_territories():
@@ -521,6 +666,13 @@ class Factory(ActionSpace):
         self.name = 'Factory'
 
     def action(self, country, player, game_state):
+        """
+
+        :param country: Country - the acting country full object
+        :param player: Player - should be the whole player object ----- @TODO - check this
+        :param game_state: GameState - the current game_state class, full object
+        :return:
+        """
         super(Factory, self).action(country, player, game_state)
         if len([i for i in country.get_home_territories() if not i.has_factory()]) == 0:
             return
@@ -544,6 +696,13 @@ class Factory(ActionSpace):
 
 
 def hypothetical_factory(choice, game_state):
+    """
+    This was how I wound up managing trying to look forward and get all potential moves
+    Allows users to perform an action on a copied game_state to explore more possibilities
+    :param choice: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
     # Might need a check in case the territory is occupied by hostiles
     country = game_state.get_country(choice[1].get_name())
     territory = game_state.get_territory(choice[0].get_id())

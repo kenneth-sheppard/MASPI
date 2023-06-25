@@ -14,6 +14,10 @@ from game_engine.investor_card import InvestorCard
 
 # Returns a GameState object to the game engine
 def setup():
+    """
+    Sets up the game, creating all initial objects
+    :return: GameState - the fully configured game state
+    """
     new_game_state = GameState()
 
     # Create territories
@@ -64,7 +68,7 @@ def setup():
 
     # Create bonds for each country
     for country in new_game_state.get_countries():
-        new_game_state.update_country(country, make_bonds_for(country))
+        new_game_state.update_country(make_bonds_for(country))
 
     # Build starting factories
     for t_name in list_of_starting_factories:
@@ -75,6 +79,7 @@ def setup():
 
     temp_dists = starting_distributions.copy()
 
+    # This can be edited to change players and player types, will need to be more dynamic eventually
     # Setup players
     for i in range(0, game_engine.settings.num_players):
         if i % 3 == 1:

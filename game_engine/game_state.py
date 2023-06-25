@@ -2,12 +2,24 @@
 
 class GameState:
     def __init__(self):
+        """
+        Initialized GameStates take no parameters, should be filled up during the setup script
+        Then passed to a game engine for playing in a game.
+        Territories - Dict {key - id(int) : value - territory(Territory)
+        Countries - Dict {key - name(string) : value - country(Country)
+        Players - List [(Player)]
+        Investor Card - instance of InvestorCard
+        """
         self.territories = {}
         self.countries = {}
         self.players = []
         self.investor_card = None
 
     def __str__(self):
+        """
+        Mostly here to be used for debugging, print out relevant characteristics of the state of the game
+        :return: String - game info
+        """
         output = ''
         for country in self.countries.values():
             output += f'{country.get_name()} - {country.get_power()}, '
@@ -23,74 +35,144 @@ class GameState:
         return output
 
     def add_territory(self, t):
+        """
+        Add element to the territories dictionary
+        :param t: Territory - the territory to be added
+        """
         self.territories[t.get_id()] = t
 
     def remove_territory(self, t):
+        """
+        Remove a territory from the territories dictionary
+        :param t: Territory - the territory to be removed
+        """
         self.territories.pop(t.get_id())
 
     def get_territory(self, t_id):
+        """
+        getter for territory
+        :param t_id: int - the id of a territory to be retrieved (see helper for list of ids)
+        :return: Territory - the territory object
+        """
         return self.territories.get(t_id)
 
     def update_territory(self, t):
+        """
+        change a territory to a newer version of that territory
+        :param t:
+        """
         self.territories[t.get_id()] = t
 
     def get_territories(self):
+        """
+        get the whole dictionary of territories
+        :return: Dict - the dictionary of territories
+        """
         return self.territories
 
     def add_country(self, c):
+        """
+        add a country to the dictionary
+        :param c: Country - stored using the name as the key
+        """
         self.countries[c.get_name()] = c
 
     def remove_country(self, c):
+        """
+        remove a country from the dictionary
+        :param c: Country - the country to be removed
+        """
         self.countries.pop(c.get_name())
 
-    def update_country(self, old_c, new_c):
-        self.countries[old_c.get_name()] = new_c
+    def update_country(self, new_c):
+        """
+        update a country to a new version
+        :param new_c: the country to replace its older version
+        """
+        self.countries[new_c.get_name()] = new_c
 
     def get_countries(self):
+        """
+        get the full list of countries
+        :return: List - the values stored in the countries dict
+        """
         return list(self.countries.values())
 
     def set_countries(self, sc):
+        """
+        set the full dictionary of countries to a new dictionary
+        :param sc:
+        """
         self.countries = sc
 
     def get_country(self, c_name):
+        """
+        getter for a country in the dictionary
+        :param c_name: String - the key for the appropriate country
+        :return: The country object
+        """
         try:
             return self.countries[c_name]
-        except KeyError as e:
-            print(e)
-            print(c_name)
-            input()
+        except KeyError:
+            return None
 
     def get_bond(self, bond):
+        """
+        getter for a bond of a country (used specifically for hypothetical actions
+        :param bond: Bond - the bond to retrieved and modified
+        :return: Bond - the bond
+        """
         return self.get_country(bond.get_country().get_name()).get_bond(bond.get_cost())
 
     def add_player(self, p):
+        """
+        add a player to the list
+        :param p: Player - the player to be added
+        """
         self.players.append(p)
 
     def get_players(self):
+        """
+        getter for the list of players
+        :return: List - the list of players
+        """
         return self.players
 
     def get_player(self, p_id):
+        """
+        get a specific player from the list
+        :param p_id: int - the id of the player that is desired
+        :return: Player - found by iterating through the list until a matching id is found
+        """
         for player in self.players:
             if player.get_id() == p_id:
                 return player
 
     def get_winner(self):
-        max = None
+        """
+        calculate the winning player by finding the one with the highest worth
+        :return: Player - the player with the highest worth
+        """
+        winner = None
         for player in self.players:
-            if max is None:
-                max = player
-            elif player.get_worth() > max.get_worth():
-                max = player
-            elif player.get_worth() == max.get_worth():
+            if winner is None:
+                winner = player
+            elif player.get_worth() > winner.get_worth():
+                winner = player
+            elif player.get_worth() == winner.get_worth():
                 # TODO implement tiebreaker rules for scoring here
                 pass
 
-        if max is None:
+        if winner is None:
             raise RuntimeError('No players were identified in the game')
 
-        return max
+        return winner
 
     def update(self):
+        """
+        update the game state after a move
+        :return: int
+        """
         # Update each territory and check for new flag
         self.__update_territories()
         # Update each country checking for new controller
@@ -101,6 +183,10 @@ class GameState:
         return 0
 
     def is_over(self):
+        """
+        checks to see if the game has ended
+        :return: boolean - True if a country is at 25 power
+        """
         for country in self.countries.values():
             if country.get_power() == 25:
                 return True
@@ -108,6 +194,14 @@ class GameState:
         return False
 
     def __update_territories(self):
+        """
+        Iterate through each territory that is not a part of a superpower
+        For water territories check boats to see if only one player is present
+        Repeat for neutral territories with tanks
+        In both cases if true add a flag for the player that controls
+        Return any other flags to the owner
+        :return:
+        """
         for territory in self.territories.values():
             players_in_territory = []
             if territory.get_is_water():
@@ -148,6 +242,10 @@ class GameState:
         return 0
 
     def __update_countries(self):
+        """
+        Update the countries by checking for changes in ownership
+        :return: int
+        """
         for country in self.get_countries():
             bond_owners = dict([(i, 0) for i in self.get_players()])
             bond_owners[None] = 0
@@ -167,6 +265,10 @@ class GameState:
         return 0
 
     def __update_players(self):
+        """
+        Update players checking for new ownership and if any players become swiss banks
+        :return:
+        """
         # Reset country ownership
         for player in self.get_players():
             player.reset_controlled_countries()
@@ -182,12 +284,23 @@ class GameState:
         return 0
 
     def do_investor_card(self):
+        """
+        Activate the investor card
+        """
         self.investor_card.do_investor_card(self)
 
     def get_countries_sorted_by_power(self):
+        """
+        gets the countries sorted by power
+        :return: List - countries sorted by power
+        """
         return sorted(self.countries.values(), key=lambda country: country.power)
 
     def get_string_of_power_values(self):
+        """
+        used for debugging and/or recording data
+        :return: String - power values for each country
+        """
         countries = self.get_countries_sorted_by_power()
         result = ''
         for country in countries:
@@ -196,6 +309,10 @@ class GameState:
         return result
 
     def get_numerical_representation(self):
+        """
+        Ask all the objects to return their own numerical representations then put them all into a list.
+        :return: List - all the information of the game state encoded
+        """
         num_list = []
         for i in range(6):
             if i < len(self.players):
@@ -216,6 +333,10 @@ class GameState:
         return num_list
 
     def get_normalized_end_scores(self):
+        """
+        normalize the end score of all players by the score of the winning player
+        :return: List - function(my_worth/winners_worth
+        """
         winner = self.get_winner()
         num_list = []
         for i in range(6):
@@ -225,6 +346,10 @@ class GameState:
         return num_list
 
     def get_players_worth(self):
+        """
+        get the worth for a specific player
+        :return: String - the worth formatted for recording purposes
+        """
         result = ''
         for p in self.players:
             result += f'{p.get_id()} : {p.get_worth()} '
