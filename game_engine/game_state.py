@@ -13,6 +13,7 @@ class GameState:
         self.territories = {}
         self.countries = {}
         self.players = []
+        self.active_country = None
         self.investor_card = None
 
     def __str__(self):
@@ -115,6 +116,20 @@ class GameState:
             return self.countries[c_name]
         except KeyError:
             return None
+
+    def get_active_country(self):
+        """
+        get the current active country.
+        :return: Country - the Country object
+        """
+        return self.active_country
+
+    def set_active_country(self, country):
+        """
+        set the current active country.
+        :param country: Country - the Country object
+        """
+        self.active_country = country
 
     def get_bond(self, bond):
         """

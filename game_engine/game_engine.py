@@ -79,7 +79,7 @@ class GameEngine:
 
     def unsubscribe(self, game_state_observer):
         """
-        Unsubscribes an observer
+        Unsubscribes an observer.
         :param game_state_observer: Observer - The Observer that will be removed
         """
         self.subscribers.remove(game_state_observer)
@@ -100,6 +100,7 @@ class GameEngine:
             self.active_country = self.state.get_country('America')
         elif self.active_country.get_name() == 'America':
             self.active_country = self.state.get_country('European Union')
+        self.state.set_active_country(self.active_country)
 
     def __move_query(self):
         """
@@ -121,18 +122,18 @@ class GameEngine:
         return ntm
 
 
-def potential_advance(choice, game_engine):
+def potential_advance(choice, engine):
     """
     Used to try and predict future possibilities
     :param choice: List[int] - how many space to move
-    :param game_engine: GameEngine - the game engine copy that will be acted upon
+    :param engine: GameEngine - the game engine copy that will be acted upon
     :return: GameEngine - the resulting GameEngine
     """
     # Advance that many spaces on the rondel
-    game_engine.active_country.advance(choice[0], game_engine.state)
+    engine.active_country.advance(choice[0], engine.state)
     # Activate that action space on the rondel
-    game_engine.active_country.get_rondel_space().get_action().action(game_engine.active_country,
-                                                                      game_engine.active_player,
-                                                                      game_engine.state)
+    engine.active_country.get_rondel_space().get_action().action(engine.active_country,
+                                                                 engine.active_player,
+                                                                 engine.state)
 
-    return game_engine
+    return engine

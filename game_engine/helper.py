@@ -128,6 +128,16 @@ def get_territory_name_from_id(t_id):
     return territory_id_and_names.get(t_id)
 
 
+def get_territories_are_adjacent(t1, t2):
+    """
+    check the reference table to find if the two territories are adjacent
+    :param t1: Territory - the first territory to compare
+    :param t2: Territory - the second territory to compare
+    :return: boolean - True if adjacent, False otherwise
+    """
+    return bool(territory_adjacency_matrix[t1.get_id()][t2.get_id()])
+
+
 starting_distributions = [[['Russia', 9], ['European Union', 2]], [['China', 9], ['America', 2]],
                           [['India', 9], ['Brazil', 2]], [['Brazil', 9], ['China', 2]],
                           [['America', 9], ['Russia', 2]], [['European Union', 9], ['India', 2]]]

@@ -183,6 +183,13 @@ class Country:
         if self.power > 25:
             self.power = 25
 
+    def get_tax_payout(self):
+        """
+        Get the amount that will be paid to the controller if a tax were to occur immediately
+        :return: int - the calculated number
+        """
+        return None
+
     def get_controlled_neutral_territories(self):
         """
         getter for controlled neutral territories
