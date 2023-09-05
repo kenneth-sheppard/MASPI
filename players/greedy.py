@@ -1,4 +1,6 @@
 import copy
+import random
+
 import game_engine.action_space as action_space
 import game_engine.game_engine as game_engine
 
@@ -22,28 +24,30 @@ class GreedyPlayer(Player):
         return value
 
     def make_import_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.hypothetical_import(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        # best_option = None
+        # best_value = None
+        # for option in options:
+        #     new_state = action_space.hypothetical_import(option, copy.deepcopy(game_state))
+        #     new_eval = self.__evaluate_game_state(new_state)
+        #     if best_option is None or new_eval > best_value:
+        #         best_value = new_eval
+        #         best_option = option
+        #
+        # return best_option
+        return options[int(random.random() * len(options))]
 
     def make_maneuver_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.hypothetical_move_piece(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        # best_option = None
+        # best_value = None
+        # for option in options:
+        #     new_state = action_space.hypothetical_move_piece(option, copy.deepcopy(game_state))
+        #     new_eval = self.__evaluate_game_state(new_state)
+        #     if best_option is None or new_eval > best_value:
+        #         best_value = new_eval
+        #         best_option = option
+        #
+        # return best_option
+        return options[int(random.random() * len(options))]
 
     def make_battle_choice(self, options, game_state):
         best_option = None
