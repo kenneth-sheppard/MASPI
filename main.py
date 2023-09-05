@@ -6,6 +6,7 @@ from statistics_observer.game_results import GameEngineObserver
 from statistics_observer.player_observer import PlayerObserver
 from neural_network.NeuralNetwork import training_iteration, train_off_data, test_model_directly
 
+
 def play_game(amount):
     op = []
     go = None
@@ -21,6 +22,8 @@ def play_game(amount):
         else:
             go.update_game_state(ge)
 
+        ge.subscribe(go)
+
         if len(op) == 0:
             for j in range(len(ge.get_state().get_players())):
                 op.append(PlayerObserver(ge.get_state().get_players()[j]))
@@ -28,10 +31,10 @@ def play_game(amount):
             for j in range(len(ge.get_state().get_players())):
                 op[j].update_player(ge.get_state().get_players()[j])
 
-        ge.play()
-
         for player_observer in op:
-            player_observer.observe()
+            ge.subscribe(player_observer)
+
+        ge.play()
 
         # calculate a winner
         winner = op[0]
@@ -80,12 +83,12 @@ def play_game(amount):
 
 if __name__ == '__main__':
 
-    # for i in range(17, 18):
+    # for i in range(47, 48):
     #     training_iteration(i)
 
     # for i in range(0, 17):
     #     train_off_data(i)
 
-    play_game(5)
+    play_game(1)
 
     # test_model_directly()
