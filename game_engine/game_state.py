@@ -350,13 +350,15 @@ class GameState:
     def get_normalized_end_scores(self):
         """
         normalize the end score of all players by the score of the winning player
-        :return: List - function(my_worth/winners_worth
+        :return: List - function(my_worth/winners_worth)
         """
         winner = self.get_winner()
         num_list = []
         for i in range(6):
             if i < len(self.players):
                 num_list.append(self.players[i].get_worth() / winner.get_worth())
+            else:
+                num_list.append(0)
 
         return num_list
 
