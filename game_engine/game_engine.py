@@ -1,6 +1,6 @@
 import time
 import game_engine.game_setup
-import game_engine.helper as helper
+from game_engine import helper as helper
 
 
 class GameEngine:
@@ -20,13 +20,13 @@ class GameEngine:
         Plays the game, ends when a country has reached power 25, or it is turn 300.
         """
         while not self.state.is_over():
-            turn_start_time = time.time()
+            # turn_start_time = time.time()
             self.turns += 1
 
             if self.turns % 6 == 0:
-                # pass
-                print(f'Turn - {self.turns // 6}')
-                print(self.state)
+                pass
+                # print(f'Turn - {self.turns // 6}')
+                # print(self.state)
 
             if self.turns // 6 == 300:
                 break
@@ -46,16 +46,16 @@ class GameEngine:
             # Update the game state
             self.state.update()
 
-            turn_end_time = time.time()
+            # turn_end_time = time.time()
 
-            print(f'elapsed time {turn_end_time - turn_start_time}s')
+            # print(f'elapsed time {turn_end_time - turn_start_time}s')
 
             # if there are subscribed observers, let them observe
             for subscriber in self.subscribers:
                 subscriber.observe()
 
-        for country in self.state.get_countries():
-            pass
+        # for country in self.state.get_countries():
+        #     pass
             # print(f'{country.get_name()} - {country.get_power()}')
 
         space = self.active_country.get_rondel_space()
@@ -70,12 +70,12 @@ class GameEngine:
         """
         return self.state
 
-    def subscribe(self, game_state_observer):
+    def subscribe(self, observer):
         """
         Subscribes a subscriber that will watch and gather data of the gameplay
-        :param game_state_observer: Observer - The Observer that will be added
+        :param observer: Observer - The Observer that will be added
         """
-        self.subscribers.append(game_state_observer)
+        self.subscribers.append(observer)
 
     def unsubscribe(self, game_state_observer):
         """
@@ -132,8 +132,8 @@ def potential_advance(choice, engine):
     # Advance that many spaces on the rondel
     engine.active_country.advance(choice[0], engine.state)
     # Activate that action space on the rondel
-    engine.active_country.get_rondel_space().get_action().action(engine.active_country,
-                                                                 engine.active_player,
-                                                                 engine.state)
+    # engine.active_country.get_rondel_space().get_action().action(engine.active_country,
+    #                                                              engine.active_player,
+    #                                                              engine.state)
 
     return engine
