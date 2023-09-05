@@ -23,22 +23,22 @@ def load_data(file_path):
     return np.array(x_data), np.array(y_data)
 
 
-def load_data_from_file(file_path="game_turns.txt"):
-    file = open(file_path, "r")
-
-    all_the_data = []
-
-    for sample in file:
-        sample_vector = []
-        for element in sample.split(','):
-            element = element.strip('\n').strip('[').strip(']').strip(' ')
-            sample_vector.append(float(element))
-        print(len(sample_vector))
-        all_the_data.append(sample_vector)
-
-    file.close()
-
-    return np.array(all_the_data)
+# def load_data_from_file(file_path="game_turns.txt"):
+#     file = open(file_path, "r")
+#
+#     all_the_data = []
+#
+#     for sample in file:
+#         sample_vector = []
+#         for element in sample.split(','):
+#             element = element.strip('\n').strip('[').strip(']').strip(' ')
+#             sample_vector.append(float(element))
+#         print(len(sample_vector))
+#         all_the_data.append(sample_vector)
+#
+#     file.close()
+#
+#     return np.array(all_the_data)
 
 
 def get_neural_network():
@@ -78,7 +78,7 @@ def training_iteration(iteration_number):
     op = []
     game_observer = None
 
-    for i in range(10):
+    for i in range(5):
         print(f'Game {i}')
         game_engine = GameEngine()
 
@@ -87,12 +87,17 @@ def training_iteration(iteration_number):
         else:
             game_observer.update_game_state(game_engine)
 
+        game_engine.subscribe(game_observer)
+
         if len(op) == 0:
             for j in range(len(game_engine.get_state().get_players())):
                 op.append(PlayerObserver(game_engine.get_state().get_players()[j]))
         else:
             for j in range(len(game_engine.get_state().get_players())):
                 op[j].update_player(game_engine.get_state().get_players()[j])
+
+        for player_observer in op:
+            game_engine.subscribe(player_observer)
 
         game_engine.play()
 
