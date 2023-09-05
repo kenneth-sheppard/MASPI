@@ -1,4 +1,5 @@
 import game_engine.rondel
+from game_engine.helper import tax_chart
 
 
 class Country:
@@ -26,6 +27,7 @@ class Country:
         self.controlled_neutral_territories = []
         self.home_territories = []
         self.flag_count = 0
+        self.max_flags = 15
         self.is_occupied = False
         self.rondel_space = None
 
@@ -188,7 +190,17 @@ class Country:
         Get the amount that will be paid to the controller if a tax were to occur immediately
         :return: int - the calculated number
         """
-        return None
+        count = 0
+
+        for territory in self.get_home_territories():
+            if not territory.is_occupied() and territory.has_factory():
+                count += 2
+
+        count += len(self.get_controlled_neutral_territories())
+
+        _, owner_payout = tax_chart(count)
+
+        return owner_payout
 
     def get_controlled_neutral_territories(self):
         """
@@ -252,6 +264,12 @@ class Country:
         pickup a flag from the board, increases the amount of flags in the flag pool
         """
         self.flag_count += 1
+
+    def get_placed_flags(self):
+        return self.max_flags - self.flag_count
+
+    def get_total_flags(self):
+        return self.max_flags
 
     def sell_bond(self, bond, player):
         """
