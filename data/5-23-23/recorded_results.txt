@@ -1,0 +1,6 @@
+Player 1509 Basic Neural Net won 0 games with scores of [10, 9, 32, 18, 53] Player 3015 Greedy won 2 games with scores of [110, 67, 83, 124, 74] Player 831 Random won 0 games with scores of [28, 19, 20, 44, 65] Player 4120 Random won 0 games with scores of [47, 49, 66, 51, 42] Player 4013 Greedy won 2 games with scores of [63, 66, 94, 127, 78] Player 369 Random won 1 games with scores of [38, 40, 94, 23, 27] Russia - wins 0 - average 4.0
+China - wins 1 - average 2.8
+India - wins 1 - average 3.8
+Brazil - wins 2 - average 1.8
+America - wins 1 - average 3.8
+European Union - wins 0 - average 4.8

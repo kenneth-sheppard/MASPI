@@ -8,7 +8,9 @@ from game_engine.helper import make_bonds_for, list_of_starting_factories, get_t
     country_id_and_names, territory_id_and_names, starting_distributions, buy_bond, sea_territories, \
     list_of_sea_factories
 from game_engine.helper import home_territories as home_territories
-from game_engine.player import RandPlayer, GreedyPlayer, BasicNeuralNetPlayer
+from players.random import RandPlayer
+from players.basic_nn import BasicNeuralNetPlayer
+from players.greedy import GreedyPlayer
 from game_engine.investor_card import InvestorCard
 
 
@@ -82,12 +84,12 @@ def setup():
     # This can be edited to change players and player types, will need to be more dynamic eventually
     # Setup players
     for i in range(0, game_engine.settings.num_players):
-        if i % 3 == 1:
-            temp_player = GreedyPlayer()
-        elif i == 0:
+        # if i % 3 == 1:
+        #     temp_player = RandPlayer()
+        if i == 1:
             temp_player = BasicNeuralNetPlayer()
         else:
-            temp_player = RandPlayer()
+            temp_player = GreedyPlayer()
         temp_player.add_money(13 * (6 // game_engine.settings.num_players))
         for j in range(0, 6 // game_engine.settings.num_players):
             # Assign a set of starting bonds to each player from list

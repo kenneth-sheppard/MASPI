@@ -714,3 +714,12 @@ def hypothetical_factory(choice, game_state):
         country.remove_ship_factory_from_supply()
 
     return game_state
+
+
+def reverse_factory(choice, game_state):
+    country = game_state.get_country(choice[1].get_name())
+    territory = game_state.get_territory(choice[0].get_id())
+    country.add_money(5)
+    territory.remove_factory()
+
+    return game_state
