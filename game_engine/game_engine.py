@@ -112,7 +112,7 @@ class GameEngine:
         for i in range(1, 7):
             if self.active_player.get_money() - max((i - 3), 0) * \
                     (1 + helper.power_chart(self.active_country.get_power())) >= 0:
-                options.append([i, self.active_country.hypothetical_advance(i).get_name()])
+                options.append([i, self.active_country.get_advance_option(i).get_name()])
 
         ntm = self.active_player.make_rondel_choice(options, self)[0]
 
@@ -130,10 +130,22 @@ def potential_advance(choice, engine):
     :return: GameEngine - the resulting GameEngine
     """
     # Advance that many spaces on the rondel
-    engine.active_country.advance(choice[0], engine.state)
+    engine.active_country.hypothetical_advance(choice[0])
     # Activate that action space on the rondel
     # engine.active_country.get_rondel_space().get_action().action(engine.active_country,
     #                                                              engine.active_player,
     #                                                              engine.state)
+
+    return engine
+
+
+def reverse_advance(choice, engine):
+    """
+    Used to try and reverse the prediction of future possibilities
+    :param choice: List[int] - how many space to move
+    :param engine: GameEngine - the game engine copy that will be acted upon
+    :return: GameEngine - the resulting GameEngine
+    """
+    engine.active_country.reverse(choice[0])
 
     return engine

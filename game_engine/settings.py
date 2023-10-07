@@ -1,2 +1,2 @@
 
-num_players = 3
+num_players = 6

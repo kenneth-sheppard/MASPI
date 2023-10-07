@@ -1,7 +1,7 @@
 import copy
 import random
 import game_engine.action_space as action_space
-import game_engine.game_engine
+import game_engine.game_engine as game_engine
 import tensorflow as tf
 from tensorflow import keras
 
@@ -23,6 +23,9 @@ class Player:
         global id_count
         self.id = id_count % 6
         id_count = (id_count + 1) % 6
+
+    def __evaluate_game_state(self, game_state):
+        return random.random()
 
     def get_id(self):
         """
@@ -175,6 +178,20 @@ class Player:
         bond_to_buy.set_owner(self)
         self.bonds.append(bond_to_buy)
 
+    def sell_bond(self, bond_to_buy, bond_to_sell=None):
+        """
+        adjust money held by the amount the bond is worth potentially modified by a bond being traded in
+        :param bond_to_buy:
+        :param bond_to_sell:
+        """
+        if bond_to_sell is not None:
+            self.money -= bond_to_sell.get_cost()
+            bond_to_sell.set_owner(self)
+
+        self.money += bond_to_buy.get_cost()
+        bond_to_buy.set_owner(None)
+        self.bonds.remove(bond_to_buy)
+
     def make_import_choice(self, options, game_state):
         """
         make a choice about where to import
@@ -182,12 +199,17 @@ class Player:
         :param game_state: GameState - the current game state
         :return: List - one element from options
         """
-        self.banana = 2
-        for i in enumerate(options):
-            print('{} - Tanks: {}, Ships: {}, Territory: {}'.format(i[0], i[1][0].get('Tanks'), i[1][0].get('Ships'),
-                                                                    i[1][1]))
+        best_option = None
+        best_value = None
+        for option in options:
+            game_state = action_space.hypothetical_import(choice=option, game_state=game_state)
+            new_eval = self.__evaluate_game_state(game_state=game_state)
+            game_state = action_space.reverse_import(choice=option, game_state=game_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(input('Choose: '))]
+        return best_option
 
     def make_maneuver_choice(self, options, game_state):
         """
@@ -196,14 +218,17 @@ class Player:
         :param game_state: GameState - the current game state
         :return: List - one element from options
         """
-        self.banana = 3
-        for i in enumerate(options):
-            if type(i[1][2]) is list:
-                print(f'{i[0]} - {i[1][0]} from {i[1][1]} to {i[1][2][0]}')
-            else:
-                print(f'{i[0]} - {i[1][0]} from {i[1][1]} to {i[1][2]}')
+        best_option = None
+        best_value = None
+        for option in options:
+            game_state = action_space.hypothetical_move_piece(command=option, game_state=game_state)
+            new_eval = self.__evaluate_game_state(game_state=game_state)
+            game_state = action_space.reverse_move_piece(command=option, game_state=game_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(input('Choose: '))]
+        return best_option
 
     def make_battle_choice(self, options, game_state):
         """
@@ -212,24 +237,36 @@ class Player:
         :param game_state: GameState - the current game state
         :return: List - one element from options
         """
-        self.banana = 4
-        for i in enumerate(options):
-            print(f'{i[0]} - {i[1]}')
+        best_option = None
+        best_value = None
+        for option in options:
+            game_state = action_space.do_battle(choice=option, game_state=game_state)
+            new_eval = self.__evaluate_game_state(game_state=game_state)
+            game_state = action_space.reverse_battle(choice=option, game_state=game_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(input('Choose: '))]
+        return best_option
 
-    def make_rondel_choice(self, options, game_engine):
+    def make_rondel_choice(self, options, engine_game):
         """
         make a choice about how far to advance on the rondel
         :param options: List - a set of move options
-        :param game_engine: GameEngine - the current game engine
+        :param engine_game: GameEngine - the current game engine
         :return: List - one element from options
         """
-        self.banana = 5
-        for i in enumerate(options):
-            print(f'{i[0]} - {i[1][1]}')
+        best_option = None
+        best_value = None
+        for option in options:
+            engine_game = game_engine.potential_advance(option, engine_game)
+            new_eval = self.__evaluate_game_state(engine_game.state)
+            engine_game = game_engine.reverse_advance(option, engine_game)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(input('Choose: '))]
+        return best_option
 
     def make_factory_choice(self, options, game_state):
         """
@@ -238,11 +275,17 @@ class Player:
         :param game_state: GameState - the current game state
         :return: List - one element from options
         """
-        self.banana = 6
-        for i in enumerate(options):
-            print(f'{i[0]} - {i[1]}')
+        best_option = None
+        best_value = None
+        for option in options:
+            game_state = action_space.hypothetical_factory(option, game_state)
+            new_eval = self.__evaluate_game_state(game_state)
+            game_state = action_space.reverse_factory(option, game_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(input('Choose: '))]
+        return best_option
 
     def make_investment_choice(self, options, game_state):
         """
@@ -251,11 +294,17 @@ class Player:
         :param game_state: GameState - the current game state
         :return: List - one element from options
         """
-        self.banana = 7
-        for i in enumerate(options):
-            print(f'{i[0]} - {i[1]}')
+        best_option = None
+        best_value = None
+        for option in options:
+            game_state = action_space.hypothetical_investment(choice=option, game_state=game_state)
+            new_eval = self.__evaluate_game_state(game_state=game_state)
+            game_state = action_space.reverse_investment(choice=option, game_state=game_state)
+            if best_option is None or new_eval > best_value:
+                best_value = new_eval
+                best_option = option
 
-        return options[int(input('Choose: '))]
+        return best_option
 
     def to_numbers(self):
         """
@@ -357,7 +406,7 @@ class GreedyPlayer(Player):
         best_option = None
         best_value = None
         for option in options:
-            new_engine = game_engine.game_engine.potential_advance(option, copy.deepcopy(engine_game))
+            new_engine = game_engine.potential_advance(option, copy.deepcopy(engine_game))
             new_eval = self.__evaluate_game_state(new_engine.state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -443,7 +492,7 @@ class BasicNeuralNetPlayer(Player):
         best_option = None
         best_value = None
         for option in options:
-            new_engine = game_engine.game_engine.potential_advance(option, copy.deepcopy(engine_game))
+            new_engine = game_engine.potential_advance(option, copy.deepcopy(engine_game))
             new_eval = self.__evaluate_game_state(new_engine.state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval

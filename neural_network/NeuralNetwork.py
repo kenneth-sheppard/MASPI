@@ -78,7 +78,7 @@ def training_iteration(iteration_number):
     op = []
     game_observer = None
 
-    for i in range(5):
+    for i in range(100):
         print(f'Game {i}')
         game_engine = GameEngine()
 

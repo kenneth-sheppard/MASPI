@@ -49,13 +49,19 @@ def setup():
         # Others 8 and 8
         if name == 'China':
             c.starting_tanks = 10
+            c.tank_factory_pool = 3
             c.starting_ships = 6
+            c.ship_factory_pool = 1
         elif name == 'America':
             c.starting_tanks = 6
+            c.tank_factory_pool = 1
             c.starting_ships = 10
+            c.ship_factory_pool = 3
         else:
             c.starting_tanks = 8
+            c.tank_factory_pool = 2
             c.starting_ships = 8
+            c.ship_factory_pool = 2
 
         # Add ships and tanks to their respective pools
         for t in range(0, c.starting_tanks):
@@ -84,9 +90,9 @@ def setup():
     # This can be edited to change players and player types, will need to be more dynamic eventually
     # Setup players
     for i in range(0, game_engine.settings.num_players):
-        # if i % 3 == 1:
-        #     temp_player = RandPlayer()
-        if i == 1:
+        if i >= 1:
+            temp_player = RandPlayer()
+        elif i < 6:
             temp_player = BasicNeuralNetPlayer()
         else:
             temp_player = GreedyPlayer()

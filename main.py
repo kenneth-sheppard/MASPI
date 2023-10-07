@@ -83,12 +83,12 @@ def play_game(amount):
 
 if __name__ == '__main__':
 
-    # for i in range(47, 48):
+    # for i in range(450, 500):
     #     training_iteration(i)
 
     # for i in range(0, 17):
     #     train_off_data(i)
 
-    play_game(1)
+    play_game(300)
 
     # test_model_directly()

@@ -25,6 +25,7 @@ class RondelSpace:
         """
         self.action = action
         self.next_space = None
+        self.previous_space = None
         global space_id
         self.id_count = space_id
         space_id = (space_id + 1) % 8
@@ -36,12 +37,26 @@ class RondelSpace:
         """
         self.next_space = rondel_space
 
+    def set_previous_space(self, rondel_space):
+        """
+        setter for the previous space on the rondel to be used when reversing
+        :param rondel_space: RondelSpace - the previous space
+        """
+        self.previous_space = rondel_space
+
     def next(self):
         """
         getter for the next space
         :return: RondelSpace - the next space
         """
         return self.next_space
+
+    def previous(self):
+        """
+        getter for the previous space
+        :return: RondelSpace - the previous space
+        """
+        return self.previous_space
 
     def get_action(self):
         """
@@ -96,6 +111,19 @@ def hypothetical_advance(rondel_space, num_to_move):
     return rondel_space
 
 
+def reverse(rondel_space, num_to_move):
+    """
+    move from one state to the next, not activating the investor space
+    :param rondel_space: RondelSpace - the current space
+    :param num_to_move: int - the number of spaces to move
+    :return: RondelSpace - the new space
+    """
+    for i in range(0, num_to_move):
+        rondel_space = rondel_space.previous()
+
+    return rondel_space
+
+
 investor = RondelSpace(action_space.Investor())
 imports = RondelSpace(action_space.Import())
 production1 = RondelSpace(action_space.Production())
@@ -112,3 +140,11 @@ taxation.set_next_space(factory)
 factory.set_next_space(production2)
 production2.set_next_space(maneuver2)
 maneuver2.set_next_space(investor)
+maneuver2.set_previous_space(production2)
+production2.set_previous_space(factory)
+factory.set_previous_space(taxation)
+taxation.set_previous_space(maneuver1)
+maneuver1.set_previous_space(production1)
+production1.set_previous_space(imports)
+imports.set_previous_space(investor)
+investor.set_previous_space(maneuver2)

@@ -134,6 +134,22 @@ def hypothetical_investment(choice, game_state):
     return game_state
 
 
+def reverse_investment(choice, game_state):
+    """
+    This was how I wound up managing trying to look forward and get all potential moves
+    Allows users to perform an action on a copied game_state to explore more possibilities
+    :param choice: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
+    if choice[1] is not None:
+        if choice[2] is not None:
+            game_state.get_player(choice[3]).sell_bond(game_state.get_bond(choice[1]), game_state.get_bond(choice[2]))
+        else:
+            game_state.get_player(choice[3]).sell_bond(game_state.get_bond(choice[1]))
+    return game_state
+
+
 class Import(ActionSpace):
     def __init__(self):
         super().__init__()
@@ -204,6 +220,30 @@ def hypothetical_import(choice, game_state):
         country.remove_ship_from_pool()
         territory.add_ship(country.get_name())
         country.remove_money(1)
+
+    return game_state
+
+
+def reverse_import(choice, game_state):
+    """
+    This was how I wound up managing trying to look forward and get all potential moves
+    Allows users to perform an action on a copied game_state to explore more possibilities
+    :param choice: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
+    country = game_state.get_country(choice[2].get_name())
+    territory = game_state.get_territory(choice[1].get_id())
+
+    for k in range(0, choice[0].get('Tanks')):
+        country.add_tank_to_pool()
+        territory.remove_tank(country.get_name())
+        country.add_money(1)
+
+    for m in range(0, choice[0].get('Ships')):
+        country.add_ship_to_pool()
+        territory.remove_ship(country.get_name())
+        country.add_money(1)
 
     return game_state
 
@@ -574,7 +614,33 @@ def hypothetical_move_piece(command, game_state):
     else:
         if command[1] != command[2]:
             raise ValueError(f'Oops! That\'s not right... -> {command[0]} - {command[1]} - {command[2]}')
-    Maneuver.battle(Maneuver(), country, player, game_state, t_to, command[0])
+
+    return game_state
+
+
+def reverse_move_piece(command, game_state):
+    """
+    :param command: Tuple - A choice tuple, exactly like the one used by the investor card ---- @TODO get example of this
+    :param game_state: GameState - A deep copy of a game state
+    :return: GameState - The game state with the choice performed
+    """
+    # Format of responses should be ('Type of Unit', Territory_Moving_From, Territory_Moving_To)
+    t_from = game_state.get_territory(command[1].get_id())
+    if type(command[2]) is list:
+        t_to = game_state.get_territory(command[2][0].get_id())
+    else:
+        t_to = game_state.get_territory(command[2].get_id())
+    country = game_state.get_country(command[3].get_name())
+    player = game_state.get_player(command[4].get_id())
+    if command[0] == 'Ship' and t_to.get_ships().get(country.get_name()) != 0:
+        t_from.add_ship(country.get_name())
+        t_to.remove_ship(country.get_name())
+    elif command[0] == 'Tank' and t_to.get_tanks().get(country.get_name()) != 0:
+        t_from.add_tank(country.get_name())
+        t_to.remove_tank(country.get_name())
+    else:
+        if command[1] != command[2]:
+            raise ValueError(f'Oops! That\'s not right... -> {command[0]} - {command[1]} - {command[2]}')
 
     return game_state
 
@@ -619,6 +685,30 @@ def do_battle(choice, game_state):
     if unit_type == 'Tank':
         game_state.get_territory(territory.get_id()).remove_tank(country.get_name())
         game_state.get_territory(territory.get_id()).remove_tank(to_fight)
+
+    return game_state
+
+
+def reverse_battle(choice, game_state):
+    """
+    Executes a battle
+    :param choice: List - [Initiating Country, Defending Country, Territory, Type of Unit]
+                          [Country, Country, Territory, String]
+    :param game_state: A full GameState object
+    :return: GameState - the resultant game state
+    """
+    if choice[1] is None:
+        return game_state
+    country = choice[0]
+    to_fight = choice[1]
+    territory = choice[2]
+    unit_type = choice[3]
+    if unit_type == 'Ship':
+        game_state.get_territory(territory.get_id()).add_ship(country.get_name())
+        game_state.get_territory(territory.get_id()).add_ship(to_fight)
+    if unit_type == 'Tank':
+        game_state.get_territory(territory.get_id()).add_tank(country.get_name())
+        game_state.get_territory(territory.get_id()).add_tank(to_fight)
 
     return game_state
 
@@ -694,6 +784,18 @@ class Factory(ActionSpace):
 
         return 0
 
+    # def reverse_action(self, country, player, game_state):
+    #     country = game_state.get_country(choice[1].get_name())
+    #     territory = game_state.get_territory(choice[0].get_id())
+    #     country.add_money(5)
+    #     territory.remove_factory()
+    #     if territory in list_of_land_factories:
+    #         country.add_tank_factory_to_supply()
+    #     elif territory in list_of_sea_factories:
+    #         country.add_ship_factory_to_supply()
+    #
+    #     return game_state
+
 
 def hypothetical_factory(choice, game_state):
     """
@@ -720,6 +822,10 @@ def reverse_factory(choice, game_state):
     country = game_state.get_country(choice[1].get_name())
     territory = game_state.get_territory(choice[0].get_id())
     country.add_money(5)
-    territory.remove_factory()
+    territory.destroy_factory()
+    if territory in list_of_land_factories:
+        country.add_tank_factory_to_supply()
+    elif territory in list_of_sea_factories:
+        country.add_ship_factory_to_supply()
 
     return game_state

@@ -76,6 +76,15 @@ class Territory:
             self.factory = True
         return self.factory
 
+    def destroy_factory(self):
+        """
+        Removes a factory if present
+        :return: boolean True if there is a factory, False otherwise
+        """
+        if self.factory:
+            self.factory = False
+        return self.factory
+
     def get_tanks(self):
         """
         Returns the tanks present

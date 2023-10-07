@@ -1,9 +1,6 @@
 
-import copy
 import math
 
-import game_engine.action_space as action_space
-import game_engine.game_engine as game_engine
 from game_engine import helper, rondel
 
 from game_engine.player import Player
@@ -14,104 +11,60 @@ class PlayerMASPI(Player):
         super().__init__()
         self.type = 'MASPI Player'
         self.maspi_interface = None
+        self.current_action = None
 
-    def __evaluate_game_state(self, game_state, action):
+    def __evaluate_game_state(self, game_state):
         if self.maspi_interface is None:
-            self.maspi_interface = MASPIface(initial_game_state=game_state, initial_action=action)
+            self.maspi_interface = MASPIface(initial_game_state=game_state, initial_action=self.current_action, player=self)
 
-        self.maspi_interface.send_state(game_state=game_state, action=action)
+        self.maspi_interface.send_state(game_state=game_state, action=self.current_action)
 
         return self.maspi_interface.get_eval()
 
     def make_import_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.hypothetical_import(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state, 'Import')
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        self.current_action = 'Import'
+        return super().make_import_choice(options=options, game_state=game_state)
 
     def make_maneuver_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.hypothetical_move_piece(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state, 'Maneuver')
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        self.current_action = 'Maneuver'
+        return super().make_maneuver_choice(options=options, game_state=game_state)
 
     def make_battle_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.do_battle(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state, 'Battle')
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        self.current_action = 'Battle'
+        return super().make_battle_choice(options=options, game_state=game_state)
 
     def make_rondel_choice(self, options, engine_game):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_engine = game_engine.potential_advance(option, copy.deepcopy(engine_game))
-            new_eval = self.__evaluate_game_state(new_engine.state, 'Rondel')
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        self.current_action = 'Rondel'
+        return super().make_rondel_choice(options=options, engine_game=engine_game)
 
     def make_factory_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.hypothetical_factory(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state, 'Factory')
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        self.current_action = 'Factory'
+        return super().make_factory_choice(options=options, game_state=game_state)
 
     def make_investment_choice(self, options, game_state):
-        best_option = None
-        best_value = None
-        for option in options:
-            new_state = action_space.hypothetical_investment(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state, 'Investor')
-            if best_option is None or new_eval > best_value:
-                best_value = new_eval
-                best_option = option
-
-        return best_option
+        self.current_action = 'Investor'
+        return super().make_investment_choice(options=options, game_state=game_state)
 
 
 class MASPIface:
-    def __init__(self, initial_game_state, initial_action):
-        self.maspi_pile = InvestorManager(initial_game_state)
+    def __init__(self, initial_game_state, initial_action, player):
+        self.maspi_pile = InvestorManager(player=player, game_state=initial_game_state, interface=self)
         self.game_state = initial_game_state
         self.action = initial_action
         self.up_to_date = False
         self.maspi_response = None
 
     def send_state(self, game_state, action):
+        self.up_to_date = False
         self.maspi_pile.receive_down(new_state={'game_state': game_state, 'action': action})
 
     def get_eval(self):
         if self.up_to_date:
-            self.up_to_date = False
             return self.maspi_response
         raise RuntimeError('The Player asked for their MASPI evaluation too early!')
+
+    def is_eval_ready(self):
+        return self.up_to_date
 
     def receive_up(self, maspi_response):
         self.up_to_date = True
@@ -120,12 +73,12 @@ class MASPIface:
 
 class MASPIPart:
 
-    def __init__(self):
+    def __init__(self, player):
         """
 
         """
         self.name = 'Basic Part'
-        self.player = None
+        self.player = player
 
     def inner_evaluation(self):
         """
@@ -164,12 +117,12 @@ class MASPIPart:
 
 class TerritoryAgent(MASPIPart):
 
-    def __init__(self, territory, maneuver_collector):
+    def __init__(self, player, territory, maneuver_collector):
         """
 
         :param territory:
         """
-        super().__init__()
+        super().__init__(player=player)
         self.name = 'Territory Agent'
         self.territory = territory
         self.neighbors = []
@@ -221,7 +174,6 @@ class TerritoryAgent(MASPIPart):
         # Identify the best location for each unit in territory
         # Probably best to loop for number of units present times
         # Return unit plans
-        new_state['eval'] = self.inner_evaluation()
         self.maneuver_collector.receive_up(new_state)
 
     def receive_down(self, new_state):
@@ -236,16 +188,20 @@ class TerritoryAgent(MASPIPart):
             self.aggressiveness = new_state.get('aggressiveness')
             self.carelessness = new_state.get('carelessness')
         elif new_state['action'] == 'Maneuver':
-            # @TODO fill this in
-            pass
+            new_state['evaluation'] += self.inner_evaluation()
         elif new_state['action'] == 'Factory':
-            # @TODO fill this in
-            pass
+            if self.territory.has_factory():
+                new_state['evaluation'] = self.inner_evaluation()
+            else:
+                new_state['evaluation'] = 0
         elif new_state['action'] == 'Import':
-            # @TODO fill this in
-            pass
+            if self.territory.get_in_country():
+                new_state['evaluation'] = self.inner_evaluation()
+            else:
+                new_state['evaluation'] = 0
         else:
             raise RuntimeError('Unexpected action passed to the Territory Agent')
+        self.pass_up(new_state=new_state)
 
 
 class ManeuverCollector(MASPIPart):
@@ -255,24 +211,30 @@ class ManeuverCollector(MASPIPart):
     # Since each move is independent of every other one (mostly) we don't need to calculate the full turn right
     # from the outset and can instead break it down in this more efficient fashion
 
-    def __init__(self, game_state):
+    def __init__(self, player, game_state, military_manager):
         """
 
         """
-        super().__init__()
+        super().__init__(player=player)
         self.name = 'Maneuver Collector'
         self.violence = 1
         self.expansiveness = 1
         self.set_of_territory_agents = {}
         self.set_of_evaluations = []
+        self.military_manager = military_manager
         for territory in game_state.get_territories().values():
-            self.set_of_territory_agents[territory.get_name()] = TerritoryAgent(territory, self)
+            self.set_of_territory_agents[territory.get_name()] = TerritoryAgent(
+                player=player, territory=territory, maneuver_collector=self
+            )
 
     def inner_evaluation(self):
         """
 
         """
-        pass
+        count = 0
+        for elem in self.set_of_evaluations:
+            count += elem
+        return count
 
     def pass_down(self, new_state):
         """
@@ -282,12 +244,11 @@ class ManeuverCollector(MASPIPart):
         # Pass down
         # Aggressiveness
         # Carelessness
+        new_state['aggressiveness'] = self.expansiveness - self.violence
+        new_state['carelessness'] = self.violence - self.expansiveness
         for t in self.set_of_territory_agents:
             t.receive_down(
-                {
-                    'aggressiveness': self.expansiveness - self.violence,
-                    'carelessness': self.violence - self.expansiveness
-                }
+                new_state=new_state
             )
 
     def pass_up(self, new_state):
@@ -296,7 +257,9 @@ class ManeuverCollector(MASPIPart):
         :param new_state:
         """
         # Pass that to the rondel manager maybe?
-        pass
+        new_state['evaluation'] = self.inner_evaluation()
+        self.set_of_evaluations.clear()
+        self.military_manager.receive_up(new_state=new_state)
 
     def receive_down(self, new_state):
         """
@@ -309,15 +272,6 @@ class ManeuverCollector(MASPIPart):
         if new_state['action'] == 'Update':
             self.expansiveness = new_state['expansiveness']
             self.violence = new_state['violence']
-        elif new_state['action'] == 'Maneuver':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Factory':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Import':
-            # @TODO fill this in
-            pass
         else:
             raise RuntimeError('Unexpected action passed to the Maneuver Collector')
 
@@ -329,29 +283,26 @@ class ManeuverCollector(MASPIPart):
         # Expected from below
         # A bunch of territory agent evaluations
         # Select the best priorities
-        self.set_of_evaluations.append(new_state['eval'])
+        self.set_of_evaluations.append(new_state['evaluation'])
+        if len(self.set_of_evaluations) == len(new_state['game_state'].get_territories().keys()):
+            self.pass_up(new_state=new_state)
 
 
 class RondelManager(MASPIPart):
 
-    def __init__(self):
+    def __init__(self, player, investment_manager):
         """
 
         """
-        super().__init__()
+        super().__init__(player=player)
         self.name = 'Rondel Manager'
-        self.money_needs = 1
-        self.army_needs = 1
-        self.expand_needs = 1
-
         self.get_money = 1
         self.spend_money = 1
         self.get_units = 1
         self.default_value = 20
         self.get_power = 1
-
+        self.investment_manager = investment_manager
         self.cost_per_space = 1
-
         self.active_country = None
 
     def space_eval(self, space):
@@ -395,21 +346,12 @@ class RondelManager(MASPIPart):
 
         return options
 
-    def pass_down(self, new_state):
-        """
-
-        :param new_state:
-        """
-        # Pass Down
-        pass
-
     def pass_up(self, new_state):
         """
 
         :param new_state:
         """
-        # I don't think anything needs to be passed up
-        pass
+        self.investment_manager.recieve_up(new_state)
 
     def receive_down(self, new_state):
         """
@@ -420,56 +362,36 @@ class RondelManager(MASPIPart):
         # Make money
         # Build force
         # Expand Territory
+        active_country = new_state['game_state'].get_active_country()
         if new_state['action'] == 'Update':
-            self.money_needs = new_state['money']
-            self.army_needs = new_state['army']
-            self.expand_needs = new_state['expand']
-            self.get_money = new_state['g_money']
-            self.spend_money = new_state['s_money']
-            self.get_units = new_state['g_units']
-            self.get_power = new_state['g_power']
-            self.cost_per_space = 1 + new_state['country_power']
+            self.get_money = active_country.get_tax_payout() + min(active_country.get_total_payout(),
+                                                                   active_country.get_player_investments(self.player))
+            self.spend_money = active_country.get_treasury() - active_country.get_total_payout()
+            self.get_units = (active_country.get_tank_pool() + active_country.get_ship_pool() -
+                              2 * active_country.get_placed_units())
+            self.get_power = math.pow(active_country.get_tax_increase(), 2)
+            self.cost_per_space = 1 + active_country.get_power()
         elif new_state['action'] == 'Rondel':
-            # @TODO fill this in
-            pass
+            # Pass up the evaluation of the current space the country sits upon
+            new_state['evaluation'] = self.space_eval(active_country.get_rondel_space()) + self.player.get_worth() ^ 2
+            self.pass_up(new_state=new_state)
         else:
             raise RuntimeError('Unexpected action passed to Rondel Manager')
-
-    def receive_up(self, new_state):
-        """
-
-        :param new_state:
-        """
-        # Expected from below
-        # The way to perform the maneuver action
-        pass
-
-    # Spaces on the Rondel
-    # Maneuver - Expand territory
-    # Production - Build force
-    # Import - Build force
-    # Taxation - Make money
-    # Investor - Make money
-    # Factory - Build force
-    def select_space(self):
-        """
-
-        """
-        pass
 
 
 class MilitaryManager(MASPIPart):
 
-    def __init__(self, game_state):
+    def __init__(self, player, game_state, investor_manager):
         """
 
         """
-        super().__init__()
+        super().__init__(player=player)
         self.name = 'Military Manager'
+        self.investor_manager = investor_manager
         self.flags = None
         self.units = None
         self.priority = None
-        self.territory_manager = ManeuverCollector(game_state)
+        self.territory_manager = ManeuverCollector(player=player, game_state=game_state, military_manager=self)
 
     def inner_evaluation(self):
         """
@@ -495,7 +417,7 @@ class MilitaryManager(MASPIPart):
         :param new_state:
         """
         # I don't think anything needs to be passed up
-        pass
+        self.investor_manager.recieve_up(new_state=new_state)
 
     def receive_down(self, new_state):
         """
@@ -513,33 +435,44 @@ class MilitaryManager(MASPIPart):
         :param new_state:
         """
         # Expected from below
-        pass
+        self.pass_up(new_state=new_state)
 
 
 class InvestorManager(MASPIPart):
 
-    def __init__(self, game_state):
+    def __init__(self, player, game_state, interface):
         """
 
         """
-        super().__init__()
+        super().__init__(player=player)
         self.name = 'Investor Manager'
         self.current_evaluations = {
-            'Russia': CountryEvaluator('Russia'),
-            'China': CountryEvaluator('China'),
-            'India': CountryEvaluator('India'),
-            'Brazil': CountryEvaluator('Brazil'),
-            'United States': CountryEvaluator('United States'),
-            'European Union': CountryEvaluator('European Union')
+            'Russia': 0,
+            'China': 0,
+            'India': 0,
+            'Brazil': 0,
+            'United States': 0,
+            'European Union': 0
         }
-        self.military_manager = MilitaryManager(game_state)
-        self.rondel_manager = RondelManager()
+        self.active_evaluation = 0
+        self.country_evaluators = [
+            CountryEvaluator(player=player, country='Russia', investor_manager=self),
+            CountryEvaluator(player=player, country='China', investor_manager=self),
+            CountryEvaluator(player=player, country='India', investor_manager=self),
+            CountryEvaluator(player=player, country='Brazil', investor_manager=self),
+            CountryEvaluator(player=player, country='United States', investor_manager=self),
+            CountryEvaluator(player=player, country='European Union', investor_manager=self)
+        ]
+        self.military_manager = MilitaryManager(player=player, game_state=game_state, investor_manager=self)
+        self.rondel_manager = RondelManager(player=player, investment_manager=self)
         self.game_state = game_state
+        self.interface = interface
 
     def inner_evaluation(self):
         """
 
         """
+        active_investments = 0
         for country in self.game_state.get_countries():
             c_val = -10
             for bond in country.get_bonds():
@@ -550,26 +483,27 @@ class InvestorManager(MASPIPart):
             if country.get_country_controller() == self.player:
                 c_val += 5
             c_val += 2 ** helper.power_chart(country.get_power())
-            return c_val
+            active_investments += c_val * self.current_evaluations[country.get_name()]
+
+        self.active_evaluation = active_investments
 
     def pass_down(self, new_state):
         """
 
         :param new_state:
         """
+        new_state['priority'] = (self.current_evaluations[self.game_state.get_active_country().get_name()] +
+                                 self.game_state.get_active_country().get_player_investments(self.player))
         # Pass Down
         self.military_manager.receive_down(
-            {
-                'game_state': self.game_state,
-                # TODO: Define this
-                'priority': 0
-            }
+            new_state=new_state
         )
-        for country_evaluator in self.current_evaluations.values():
+        self.rondel_manager.receive_down(
+            new_state=new_state
+        )
+        for country_evaluator in self.country_evaluators:
             country_evaluator.receive_down(
-                {
-                    'game_state': self.game_state
-                }
+                new_state=new_state
             )
 
     def pass_up(self, new_state):
@@ -580,23 +514,17 @@ class InvestorManager(MASPIPart):
         # Pass Up
         # Parse what to pass using the information in the game state
         if new_state['action'] == 'Maneuver':
-            # @TODO fill this in
-            pass
+            return new_state['evaluation']
         elif new_state['action'] == 'Factory':
-            # @TODO fill this in
-            pass
+            return new_state['evaluation']
         elif new_state['action'] == 'Import':
-            # @TODO fill this in
-            pass
+            return new_state['evaluation']
         elif new_state['action'] == 'Investor':
-            # @TODO fill this in
-            pass
+            return self.active_evaluation
         elif new_state['action'] == 'Rondel':
-            # @TODO fill this in
-            pass
+            return new_state['evaluation']
         elif new_state['action'] == 'Battle':
-            # @TODO fill this in
-            pass
+            return new_state['evaluation']
         else:
             # Go cry or something because we didn't expect this
             raise RuntimeError('The action passed to the InvestorManager was not recognized')
@@ -607,29 +535,23 @@ class InvestorManager(MASPIPart):
         an action that is going to be taken (rondel, battle, maneuver, etc.)
         :param new_state:
         """
-        # Expected from above
-        if new_state['action'] == 'Maneuver':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Factory':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Import':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Investor':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Rondel':
-            # @TODO fill this in
-            pass
-        elif new_state['action'] == 'Battle':
-            # @TODO fill this in
-            pass
-        else:
-            # Go cry or something because we didn't expect this
-            raise RuntimeError('The action passed to the InvestorManager was not recognized')
         self.pass_down(new_state)
+        # # Expected from above
+        # if new_state['action'] == 'Maneuver':
+        #     pass
+        # elif new_state['action'] == 'Factory':
+        #     pass
+        # elif new_state['action'] == 'Import':
+        #     pass
+        # elif new_state['action'] == 'Investor':
+        #     self.inner_evaluation()
+        # elif new_state['action'] == 'Rondel':
+        #     pass
+        # elif new_state['action'] == 'Battle':
+        #     pass
+        # else:
+        #     # Go cry or something because we didn't expect this
+        #     raise RuntimeError('The action passed to the InvestorManager was not recognized')
 
     def receive_up(self, new_state):
         """
@@ -638,21 +560,25 @@ class InvestorManager(MASPIPart):
         """
         # Expected from below
         # Anything we get should be passed up to the Agent above us
+        for country in self.current_evaluations.keys():
+            if country in new_state:
+                self.current_evaluations[country] = new_state[country]
         self.pass_up(new_state=new_state)
 
 
 class CountryEvaluator(MASPIPart):
 
-    def __init__(self, country):
+    def __init__(self, player, country, investor_manager):
         """
 
         """
-        super().__init__()
+        super().__init__(player=player)
         self.name = 'Country Evaluator'
         self.total_investment = None
         self.relative_power = None
         self.tax_increase = None
         self.country = country
+        self.investor_manager = investor_manager
 
     def inner_evaluation(self):
         """
@@ -674,7 +600,7 @@ class CountryEvaluator(MASPIPart):
         :param new_state:
         """
         # Pass Up
-        pass
+        self.investor_manager.recieve_up(new_state)
 
     def receive_down(self, new_state):
         """
@@ -693,6 +619,7 @@ class CountryEvaluator(MASPIPart):
                 rel_pow += 1
         self.relative_power = rel_pow
         self.tax_increase = new_state['game_state'].get_country(self.country).get_tax_payout()
+        new_state[self.country.get_name()] = self.inner_evaluation()
         self.pass_up(new_state)
 
     def receive_up(self, new_state):

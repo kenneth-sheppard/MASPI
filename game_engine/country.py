@@ -18,8 +18,11 @@ class Country:
         self.id = c_id
         self.starting_tanks = 0
         self.starting_ships = 0
+        self.starting_check = True
         self.tank_pool = 0
+        self.tank_factory_pool = 0
         self.ship_pool = 0
+        self.ship_factory_pool = 0
         self.bonds = {}
         self.treasury = 0
         self.controller = None
@@ -100,6 +103,44 @@ class Country:
         """
         self.ship_pool += 1
 
+    def add_tank_factory_to_supply(self):
+        """
+        Add a factory to the pool of available tank factories
+        :return: boolean - True
+        """
+        self.tank_factory_pool += 1
+        return True
+
+    def remove_tank_factory_from_supply(self):
+        """
+        Remove a factory from the pool of available tank factories
+        :return: boolean - True if there are available factories, False otherwise
+        """
+        if self.tank_factory_pool > 0:
+            self.tank_factory_pool -= 1
+            return True
+        else:
+            return False
+
+    def add_ship_factory_to_supply(self):
+        """
+        Add a factory to the pool of available ship factories
+        :return: boolean - True
+        """
+        self.ship_factory_pool += 1
+        return True
+
+    def remove_ship_factory_from_supply(self):
+        """
+        Remove a factory from teh pool of available ship factories
+        :return: boolean - True if there are available factories, False otherwise
+        """
+        if self.ship_factory_pool > 0:
+            self.ship_factory_pool -= 1
+            return True
+        else:
+            return False
+
     def get_bonds(self):
         """
         Return a list of all bonds associated with the country
@@ -128,6 +169,31 @@ class Country:
         :param bond: Bond - the bond to be removed, replaced with None
         """
         self.bonds[bond.cost] = None
+
+    def get_player_investments(self, player):
+        """
+        Count how much a player holds in the country, by bond interest rate
+        :param player: Player - The player to check
+        :return: Integer - the sum of interest rates for bonds held by Player
+        """
+        count = 0
+        for bond in self.bonds:
+            if bond.get_owner() == player:
+                count += bond.get_interest_rate()
+
+        return count
+
+    def get_total_payout(self):
+        """
+        Calculate how much money must be spent to pay all bonds
+        :return: the calculated amount
+        """
+        payout = 0
+        for bond in self.bonds:
+            if bond.get_owner() is not None:
+                payout += bond.get_interest_rate()
+
+        return payout
 
     def get_treasury(self):
         """
@@ -201,6 +267,23 @@ class Country:
         _, owner_payout = tax_chart(count)
 
         return owner_payout
+
+    def get_tax_increase(self):
+        """
+        Get the amount that will be paid to the controller if a tax were to occur immediately
+        :return: int - the calculated number
+        """
+        count = 0
+
+        for territory in self.get_home_territories():
+            if not territory.is_occupied() and territory.has_factory():
+                count += 2
+
+        count += len(self.get_controlled_neutral_territories())
+
+        increase, _ = tax_chart(count)
+
+        return increase
 
     def get_controlled_neutral_territories(self):
         """
@@ -297,16 +380,36 @@ class Country:
         else:
             self.rondel_space = game_engine.rondel.advance(self.rondel_space, num_to_advance, game_state)
 
-    def hypothetical_advance(self, num_to_advance):
+    def get_advance_option(self, num_to_advance):
         """
-        Performs a hypothetical advance, never changing the true state of the rondel
+        Returns a hypothetical advance, never changing the true state of the rondel
         :param num_to_advance:
         :return:
         """
         if self.rondel_space is None:
-            return game_engine.rondel.start(num_to_advance)
+            return game_engine.rondel.start(index_to_start=num_to_advance)
         else:
-            return game_engine.rondel.hypothetical_advance(self.rondel_space, num_to_advance)
+            return game_engine.rondel.hypothetical_advance(rondel_space=self.rondel_space, num_to_move=num_to_advance)
+
+    def hypothetical_advance(self, num_to_advance):
+        """
+        Performs a hypothetical advance, never changing the true state of the rondel
+        :param num_to_advance:
+        """
+        if self.rondel_space is None:
+            self.starting_check = True
+            self.rondel_space = game_engine.rondel.start(num_to_advance)
+        else:
+            self.rondel_space = game_engine.rondel.hypothetical_advance(rondel_space=self.rondel_space, num_to_move=num_to_advance)
+
+    def reverse(self, num_to_advance):
+        if self.rondel_space is None:
+            raise RuntimeError('Tried to reverse without setting the rondel space first!')
+        elif self.starting_check:
+            self.starting_check = False
+            self.rondel_space = None
+        else:
+            self.rondel_space = game_engine.rondel.reverse(rondel_space=self.rondel_space, num_to_move=num_to_advance)
 
     def get_rondel_space(self):
         """
