@@ -183,7 +183,7 @@ class Territory:
     def get_in_country(self):
         """
         Returns if territory is a part of a country, one of the four home territories
-        :return: boolean True if is part, False otherwise
+        :return: Country - the country that the territory is in, or None
         """
         return self.in_country
 

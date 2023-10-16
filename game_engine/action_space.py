@@ -430,6 +430,8 @@ class Maneuver(ActionSpace):
             # Create a list of all legal moves for each of those tanks
             legal_moves = []
 
+            destinations = []
+
             for tank_territory in active_tank_territories:
                 # Skip territories whose tanks have all been moved
                 if multiple_tanks_handler[tank_territory] > 0:
@@ -442,7 +444,7 @@ class Maneuver(ActionSpace):
 
                     for territory in adjacent_territories:
                         if territory.get_in_country() == country:
-                            w = self.__find_railroad(country, territory, game_state, convoy_ships, [])
+                            w = self.__find_railroad(country, territory, game_state, active_ship_territories, [tank_territory])
                         else:
                             w = None
                         if w is not None:
@@ -452,7 +454,7 @@ class Maneuver(ActionSpace):
                             else:
                                 temp.append(w)
 
-                        q = self.__find_convoy(country, territory, game_state, convoy_ships)
+                        q = self.__find_convoy(country, territory, game_state, active_ship_territories)
                         if q is not None:
                             if type(q) is list:
                                 for elem in q:
@@ -464,6 +466,13 @@ class Maneuver(ActionSpace):
 
                     for adjacent_tank_territory in adjacent_territories:
                         if ('Tank', tank_territory, adjacent_tank_territory) not in legal_moves:
+                            if type(adjacent_tank_territory) is list:
+                                if adjacent_tank_territory[0] in destinations:
+                                    continue
+                                else:
+                                    destinations.append(adjacent_tank_territory[0])
+                            else:
+                                destinations.append(adjacent_tank_territory)
                             legal_moves.append(('Tank', tank_territory, adjacent_tank_territory, country, player))
             # Get the decision from the player
             choice = player.make_maneuver_choice(options=legal_moves, game_state=game_state)
@@ -523,7 +532,7 @@ class Maneuver(ActionSpace):
                                 res.append(territory)
                                 possible_convoys.append(res)
                                 break
-
+            available_ships.append(territory)
             return possible_convoys
 
     def __find_railroad(self, country, territory, game_state, available_ships, visited_territories):
@@ -538,9 +547,9 @@ class Maneuver(ActionSpace):
         """
         if territory.is_occupied() or territory in visited_territories:
             return None
-        elif not territory.get_in_country() == country and not territory.get_is_water():
-            return [territory]
         elif len(visited_territories) > 0 and visited_territories[0].get_in_country() != country:
+            return None
+        elif not territory.get_in_country() == country and not territory.get_is_water():
             return [territory]
         elif not territory.get_in_country() == country and territory.get_is_water():
             return self.__find_convoy(country, territory, game_state, available_ships)

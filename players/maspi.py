@@ -6,7 +6,7 @@ from game_engine import helper, rondel
 from game_engine.player import Player
 
 
-class PlayerMASPI(Player):
+class MASPIPlayer(Player):
     def __init__(self):
         super().__init__()
         self.type = 'MASPI Player'
@@ -312,7 +312,7 @@ class RondelManager(MASPIPart):
         :return:
         """
         if space.get_name() == 'Investor':
-            return self.get_money + self.spend_money
+            return math.pow(self.get_money + self.spend_money, 2)
         elif space.get_name() == 'Import':
             return self.get_units + self.spend_money
         elif space.get_name() == 'Production':
@@ -320,7 +320,7 @@ class RondelManager(MASPIPart):
         elif space.get_name() == 'Maneuver':
             return self.get_power + self.default_value
         elif space.get_name() == 'Taxation':
-            return self.get_power + self.get_money
+            return math.pow(self.get_power + self.get_money, 2)
         elif space.get_name() == 'Factory':
             return self.get_units + self.spend_money
         else:
@@ -373,7 +373,7 @@ class RondelManager(MASPIPart):
             self.cost_per_space = 1 + active_country.get_power()
         elif new_state['action'] == 'Rondel':
             # Pass up the evaluation of the current space the country sits upon
-            new_state['evaluation'] = self.space_eval(active_country.get_rondel_space()) + self.player.get_worth() ^ 2
+            new_state['evaluation'] = self.space_eval(active_country.get_rondel_space()) + self.player.get_worth() ^ 3
             self.pass_up(new_state=new_state)
         else:
             raise RuntimeError('Unexpected action passed to Rondel Manager')
@@ -474,7 +474,7 @@ class InvestorManager(MASPIPart):
         """
         active_investments = 0
         for country in self.game_state.get_countries():
-            c_val = -10
+            c_val = 0
             for bond in country.get_bonds():
                 if bond.get_owner() == self.player:
                     c_val += bond.get_cost()
@@ -482,8 +482,8 @@ class InvestorManager(MASPIPart):
                     c_val += 2
             if country.get_country_controller() == self.player:
                 c_val += 5
-            c_val += 2 ** helper.power_chart(country.get_power())
-            active_investments += c_val * self.current_evaluations[country.get_name()]
+            c_val += self.current_evaluations[country.get_name()] ** helper.power_chart(country.get_power())
+            active_investments += c_val
 
         self.active_evaluation = active_investments
 

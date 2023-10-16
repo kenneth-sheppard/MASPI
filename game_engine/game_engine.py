@@ -21,7 +21,6 @@ class GameEngine:
         """
         while not self.state.is_over():
             # turn_start_time = time.time()
-            self.turns += 1
 
             if self.turns % 6 == 0:
                 pass
@@ -38,7 +37,10 @@ class GameEngine:
             # Ask that player to choose how far on the rondel they want to go
             # Tax the player if moving too far
             if self.active_player is not None:
-                ntm = self.__move_query()
+                if self.turns // 6 == 0:
+                    ntm = self.__turn_one_move_query()
+                else:
+                    ntm = self.__move_query()
             # Advance that many spaces on the rondel
                 self.active_country.advance(ntm, self.state)
             # Activate that action space on the rondel
@@ -49,6 +51,8 @@ class GameEngine:
             # turn_end_time = time.time()
 
             # print(f'elapsed time {turn_end_time - turn_start_time}s')
+
+            self.turns += 1
 
             # if there are subscribed observers, let them observe
             for subscriber in self.subscribers:
@@ -84,9 +88,16 @@ class GameEngine:
         """
         self.subscribers.remove(game_state_observer)
 
+    def get_turns(self):
+        """
+        getter for current elapsed turns
+        :return: int - the amount of turns
+        """
+        return self.turns // 6
+
     def __next_active_country(self):
         """
-        Finds the next active country using Strings and logic (kinda suspect though)
+        Finds the next active country using Strings and logic
         """
         if self.active_country is None or self.active_country.get_name() == 'European Union':
             self.active_country = self.state.get_country('Russia')
@@ -121,6 +132,18 @@ class GameEngine:
 
         return ntm
 
+    def __turn_one_move_query(self):
+        """
+        Queries the player how far they want to move, accounting for how much there money allows them to move.
+        :return: int - the number that they can move
+        """
+        options = []
+
+        for i in range(1, 9):
+            options.append([i, self.active_country.get_advance_option(i).get_name()])
+
+        return self.active_player.make_rondel_choice(options, self)[0]
+
 
 def potential_advance(choice, engine):
     """
@@ -131,10 +154,6 @@ def potential_advance(choice, engine):
     """
     # Advance that many spaces on the rondel
     engine.active_country.hypothetical_advance(choice[0])
-    # Activate that action space on the rondel
-    # engine.active_country.get_rondel_space().get_action().action(engine.active_country,
-    #                                                              engine.active_player,
-    #                                                              engine.state)
 
     return engine
 

@@ -1,10 +1,15 @@
 
 import csv
+import os
 import time
+
+import game_engine.game_setup
+import game_engine.settings
+from neural_network.NeuralNetwork import training_iteration, train_off_data, test_model_directly
+from players import random, greedy, basic_nn, maspi, human
 from game_engine.game_engine import GameEngine
 from statistics_observer.game_results import GameEngineObserver
 from statistics_observer.player_observer import PlayerObserver
-from neural_network.NeuralNetwork import training_iteration, train_off_data, test_model_directly
 
 
 def play_game(amount):
@@ -71,24 +76,55 @@ def play_game(amount):
 
     print(go)
 
-    with open('recorded_results.txt', 'wt') as f:
+    if not os.path.isdir(os.path.join(game_engine.settings.folder_to_write)):
+        os.mkdir(os.path.join(game_engine.settings.folder_to_write))
+
+    if os.path.isfile(os.path.join(game_engine.settings.folder_to_write, 'recorded_results.txt')):
+        os.remove(os.path.join(game_engine.settings.folder_to_write, 'recorded_results.txt'))
+
+    if os.path.isfile(os.path.join(game_engine.settings.folder_to_write, 'game_turns.csv')):
+        os.remove(os.path.join(game_engine.settings.folder_to_write, 'game_turns.csv'))
+
+    if os.path.isfile(os.path.join(game_engine.settings.folder_to_write, 'quick_stats.csv')):
+        os.remove(os.path.join(game_engine.settings.folder_to_write, 'quick_stats.csv'))
+
+    with open(os.path.join(game_engine.settings.folder_to_write, 'recorded_results.txt'), 'wt') as f:
         for player_observer in op:
             f.write(player_observer.__str__() + ' ')
         f.write(go.__str__())
 
-    with open('game_turns.csv', 'wt') as f:
+    with open(os.path.join(game_engine.settings.folder_to_write, 'game_turns.csv'), 'wt') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerows(go.get_turn_by_turn())
+
+    with open(os.path.join(game_engine.settings.folder_to_write, 'quick_stats.csv'), 'wt') as f:
+        csv_writer = csv.writer(f)
+        rows = go.get_game_by_game_stats()
+        for i in range(0, len(rows)):
+            for player_observer in op:
+                rows[i].append(player_observer.get_score(i))
+        csv_writer.writerows(rows)
 
 
 if __name__ == '__main__':
 
-    # for i in range(450, 500):
+    game_engine.settings.num_players = 6
+
+    game_engine.settings.player_1 = human.HumanPlayer
+    game_engine.settings.player_2 = human.HumanPlayer
+    game_engine.settings.player_3 = human.HumanPlayer
+    game_engine.settings.player_4 = human.HumanPlayer
+    game_engine.settings.player_5 = human.HumanPlayer
+    game_engine.settings.player_6 = human.HumanPlayer
+
+    game_engine.settings.folder_to_write = 'practice_data\\live_game'
+
+    # for i in range(0, 50):
     #     training_iteration(i)
 
     # for i in range(0, 17):
     #     train_off_data(i)
 
-    play_game(300)
+    play_game(1)
 
     # test_model_directly()

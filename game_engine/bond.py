@@ -21,7 +21,7 @@ class Bond:
         A String representation of a bond
         :return: String - [Country] - [Cost]([Interest Rate])
         """
-        return f'{self.country.get_name()} - {self.cost}({self.interest_rate})'
+        return f'{self.country.get_abbr()} - {self.cost:2}({self.interest_rate})'
 
     def get_country(self):
         """

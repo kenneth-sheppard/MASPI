@@ -96,12 +96,13 @@ class InvestorCard:
         # Available bonds through trade in
         for country in game_state.get_countries():
             for bond in country.get_bonds():
-                if bond.get_owner() is None and bond.get_cost() > self.controller.get_player().get_money():
+                if bond.get_owner() is None:
                     # Check if there is a lower bond to trade in
                     # Do not do the bonds that cannot be paid for
                     for owned_bond in self.controller.get_player().get_bonds():
-                        if owned_bond.get_owner() == bond.get_owner() and bond.get_cost() - owned_bond.get_cost() <= \
-                                self.controller.get_player().get_money():
+                        if (owned_bond.get_country() == bond.get_country() and
+                                0 <= bond.get_cost() - owned_bond.get_cost() <=
+                                self.controller.get_player().get_money()):
                             # options are structured as bond to buy then bond to trade in
                             options.append([bond.get_cost() - owned_bond.get_cost(), bond, owned_bond, self.controller.get_player().get_id()])
 

@@ -3,7 +3,7 @@ from game_engine.helper import tax_chart
 
 
 class Country:
-    def __init__(self, name, c_id):
+    def __init__(self, name, abbr, c_id):
         """
         A Country represents one of the six superpowers that are controlled by the players.
         Countries hold pools of units (Tanks and Ships).
@@ -15,6 +15,7 @@ class Country:
         :param c_id: int - the id of the country (0-5) ((1-6)??)
         """
         self.name = name
+        self.abbr = abbr
         self.id = c_id
         self.starting_tanks = 0
         self.starting_ships = 0
@@ -54,6 +55,13 @@ class Country:
         :return: String - the name
         """
         return self.name
+
+    def get_abbr(self):
+        """
+        The abbreviation of the name, for display purposes
+        :return: String - the abbreviation
+        """
+        return self.abbr
 
     def get_tank_pool(self):
         """

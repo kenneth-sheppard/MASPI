@@ -172,9 +172,13 @@ class Player:
         """
         if bond_to_sell is not None:
             self.money += bond_to_sell.get_cost()
+            self.bonds.remove(bond_to_sell)
             bond_to_sell.set_owner(None)
 
         self.money -= bond_to_buy.get_cost()
+        bond_to_buy.get_country().add_money(bond_to_buy.get_cost())
+        if bond_to_sell is not None:
+            bond_to_sell.get_country().remove_money(bond_to_sell.get_cost())
         bond_to_buy.set_owner(self)
         self.bonds.append(bond_to_buy)
 
@@ -187,8 +191,12 @@ class Player:
         if bond_to_sell is not None:
             self.money -= bond_to_sell.get_cost()
             bond_to_sell.set_owner(self)
+            self.bonds.append(bond_to_sell)
 
         self.money += bond_to_buy.get_cost()
+        if bond_to_sell is not None:
+            bond_to_sell.get_country().add_money(bond_to_sell.get_cost())
+        bond_to_buy.get_country().remove_money(bond_to_buy.get_cost())
         bond_to_buy.set_owner(None)
         self.bonds.remove(bond_to_buy)
 
