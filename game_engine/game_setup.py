@@ -94,6 +94,7 @@ def setup():
             raise RuntimeError('Did not properly configure all players')
         temp_player = game_engine.settings.player_list[i]()
         temp_player.add_money(13 * (6 // game_engine.settings.num_players))
+        temp_player.remove_money(((6 // game_engine.settings.num_players) - 1) * 2)
         for j in range(0, 6 // game_engine.settings.num_players):
             # Assign a set of starting bonds to each player from list
             # Choose random available option
@@ -107,8 +108,8 @@ def setup():
 
         new_game_state.add_player(temp_player)
 
-        print(f'Adding Player {temp_player.get_id()}')
-        print(f'With bonds {" ".join([str(b) for b in temp_player.get_bonds()])}\n')
+        # print(f'Adding Player {temp_player.get_id()}')
+        # print(f'With bonds {" ".join([str(b) for b in temp_player.get_bonds()])}\n')
 
         i_card.add_player(temp_player)
 

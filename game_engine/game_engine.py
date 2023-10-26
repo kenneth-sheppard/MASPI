@@ -45,6 +45,10 @@ class GameEngine:
                 self.active_country.advance(ntm, self.state)
             # Activate that action space on the rondel
                 self.active_country.get_rondel_space().get_action().action(self.active_country, self.active_player, self.state)
+            # Activate the investor card if Investor Space was passed
+                if self.state.get_delayed_investor_card():
+                    self.state.do_investor_card()
+                    self.state.set_delayed_investor_card(False)
             # Update the game state
             self.state.update()
 

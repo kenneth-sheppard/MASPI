@@ -111,6 +111,13 @@ class Country:
         """
         self.ship_pool += 1
 
+    def get_factories_in_supply(self):
+        """
+        Calculate the amount of factories left to be placed
+        :return:
+        """
+        return self.tank_factory_pool + self.ship_factory_pool
+
     def add_tank_factory_to_supply(self):
         """
         Add a factory to the pool of available tank factories
@@ -272,7 +279,7 @@ class Country:
 
         count += len(self.get_controlled_neutral_territories())
 
-        _, owner_payout = tax_chart(count)
+        owner_payout, _ = tax_chart(count)
 
         return owner_payout
 
@@ -289,7 +296,7 @@ class Country:
 
         count += len(self.get_controlled_neutral_territories())
 
-        increase, _ = tax_chart(count)
+        _, increase = tax_chart(count)
 
         return increase
 
@@ -331,6 +338,12 @@ class Country:
         :param territories: List - home territories of this Country
         """
         self.home_territories = territories
+
+    def under_occupation(self):
+        for territory in self.home_territories:
+            if territory.is_occupied():
+                return True
+        return False
 
     def get_placed_units(self):
         """

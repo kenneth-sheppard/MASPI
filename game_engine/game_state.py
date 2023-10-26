@@ -15,6 +15,7 @@ class GameState:
         self.players = []
         self.active_country = None
         self.investor_card = None
+        self.delayed_investor_card = False
 
     def __str__(self):
         """
@@ -230,16 +231,14 @@ class GameState:
                     if c_pieces > 0:
                         players_in_territory.append(c_name)
             # Update flag if there is exactly one country in neutral territory
-            if territory.is_neutral:
+            if territory.is_neutral and len(players_in_territory) == 1:
                 for country in self.countries.values():
                     if country.remove_controlled_neutral_territory(territory):
                         country.pickup_flag()
-                if len(players_in_territory) == 1:
-                    c_name = players_in_territory[0]
-                    if self.get_country(c_name).place_flag():
-                        territory.set_territory_controller(c_name)
-                        self.get_country(c_name).add_controlled_neutral_territory(territory)
-
+                c_name = players_in_territory[0]
+                if self.get_country(c_name).place_flag():
+                    territory.set_territory_controller(c_name)
+                    self.get_country(c_name).add_controlled_neutral_territory(territory)
             # Territory is not neutral
             else:
                 # If more than two people are in territory is occupied
@@ -297,6 +296,20 @@ class GameState:
                 player.set_is_swiss_bank(True)
 
         return 0
+
+    def get_delayed_investor_card(self):
+        """
+        Check if an investor card trigger needs to occur after an action completes
+        :return: Boolean - True if needed trigger, False otherwise
+        """
+        return self.delayed_investor_card
+
+    def set_delayed_investor_card(self, sdic):
+        """
+        Set the value of delayed_investor_card
+        :param sdic: Boolean True if needed trigger, False otherwise
+        """
+        self.delayed_investor_card = sdic
 
     def do_investor_card(self):
         """

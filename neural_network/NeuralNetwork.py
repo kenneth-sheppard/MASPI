@@ -78,8 +78,8 @@ def training_iteration(iteration_number):
     op = []
     game_observer = None
 
-    for i in range(100):
-        print(f'Game {i}')
+    print(f'iteration {iteration_number}')
+    for i in range(50):
         game_engine = GameEngine()
 
         if game_observer is None:
@@ -150,6 +150,14 @@ def training_iteration(iteration_number):
         csv_writer = csv.writer(f)
         csv_writer.writerows(game_observer.get_turn_by_turn())
         f.close()
+
+    with open(os.path.join('data', f'games{iteration_number}', 'quick_stats.csv'), 'wt') as f:
+        csv_writer = csv.writer(f)
+        rows = game_observer.get_game_by_game_stats()
+        for i in range(0, len(rows)):
+            for player_observer in op:
+                rows[i].append(player_observer.get_score(i))
+        csv_writer.writerows(rows)
 
     # so first we're just going to pull the data and run it through training and build from there
     data_values, data_class = load_data('game_turns.csv')

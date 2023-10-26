@@ -28,6 +28,7 @@ class Territory:
         }
         self.is_water = False
         self.is_costal = False
+        self.has_peace = False
 
     def __str__(self):
         return self.name
@@ -74,6 +75,10 @@ class Territory:
         """
         if not self.factory:
             self.factory = True
+            if self.factory_is_sea:
+                self.in_country.remove_ship_factory_from_supply()
+            else:
+                self.in_country.remove_tank_factory_from_supply()
         return self.factory
 
     def destroy_factory(self):
@@ -83,6 +88,10 @@ class Territory:
         """
         if self.factory:
             self.factory = False
+            if self.factory_is_sea:
+                self.in_country.add_ship_factory_to_supply()
+            else:
+                self.in_country.add_tank_factory_to_supply()
         return self.factory
 
     def get_tanks(self):
@@ -205,6 +214,12 @@ class Territory:
         :return: boolean True if it can, false otherwise
         """
         return self.factory_is_sea
+
+    def get_has_peace(self):
+        return self.has_peace
+
+    def set_has_peace(self, peace):
+        self.has_peace = peace
 
     def to_numbers(self):
         """

@@ -83,33 +83,11 @@ class InvestorCard:
         """
         self.controller.get_player().add_money(2)
         # Create a list of all potential options
+        invest(player=self.controller.get_player(), game_state=game_state)
 
-        # Available bonds with no controller direct buy
-        # Start with default option of buying no bonds
-        options = [[0, None, None, self.controller.get_player().get_id()]]
-        for country in game_state.get_countries():
-            for bond in country.get_bonds():
-                # Do not do the bonds that cannot be paid for
-                if bond.get_owner() is None and bond.get_cost() <= self.controller.get_player().get_money():
-                    # options are structured as amount to pay, bond to buy, bond to trade in
-                    options.append([bond.get_cost(), bond, None, self.controller.get_player().get_id()])
-        # Available bonds through trade in
-        for country in game_state.get_countries():
-            for bond in country.get_bonds():
-                if bond.get_owner() is None:
-                    # Check if there is a lower bond to trade in
-                    # Do not do the bonds that cannot be paid for
-                    for owned_bond in self.controller.get_player().get_bonds():
-                        if (owned_bond.get_country() == bond.get_country() and
-                                0 <= bond.get_cost() - owned_bond.get_cost() <=
-                                self.controller.get_player().get_money()):
-                            # options are structured as bond to buy then bond to trade in
-                            options.append([bond.get_cost() - owned_bond.get_cost(), bond, owned_bond, self.controller.get_player().get_id()])
-
-        choice = self.controller.get_player().make_investment_choice(options, game_state)
-
-        if choice[1] is not None:
-            self.controller.get_player().buy_bond(choice[1], choice[2])
+        for player in game_state.get_players():
+            if player.get_is_swiss_bank():
+                invest(player=player, game_state=game_state)
 
         # Pass the card to the next player
         self.set_controller(self.get_controller().get_next())
@@ -143,3 +121,32 @@ class InvestorCard:
             :return: Player - this player
             """
             return self.player
+
+
+def invest(player, game_state):
+    # Available bonds with no controller direct buy
+    # Start with default option of buying no bonds
+    options = [[0, None, None, player.get_id()]]
+    for country in game_state.get_countries():
+        for bond in country.get_bonds():
+            # Do not do the bonds that cannot be paid for
+            if bond.get_owner() is None and bond.get_cost() <= player.get_money():
+                # options are structured as amount to pay, bond to buy, bond to trade in
+                options.append([bond.get_cost(), bond, None, player.get_id()])
+    # Available bonds through trade in
+    for country in game_state.get_countries():
+        for bond in country.get_bonds():
+            if bond.get_owner() is None:
+                # Check if there is a lower bond to trade in
+                # Do not do the bonds that cannot be paid for
+                for owned_bond in player.get_bonds():
+                    if (owned_bond.get_country() == bond.get_country() and
+                            0 <= bond.get_cost() - owned_bond.get_cost() <= player.get_money()):
+                        # options are structured as bond to buy then bond to trade in
+                        options.append([bond.get_cost() - owned_bond.get_cost(), bond, owned_bond, player.get_id()])
+
+    choice = player.make_investment_choice(options, game_state)
+
+    if choice[1] is not None:
+        player.buy_bond(choice[1], choice[2])
+

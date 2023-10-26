@@ -110,17 +110,31 @@ if __name__ == '__main__':
 
     game_engine.settings.num_players = 6
 
-    game_engine.settings.player_1 = human.HumanPlayer
-    game_engine.settings.player_2 = human.HumanPlayer
-    game_engine.settings.player_3 = human.HumanPlayer
-    game_engine.settings.player_4 = human.HumanPlayer
-    game_engine.settings.player_5 = human.HumanPlayer
-    game_engine.settings.player_6 = human.HumanPlayer
+    # game_engine.settings.player_1 = greedy.GreedyPlayer
+    # game_engine.settings.player_2 = random.RandPlayer
+    # game_engine.settings.player_3 = greedy.GreedyPlayer
+    # game_engine.settings.player_4 = basic_nn.BasicNeuralNetPlayer
+    # game_engine.settings.player_5 = maspi.MASPIPlayer
+    # game_engine.settings.player_6 = maspi.MASPIPlayer
 
-    game_engine.settings.folder_to_write = 'practice_data\\live_game'
+    # game_engine.settings.player_1 = human.HumanPlayer
+    # game_engine.settings.player_2 = human.HumanPlayer
+    # game_engine.settings.player_3 = human.HumanPlayer
+    # game_engine.settings.player_4 = human.HumanPlayer
+    # game_engine.settings.player_5 = human.HumanPlayer
+    # game_engine.settings.player_6 = human.HumanPlayer
 
-    # for i in range(0, 50):
-    #     training_iteration(i)
+    game_engine.settings.player_1 = basic_nn.BasicNeuralNetPlayer
+    game_engine.settings.player_2 = basic_nn.BasicNeuralNetPlayer
+    game_engine.settings.player_3 = basic_nn.BasicNeuralNetPlayer
+    game_engine.settings.player_4 = basic_nn.BasicNeuralNetPlayer
+    game_engine.settings.player_5 = basic_nn.BasicNeuralNetPlayer
+    game_engine.settings.player_6 = basic_nn.BasicNeuralNetPlayer
+
+    game_engine.settings.folder_to_write = 'practice_data\\development'
+
+    for i in range(847, 1000):
+        training_iteration(i)
 
     # for i in range(0, 17):
     #     train_off_data(i)
