@@ -1,14 +1,14 @@
 import game_engine.action_space as action_space
 
 
-def start(index_to_start):
+def start(advance_move):
     """
     figure out what space on the rondel to start a given country
-    :param index_to_start: int - the number of spaces to move forward from investor
+    :param advance_move: int - the number of spaces to move forward from investor
     :return: RondelSpace - the starting space
     """
     starting_space = investor
-    for i in range(0, index_to_start):
+    for i in range(0, advance_move[0]):
         starting_space = starting_space.next()
 
     return starting_space
@@ -29,6 +29,9 @@ class RondelSpace:
         global space_id
         self.id_count = space_id
         space_id = (space_id + 1) % 8
+
+    def __str__(self):
+        return self.action.get_name()
 
     def set_next_space(self, rondel_space):
         """
@@ -80,15 +83,17 @@ class RondelSpace:
         return self.id_count
 
 
-def advance(rondel_space, num_to_move, game_state):
+def advance(rondel_space, advance_move, game_state):
     """
     move from one state to the next space a number of times, maybe triggering the investor card
     :param rondel_space: RondelSpace - the current space
-    :param num_to_move: int - the number of spaces to move
+    :param advance_move: int - the number of spaces to move
     :param game_state: GameState - the current game state
     :return: RondelSpace - the new space
     """
-    for i in range(0, num_to_move):
+    game_state.get_active_country().get_country_controller().remove_money(advance_move[2])
+
+    for i in range(0, advance_move[0]):
         rondel_space = rondel_space.next()
         # If passing investor space trigger investor card in game_state
         if rondel_space is investor:
@@ -98,27 +103,33 @@ def advance(rondel_space, num_to_move, game_state):
 
 
 # Hypothetical advance does not trigger the investor space
-def hypothetical_advance(rondel_space, num_to_move):
+def hypothetical_advance(rondel_space, advance_move, game_state):
     """
     move from one state to the next, not activating the investor space
     :param rondel_space: RondelSpace - the current space
-    :param num_to_move: int - the number of spaces to move
+    :param advance_move: int - the number of spaces to move
+    :param game_state: GameState - the current game state
     :return: RondelSpace - the new space
     """
-    for i in range(0, num_to_move):
+    game_state.get_active_country().get_country_controller().remove_money(advance_move[2])
+
+    for i in range(0, advance_move[0]):
         rondel_space = rondel_space.next()
 
     return rondel_space
 
 
-def reverse(rondel_space, num_to_move):
+def reverse(rondel_space, advance_move, game_state):
     """
     move from one state to the next, not activating the investor space
     :param rondel_space: RondelSpace - the current space
-    :param num_to_move: int - the number of spaces to move
+    :param advance_move: int - the number of spaces to move
+    :param game_state: GameState - the current game state
     :return: RondelSpace - the new space
     """
-    for i in range(0, num_to_move):
+    game_state.get_active_country().get_country_controller().add_money(advance_move[2])
+
+    for i in range(0, advance_move[0]):
         rondel_space = rondel_space.previous()
 
     return rondel_space

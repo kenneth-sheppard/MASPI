@@ -8,7 +8,7 @@ class RandPlayer(Player):
         super().__init__()
         self.type = 'Random'
 
-    def __evaluate_game_state(self, game_state):
+    def evaluate_game_state(self, game_state):
         return random.random()
 
     # def make_import_choice(self, options, game_state):

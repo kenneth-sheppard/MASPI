@@ -27,7 +27,7 @@ class GameEngine:
                 # print(f'Turn - {self.turns // 6}')
                 # print(self.state)
 
-            if self.turns // 6 == 300:
+            if self.turns // 6 == 100:
                 break
 
             # Get the active country
@@ -38,11 +38,11 @@ class GameEngine:
             # Tax the player if moving too far
             if self.active_player is not None:
                 if self.turns // 6 == 0:
-                    ntm = self.__turn_one_move_query()
+                    move = self.__turn_one_move_query()
                 else:
-                    ntm = self.__move_query()
+                    move = self.__move_query()
             # Advance that many spaces on the rondel
-                self.active_country.advance(ntm, self.state)
+                self.active_country.advance(move, self.state)
             # Activate that action space on the rondel
                 self.active_country.get_rondel_space().get_action().action(self.active_country, self.active_player, self.state)
             # Activate the investor card if Investor Space was passed
@@ -127,14 +127,11 @@ class GameEngine:
         for i in range(1, 7):
             if self.active_player.get_money() - max((i - 3), 0) * \
                     (1 + helper.power_chart(self.active_country.get_power())) >= 0:
-                options.append([i, self.active_country.get_advance_option(i).get_name()])
+                options.append(
+                    [i, self.active_country.get_advance_option([i, 'None', 0], self.state).get_name(),
+                     max((i - 3), 0) * (1 + helper.power_chart(self.active_country.get_power()))])
 
-        ntm = self.active_player.make_rondel_choice(options, self)[0]
-
-        if ntm > 3:
-            self.active_player.remove_money((ntm - 3) * (1 + helper.power_chart(self.active_country.get_power())))
-
-        return ntm
+        return self.active_player.make_rondel_choice(options, self)
 
     def __turn_one_move_query(self):
         """
@@ -144,9 +141,9 @@ class GameEngine:
         options = []
 
         for i in range(1, 9):
-            options.append([i, self.active_country.get_advance_option(i).get_name()])
+            options.append([i, self.active_country.get_advance_option([i, 'None', 0], self.state).get_name(), 0])
 
-        return self.active_player.make_rondel_choice(options, self)[0]
+        return self.active_player.make_rondel_choice(options, self)
 
 
 def potential_advance(choice, engine):
@@ -157,7 +154,7 @@ def potential_advance(choice, engine):
     :return: GameEngine - the resulting GameEngine
     """
     # Advance that many spaces on the rondel
-    engine.active_country.hypothetical_advance(choice[0])
+    engine.active_country.hypothetical_advance(choice, engine.get_state())
 
     return engine
 
@@ -169,6 +166,6 @@ def reverse_advance(choice, engine):
     :param engine: GameEngine - the game engine copy that will be acted upon
     :return: GameEngine - the resulting GameEngine
     """
-    engine.active_country.reverse(choice[0])
+    engine.active_country.reverse(choice, engine.get_state())
 
     return engine

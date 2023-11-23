@@ -604,7 +604,7 @@ def reverse_move_piece(command, game_state):
     return game_state
 
 
-def do_a_battle(country, player, game_state, territory):
+def do_a_battle(country, player, game_state, territory, recurse=False):
     options = []
     if territory.has_factory() and territory.get_num_tanks(country_name=country.get_name()) == 3 and \
             territory.get_in_country().get_factories_in_supply() < 3:
@@ -628,8 +628,14 @@ def do_a_battle(country, player, game_state, territory):
     to_fight = player.make_battle_choice(options, game_state)
     if to_fight[1] is None:
         for c in game_state.get_countries():
-            if c.get_name() in get_generic_present(territory=territory):
-                do_a_battle(country=c, player=c.get_country_controller(), game_state=game_state, territory=territory)
+            if c.get_name() in get_generic_present(territory=territory) and c is not country and not recurse:
+                do_a_battle(
+                    country=c,
+                    player=c.get_country_controller(),
+                    game_state=game_state,
+                    territory=territory,
+                    recurse=True
+                )
     else:
         do_battle(to_fight, game_state)
 

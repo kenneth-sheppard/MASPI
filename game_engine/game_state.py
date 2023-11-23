@@ -240,6 +240,8 @@ class GameState:
                     territory.set_territory_controller(c_name)
                     self.get_country(c_name).add_controlled_neutral_territory(territory)
             # Territory is not neutral
+            elif territory.is_neutral:
+                pass
             else:
                 # If more than two people are in territory is occupied
                 if len(players_in_territory) > 1:

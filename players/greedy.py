@@ -12,7 +12,7 @@ class GreedyPlayer(Player):
         super().__init__()
         self.type = 'Greedy'
 
-    def __evaluate_game_state(self, game_state):
+    def evaluate_game_state(self, game_state):
         value = 0
         for player in game_state.get_players():
             if player.get_id() is self.id:

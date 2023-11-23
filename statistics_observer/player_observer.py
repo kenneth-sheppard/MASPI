@@ -42,6 +42,7 @@ class PlayerObserver:
 
     def update_player(self, p):
         self.player = p
+        self.player_info['type'] = p.get_type()
 
     def get_player(self):
         return self.player

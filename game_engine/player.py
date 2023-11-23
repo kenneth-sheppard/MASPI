@@ -19,12 +19,12 @@ class Player:
         self.has_investor_card = False
         self.is_swiss_bank = False
         self.banana = 0
-        self.type = 'Human'
+        self.type = 'Default Player'
         global id_count
         self.id = id_count % 6
         id_count = (id_count + 1) % 6
 
-    def __evaluate_game_state(self, game_state):
+    def evaluate_game_state(self, game_state):
         return random.random()
 
     def get_id(self):
@@ -211,7 +211,7 @@ class Player:
         best_value = None
         for option in options:
             game_state = action_space.hypothetical_import(choice=option, game_state=game_state)
-            new_eval = self.__evaluate_game_state(game_state=game_state)
+            new_eval = self.evaluate_game_state(game_state=game_state)
             game_state = action_space.reverse_import(choice=option, game_state=game_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -230,7 +230,7 @@ class Player:
         best_value = None
         for option in options:
             game_state = action_space.hypothetical_move_piece(command=option, game_state=game_state)
-            new_eval = self.__evaluate_game_state(game_state=game_state)
+            new_eval = self.evaluate_game_state(game_state=game_state)
             game_state = action_space.reverse_move_piece(command=option, game_state=game_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -249,7 +249,7 @@ class Player:
         best_value = None
         for option in options:
             game_state = action_space.do_battle(choice=option, game_state=game_state)
-            new_eval = self.__evaluate_game_state(game_state=game_state)
+            new_eval = self.evaluate_game_state(game_state=game_state)
             game_state = action_space.reverse_battle(choice=option, game_state=game_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -268,7 +268,7 @@ class Player:
         best_value = None
         for option in options:
             engine_game = game_engine.potential_advance(option, engine_game)
-            new_eval = self.__evaluate_game_state(engine_game.state)
+            new_eval = self.evaluate_game_state(engine_game.state)
             engine_game = game_engine.reverse_advance(option, engine_game)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -287,7 +287,7 @@ class Player:
         best_value = None
         for option in options:
             game_state = action_space.hypothetical_factory(option, game_state)
-            new_eval = self.__evaluate_game_state(game_state)
+            new_eval = self.evaluate_game_state(game_state)
             game_state = action_space.reverse_factory(option, game_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -306,7 +306,7 @@ class Player:
         best_value = None
         for option in options:
             game_state = action_space.hypothetical_investment(choice=option, game_state=game_state)
-            new_eval = self.__evaluate_game_state(game_state=game_state)
+            new_eval = self.evaluate_game_state(game_state=game_state)
             game_state = action_space.reverse_investment(choice=option, game_state=game_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
@@ -363,7 +363,7 @@ class GreedyPlayer(Player):
         super().__init__()
         self.type = 'Greedy'
 
-    def __evaluate_game_state(self, game_state):
+    def evaluate_game_state(self, game_state):
         value = 0
         for player in game_state.get_players():
             if player.get_id() is self.id:
@@ -379,7 +379,7 @@ class GreedyPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_import(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -391,7 +391,7 @@ class GreedyPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_move_piece(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -403,7 +403,7 @@ class GreedyPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.do_battle(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -415,7 +415,7 @@ class GreedyPlayer(Player):
         best_value = None
         for option in options:
             new_engine = game_engine.potential_advance(option, copy.deepcopy(engine_game))
-            new_eval = self.__evaluate_game_state(new_engine.state)
+            new_eval = self.evaluate_game_state(new_engine.state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -427,7 +427,7 @@ class GreedyPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_factory(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -439,7 +439,7 @@ class GreedyPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_investment(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -453,7 +453,7 @@ class BasicNeuralNetPlayer(Player):
         self.type = 'Basic Neural Net'
         self.model = keras.models.load_model('recent_model')
 
-    def __evaluate_game_state(self, game_state):
+    def evaluate_game_state(self, game_state):
         state = game_state.get_numerical_representation()
         reshaped_state = tf.reshape(state, (1, 1302))
         values = self.model.predict(reshaped_state)[0]
@@ -465,7 +465,7 @@ class BasicNeuralNetPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_import(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -477,7 +477,7 @@ class BasicNeuralNetPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_move_piece(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -489,7 +489,7 @@ class BasicNeuralNetPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.do_battle(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -501,7 +501,7 @@ class BasicNeuralNetPlayer(Player):
         best_value = None
         for option in options:
             new_engine = game_engine.potential_advance(option, copy.deepcopy(engine_game))
-            new_eval = self.__evaluate_game_state(new_engine.state)
+            new_eval = self.evaluate_game_state(new_engine.state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -513,7 +513,7 @@ class BasicNeuralNetPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_factory(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option
@@ -525,7 +525,7 @@ class BasicNeuralNetPlayer(Player):
         best_value = None
         for option in options:
             new_state = action_space.hypothetical_investment(option, copy.deepcopy(game_state))
-            new_eval = self.__evaluate_game_state(new_state)
+            new_eval = self.evaluate_game_state(new_state)
             if best_option is None or new_eval > best_value:
                 best_value = new_eval
                 best_option = option

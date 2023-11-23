@@ -79,7 +79,8 @@ def training_iteration(iteration_number):
     game_observer = None
 
     print(f'iteration {iteration_number}')
-    for i in range(50):
+    for i in range(10):
+        tf.keras.backend.clear_session()
         game_engine = GameEngine()
 
         if game_observer is None:
@@ -188,9 +189,30 @@ def train_off_data(iteration_number):
 
     history = model.fit(tf.expand_dims(x_train, axis=-1), y_train, epochs=100, batch_size=500)
     model.save('recent_model', save_format='h5')
-    model.save('./models_h5/model' + str(iteration_number), save_format='h5')
+    # model.save('./models_h5/model' + str(iteration_number), save_format='h5')
 
     return iteration_number + 1
+
+
+def train_on_all_data(start, end, name):
+    data_values = None
+    data_class = None
+
+    for count in range(start, end):
+        if count == start:
+            data_values, data_class = load_data(f'./data/games{count}/game_turns.csv')
+        else:
+            new_vals, new_classes = load_data(f'./data/games{count}/game_turns.csv')
+            data_values = np.concatenate((data_values, new_vals))
+            data_class = np.concatenate((data_class, new_classes))
+
+    x_train, x_test, y_train, y_test = train_test_split(data_values, data_class, test_size=0.25, random_state=5, shuffle=True)
+
+    model = get_neural_network()
+
+    history = model.fit(tf.expand_dims(x_train, axis=-1), y_train, epochs=100, batch_size=5000)
+
+    model.save(f'models/{name}', save_format='h5')
 
 
 def test_model_directly():

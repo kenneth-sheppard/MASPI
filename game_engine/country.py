@@ -192,7 +192,7 @@ class Country:
         :return: Integer - the sum of interest rates for bonds held by Player
         """
         count = 0
-        for bond in self.bonds:
+        for bond in self.bonds.values():
             if bond.get_owner() == player:
                 count += bond.get_interest_rate()
 
@@ -204,7 +204,7 @@ class Country:
         :return: the calculated amount
         """
         payout = 0
-        for bond in self.bonds:
+        for bond in self.bonds.values():
             if bond.get_owner() is not None:
                 payout += bond.get_interest_rate()
 
@@ -372,6 +372,9 @@ class Country:
     def get_placed_flags(self):
         return self.max_flags - self.flag_count
 
+    def get_available_flags(self):
+        return self.flag_count
+
     def get_total_flags(self):
         return self.max_flags
 
@@ -390,47 +393,66 @@ class Country:
         """
         self.bonds[bond.cost].set_owner(None)
 
-    def advance(self, num_to_advance, game_state):
+    def advance(self, advance_move, game_state):
         """
         Moves the marker around the rondel, jumping from space to space and storing the last space visited
-        :param num_to_advance: int - the number of spaces to jump
+        :param advance_move: int - the number of spaces to jump
         :param game_state: GameState - used to access the rondel, probably could be passed directly
         """
         if self.rondel_space is None:
-            self.rondel_space = game_engine.rondel.start(num_to_advance)
+            self.rondel_space = game_engine.rondel.start(advance_move)
         else:
-            self.rondel_space = game_engine.rondel.advance(self.rondel_space, num_to_advance, game_state)
+            self.rondel_space = game_engine.rondel.advance(self.rondel_space, advance_move, game_state)
 
-    def get_advance_option(self, num_to_advance):
+    def get_advance_option(self, advance_move, game_state):
         """
         Returns a hypothetical advance, never changing the true state of the rondel
-        :param num_to_advance:
+        :param advance_move: int - the number of spaces to jump
+        :param game_state: GameState - used to access the rondel, probably could be passed directly
         :return:
         """
         if self.rondel_space is None:
-            return game_engine.rondel.start(index_to_start=num_to_advance)
+            return game_engine.rondel.start(advance_move=advance_move)
         else:
-            return game_engine.rondel.hypothetical_advance(rondel_space=self.rondel_space, num_to_move=num_to_advance)
+            return game_engine.rondel.hypothetical_advance(
+                rondel_space=self.rondel_space,
+                advance_move=advance_move,
+                game_state=game_state
+            )
 
-    def hypothetical_advance(self, num_to_advance):
+    def hypothetical_advance(self, advance_move, game_state):
         """
         Performs a hypothetical advance, never changing the true state of the rondel
-        :param num_to_advance:
+        :param advance_move: int - the number of spaces to jump
+        :param game_state: GameState - used to access the rondel, probably could be passed directly
         """
         if self.rondel_space is None:
             self.starting_check = True
-            self.rondel_space = game_engine.rondel.start(num_to_advance)
+            self.rondel_space = game_engine.rondel.start(advance_move)
         else:
-            self.rondel_space = game_engine.rondel.hypothetical_advance(rondel_space=self.rondel_space, num_to_move=num_to_advance)
+            self.rondel_space = game_engine.rondel.hypothetical_advance(
+                rondel_space=self.rondel_space,
+                advance_move=advance_move,
+                game_state=game_state
+            )
 
-    def reverse(self, num_to_advance):
+    def reverse(self, advance_move, game_state):
+        """
+        Performs a hypothetical reverse, never changing the true state of the rondel
+        :param advance_move: int - the number of spaces to jump
+        :param game_state: GameState - used to access the rondel, probably could be passed directly
+        """
         if self.rondel_space is None:
             raise RuntimeError('Tried to reverse without setting the rondel space first!')
         elif self.starting_check:
             self.starting_check = False
             self.rondel_space = None
         else:
-            self.rondel_space = game_engine.rondel.reverse(rondel_space=self.rondel_space, num_to_move=num_to_advance)
+            self.rondel_space = game_engine.rondel.reverse(
+                rondel_space=self.rondel_space,
+                advance_move=advance_move,
+                game_state=game_state
+            )
 
     def get_rondel_space(self):
         """
