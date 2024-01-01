@@ -34,6 +34,13 @@ class Player:
         """
         return self.id
 
+    def set_id(self, new_id):
+        """
+        setter for the id of the player
+        :param new_id: int - between 0 and 5
+        """
+        self.id = new_id
+
     def get_bonds(self):
         """
         getter for the set of bonds held by the player

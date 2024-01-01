@@ -93,6 +93,7 @@ def setup():
         if game_engine.settings.player_list[i] is None:
             raise RuntimeError('Did not properly configure all players')
         temp_player = game_engine.settings.player_list[i]()
+        temp_player.set_id(i)
         temp_player.add_money(13 * (6 // game_engine.settings.num_players))
         temp_player.remove_money(((6 // game_engine.settings.num_players) - 1) * 2)
         for j in range(0, 6 // game_engine.settings.num_players):

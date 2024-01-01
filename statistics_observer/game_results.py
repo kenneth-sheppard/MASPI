@@ -57,7 +57,6 @@ class GameEngineObserver:
         return self.game_by_game_stats
 
 
-
 class CountryObserver:
 
     def __init__(self, c):
