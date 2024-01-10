@@ -10,7 +10,7 @@ class TaxStats:
         else:
             self.players[sample[0]] = sample[1]
 
-    def take_current_and_previous_turn_taxes(self, previous_turn, current_turn):
+    def take_current_and_previous_turn_tax_power(self, previous_turn, current_turn):
         for country in current_turn['Countries'].keys():
             if current_turn['Countries'][country]['Rondel Space'] == 'Taxation':
                 if int(previous_turn['Countries'][country]['Power']) != int(current_turn['Countries'][country]['Power']):
@@ -20,6 +20,15 @@ class TaxStats:
                     # Save the increase in power and the player responsible
                     post_tax_power = int(current_turn['Players'][controller][0])
                     self.add_information((pre_tax_controller, post_tax_power - pre_tax_power))
+
+    def take_current_and_previous_turn_tax_income(self, previous_turn, current_turn, country):
+        controller = current_turn['Countries'][country]['Controller']
+        if current_turn['Countries'][country]['Rondel Space'] == 'Taxation':
+            if int(previous_turn['Players'][controller][0]) != int(current_turn['Players'][controller][0]):
+                pre_tax_money = int(previous_turn['Players'][controller][0])
+                # Save the increase in power and the player responsible
+                post_tax_money = int(current_turn['Players'][controller][0])
+                self.add_information((controller, post_tax_money - pre_tax_money))
 
     def take_current_and_previous_turn_investor(self, previous_turn, current_turn):
         for player in current_turn['Players'].keys():
