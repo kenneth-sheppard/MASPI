@@ -57,11 +57,11 @@ class Scribe:
             turn_counter = 0
             first_player_id = 0
             rondel_selection = True
-            self.tax_stats = TaxStats()
-            self.invest_stats = TaxStats()
+            # self.tax_stats = TaxStats()
+            # self.invest_stats = TaxStats()
             previous_turn = {}
             self.rondel_stats = RondelStats()
-            # self.bond_stats = BondStats()
+            self.bond_stats = BondStats()
             self.money_stats = MoneyStats()
 
             for turn in csv_reader:
@@ -122,10 +122,10 @@ class Scribe:
                 }
                 # Rondel selection changes before this is checked, so I want to see the inverse
                 if not rondel_selection:
-                    # self.rondel_stats.take_current_and_previous_turn(
-                    #     previous_turn=previous_turn,
-                    #     current_turn=current_turn
-                    # )
+                    self.rondel_stats.take_current_and_previous_turn(
+                        previous_turn=previous_turn,
+                        current_turn=current_turn
+                    )
                     # self.invest_stats.take_current_and_previous_turn_investor(
                     #     previous_turn=previous_turn,
                     #     current_turn=current_turn
@@ -135,11 +135,12 @@ class Scribe:
                             continue
                         if (current_turn['Countries'][country]['Rondel Space'] !=
                                 previous_turn['Countries'][country]['Rondel Space']):
-                            self.tax_stats.take_current_and_previous_turn_tax_income(
-                                previous_turn=previous_turn,
-                                current_turn=current_turn,
-                                country=country
-                            )
+                            # self.tax_stats.take_current_and_previous_turn_tax_income(
+                            #     previous_turn=previous_turn,
+                            #     current_turn=current_turn,
+                            #     country=country
+                            # )
+                            pass
 
                 previous_turn = {
                     'Players': players,
@@ -154,9 +155,9 @@ class Scribe:
                         if country['Power'] == '25':
                             # end of current game reset for next game
                             self.rondel_stats.finalize_game()
-                            self.tax_stats.finalize_game()
+                            # self.tax_stats.finalize_game()
                             # self.invest_stats.finalize_game()
-                            # self.bond_stats.take_end_of_game_state(current_turn=current_turn)
+                            self.bond_stats.take_end_of_game_state_for_absolute_points(current_turn=current_turn)
                             self.money_stats.take_end_of_game_stats(current_turn=current_turn)
                             turn_counter = 0
                             # This is to handle the first turn offset for player ids in the event of
@@ -164,17 +165,17 @@ class Scribe:
                             first_player_id = (first_player_id + player_count) % 6
 
     def get_statistics(self):
-        # player_sums = {}
-        # country_sums = {}
+        player_sums = {}
+        country_sums = {}
         # tax_sums = {}
         # invest_sums = {}
         bond_numbers = {}
         player_favorite_turns = {}
-        # self.calculate_rondel_stats(country_sums, player_sums)
+        country_sums, player_sums = self.calculate_rondel_stats(country_sums, player_sums)
         #
         # tax_sums = self.sum_tax_stats(tax_sums, self.tax_stats)
 
-        self.show_ending_money()
+        # self.show_ending_money()
 
         # self.sum_tax_stats(invest_sums, self.invest_stats)
 
@@ -191,9 +192,11 @@ class Scribe:
         #             choice_max[1] / sum(self.rondel_stats.get_turns_by_players()[player][turn].values())
         #         )
 
-        # print_stats_table(player_sums)
+        print_stats_table(player_sums)
 
-        # print_stats_table(country_sums)
+        # self.show_total_points()
+
+        print_stats_table(country_sums)
 
         # # Game length max, min, average, mean, median, mode
         # game_lengths_list = list(self.game_lengths.values())
@@ -221,6 +224,12 @@ class Scribe:
         bond_sums = self.money_stats.end_wealth
         for key in sorted(bond_sums.keys()):
             print(f'{key.replace(" ", "_")} {bond_sums[key]}')
+
+    def show_total_points(self):
+        bond_sums = self.bond_stats.points_cost
+        money_sums = self.money_stats.end_wealth
+        for key in sorted(bond_sums.keys()):
+            print(f'{key.replace(" ", "_")} {bond_sums[key]} {money_sums[key]}')
 
     def sum_tax_stats(self, tax_sums, tax_class_instance):
         for game in tax_class_instance.get_information():
@@ -260,9 +269,8 @@ class Scribe:
 
 
 if __name__ == '__main__':
-    crib = Scribe(games='../final_tests/one_maspi_all_neural_6/', old_id_count=True)
+    crib = Scribe(games='../final_tests/one_maspi_all_random_6/', old_id_count=True)
 
     crib.process_games()
 
     crib.get_statistics()
-

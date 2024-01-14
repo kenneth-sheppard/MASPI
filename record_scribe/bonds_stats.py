@@ -1,9 +1,12 @@
+import game_engine.helper
+
+
 class BondStats:
     def __init__(self):
         self.points_cost = {}
         self.bonds = {}
 
-    def take_end_of_game_state(self, current_turn):
+    def take_end_of_game_state_for_relative_bonds(self, current_turn):
         for country in current_turn['Countries'].keys():
             for bond in current_turn['Countries'][country]['Bonds']:
                 if bond[2] is None or bond[2] == 'No Player':
@@ -11,10 +14,31 @@ class BondStats:
                 else:
                     if bond[2] not in self.points_cost.keys():
                         self.points_cost[bond[2]] = (
-                                int(current_turn['Countries'][country]['Power']) * int(bond[1]) - int(bond[0]))
+                                game_engine.helper.power_chart(int(current_turn['Countries'][country]['Power']))
+                                * int(bond[1]) - int(bond[0])
+                        )
                     else:
                         self.points_cost[bond[2]] += (
-                                int(current_turn['Countries'][country]['Power']) * int(bond[1]) - int(bond[0]))
+                                game_engine.helper.power_chart(int(current_turn['Countries'][country]['Power']))
+                                * int(bond[1]) - int(bond[0])
+                        )
+
+    def take_end_of_game_state_for_absolute_points(self, current_turn):
+        for country in current_turn['Countries'].keys():
+            for bond in current_turn['Countries'][country]['Bonds']:
+                if bond[2] is None or bond[2] == 'No Player':
+                    continue
+                else:
+                    if bond[2] not in self.points_cost.keys():
+                        self.points_cost[bond[2]] = (
+                                game_engine.helper.power_chart(int(current_turn['Countries'][country]['Power']))
+                                * int(bond[1])
+                        )
+                    else:
+                        self.points_cost[bond[2]] += (
+                                game_engine.helper.power_chart(int(current_turn['Countries'][country]['Power']))
+                                * int(bond[1])
+                        )
 
 
 class MoneyStats:

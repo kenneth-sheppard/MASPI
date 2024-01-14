@@ -7,22 +7,27 @@ class RondelStats:
 
     # country, countries[country]['Rondel Space'], countries[country]['Controller']
     def process_change(self, change, turn_int_div_six):
-        # if change[2] in self.players.keys():
-        #     if change[1] in self.players[change[2]]:
-        #         self.players[change[2]][change[1]] = self.players[change[2]][change[1]] + 1
-        #     else:
-        #         self.players[change[2]][change[1]] = 1
-        # else:
-        #     self.players[change[2]] = {change[1]: 1}
-        #
-        # if change[0] in self.countries.keys():
-        #     if change[1] in self.countries[change[0]]:
-        #         self.countries[change[0]][change[1]] = self.countries[change[0]][change[1]] + 1
-        #     else:
-        #         self.countries[change[0]][change[1]] = 1
-        # else:
-        #     self.countries[change[0]] = {change[1]: 1}
+        self.calculate_total_actions(change)
 
+        # self.calculate_actions_by_turn_occurrence(change, turn_int_div_six)
+
+    def calculate_total_actions(self, change):
+        if change[2] in self.players.keys():
+            if change[1] in self.players[change[2]]:
+                self.players[change[2]][change[1]] = self.players[change[2]][change[1]] + 1
+            else:
+                self.players[change[2]][change[1]] = 1
+        else:
+            self.players[change[2]] = {change[1]: 1}
+        if change[0] in self.countries.keys():
+            if change[1] in self.countries[change[0]]:
+                self.countries[change[0]][change[1]] = self.countries[change[0]][change[1]] + 1
+            else:
+                self.countries[change[0]][change[1]] = 1
+        else:
+            self.countries[change[0]] = {change[1]: 1}
+
+    def calculate_actions_by_turn_occurrence(self, change, turn_int_div_six):
         if change[2] in self.turns_by_player.keys():
             if turn_int_div_six in self.turns_by_player[change[2]].keys():
                 if change[1] in self.turns_by_player[change[2]][turn_int_div_six].keys():
@@ -43,7 +48,7 @@ class RondelStats:
                     current_turn['Countries']['Russia']['Rondel Space'],
                     current_turn['Countries']['Russia']['Controller']
                 ),
-                turn_int_div_six=current_turn['Turn Counter'] // 6
+                turn_int_div_six=current_turn['Turn Number'] // 6
             )
         else:
             for country in current_turn['Countries'].keys():
@@ -54,7 +59,7 @@ class RondelStats:
                             current_turn['Countries'][country]['Rondel Space'],
                             current_turn['Countries'][country]['Controller']
                         ),
-                        turn_int_div_six=current_turn['Turn Counter'] // 6
+                        turn_int_div_six=current_turn['Turn Number'] // 6
                     )
 
     def finalize_game(self):
