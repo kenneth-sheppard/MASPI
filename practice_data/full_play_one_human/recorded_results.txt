@@ -1,0 +1,18 @@
+Player 3008 Human won 1 games with scores of [157] and bonds:
+EU -  2(1), EU -  6(3), RU - 12(5), RU - 20(7), RU - 16(6), RU - 25(8), 
+ Player 1027 Greedy won 0 games with scores of [11] and bonds:
+IN -  4(2), IN -  6(3), CN -  4(2), EU -  9(4), CN -  9(4), 
+ Player 932 Basic Neural Net won 0 games with scores of [26] and bonds:
+CN -  2(1), RU -  2(1), RU -  4(2), BR -  2(1), US - 12(5), US -  4(2), 
+ Player 4376 MASPI Player won 0 games with scores of [28] and bonds:
+CN -  6(3), BR -  9(4), US -  6(3), IN - 12(5), 
+ Player 3859 MASPI Player won 0 games with scores of [9] and bonds:
+BR -  4(2), IN - 20(7), 
+ Player 2466 MASPI Player won 0 games with scores of [39] and bonds:
+RU -  6(3), CN - 12(5), IN -  2(1), BR - 12(5), US -  2(1), US -  9(4), 
+ Russia          - finishes  1(25),  - average 1.0
+China           - finishes  4( 2),  - average 4.0
+India           - finishes  3( 2),  - average 3.0
+Brazil          - finishes  5( 1),  - average 5.0
+America         - finishes  2( 3),  - average 2.0
+European Union  - finishes  6( 0),  - average 6.0
