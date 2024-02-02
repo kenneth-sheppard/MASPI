@@ -253,34 +253,34 @@ def play_games_with_changing_sets(amount_of_games, list_of_players):
 if __name__ == '__main__':
     game_engine.settings.num_players = 6
 
+    game_engine.settings.player_1 = basic_nn.FullScopeNeuralNetPlayer
+    game_engine.settings.player_2 = basic_nn.FullScopeNeuralNetPlayer
+    game_engine.settings.player_3 = basic_nn.FullScopeNeuralNetPlayer
+    game_engine.settings.player_4 = basic_nn.FullScopeNeuralNetPlayer
+    game_engine.settings.player_5 = basic_nn.FullScopeNeuralNetPlayer
+    game_engine.settings.player_6 = basic_nn.FullScopeNeuralNetPlayer
+
     # game_engine.settings.player_1 = greedy.GreedyPlayer
     # game_engine.settings.player_2 = random.RandPlayer
-    # game_engine.settings.player_3 = greedy.GreedyPlayer
-    # game_engine.settings.player_4 = basic_nn.BasicNeuralNetPlayer
-    # game_engine.settings.player_5 = maspi.MASPIPlayer
-    # game_engine.settings.player_6 = basic_nn.FiftyGamesNeuralNetPlayer
+    # game_engine.settings.player_3 = greedy.GreedyOnTheBoardPlayer
+    # game_engine.settings.player_4 = random.RandPlayer
+    # game_engine.settings.player_5 = greedy.GreedyWithPenaltiesPlayer
+    # game_engine.settings.player_6 = random.RandPlayer
 
-    game_engine.settings.player_1 = random.RandPlayer
-    game_engine.settings.player_2 = basic_nn.BasicNeuralNetPlayer
-    game_engine.settings.player_3 = basic_nn.BasicNeuralNetPlayer
-    game_engine.settings.player_4 = basic_nn.BasicNeuralNetPlayer
-    game_engine.settings.player_5 = basic_nn.BasicNeuralNetPlayer
-    game_engine.settings.player_6 = basic_nn.BasicNeuralNetPlayer
+    # game_engine.settings.folder_to_write = 'practice_data/some_games'
 
-    game_engine.settings.folder_to_write = 'practice_data\\various_games_set'
-
-    # for i in range(29, 50):
-    #     training_iteration(i)
+    for i in range(57, 60):
+        training_iteration(i)
 
     # for i in range(0, 500):
     #     train_off_data(i)
     #
     # train_on_all_data(1400, 1500, '100_games_full')
 
-    # play_game(100)
+    # play_game(10)
 
-    play_games_with_changing_sets(
-        amount_of_games=200, list_of_players=[random.RandPlayer, greedy.GreedyPlayer, basic_nn.BasicNeuralNetPlayer,
-                                              maspi.MASPIPlayer])
+    # play_games_with_changing_sets(
+    #     amount_of_games=200,
+    #     list_of_players=[random.RandPlayer, greedy.GreedyPlayer, basic_nn.BasicNeuralNetPlayer, maspi.MASPIPlayer])
 
     # test_model_directly()

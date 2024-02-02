@@ -11,6 +11,8 @@ from game_engine.game_engine import GameEngine
 from statistics_observer.game_results import GameEngineObserver
 from statistics_observer.player_observer import PlayerObserver
 
+current_model_name = 'scoped_model'
+
 
 def load_data(file_path):
     df = pd.read_csv(file_path, header=None)
@@ -168,10 +170,10 @@ def training_iteration(iteration_number):
     if iteration_number == 0:
         model = get_neural_network()
     else:
-        model = keras.models.load_model('recent_model')
+        model = keras.models.load_model(current_model_name)
 
     history = model.fit(x_train, y_train, epochs=100, batch_size=500)
-    model.save('recent_model', save_format='h5')
+    model.save(current_model_name, save_format='h5')
     model.save('./models_h5/model' + str(iteration_number), save_format='h5')
 
     return iteration_number + 1
@@ -185,10 +187,10 @@ def train_off_data(iteration_number):
     if iteration_number == 0:
         model = get_neural_network()
     else:
-        model = keras.models.load_model('recent_model')
+        model = keras.models.load_model(current_model_name)
 
     history = model.fit(tf.expand_dims(x_train, axis=-1), y_train, epochs=100, batch_size=500)
-    model.save('recent_model', save_format='h5')
+    model.save(current_model_name, save_format='h5')
     # model.save('./models_h5/model' + str(iteration_number), save_format='h5')
 
     return iteration_number + 1
@@ -216,7 +218,7 @@ def train_on_all_data(start, end, name):
 
 
 def test_model_directly():
-    model = keras.models.load_model('recent_model')
+    model = keras.models.load_model(current_model_name)
 
     data_values, data_class = load_data('game_turns.csv')
 

@@ -18,7 +18,7 @@ class BasicNeuralNetPlayer(Player):
         self.type = 'Basic Neural Net'
         global basic_model
         keras.backend.clear_session()
-        basic_model = keras.models.load_model('recent_model')
+        basic_model = keras.models.load_model('models/BasicNeuralNetPlayerModel/recent_model')
 
     def evaluate_game_state(self, game_state):
         state = game_state.get_numerical_representation()
@@ -42,5 +42,21 @@ class FiftyGamesNeuralNetPlayer(Player):
         state = game_state.get_numerical_representation()
         reshaped_state = tf.reshape(state, (1, 1302))
         values = fifty_games_model.predict(reshaped_state, verbose=0)[0]
+
+        return values[self.id]
+
+
+class FullScopeNeuralNetPlayer(Player):
+    def __init__(self):
+        super().__init__()
+        self.type = 'Full Scope Neural Net'
+        global basic_model
+        keras.backend.clear_session()
+        basic_model = keras.models.load_model('scoped_model')
+
+    def evaluate_game_state(self, game_state):
+        state = game_state.get_numerical_representation()
+        reshaped_state = tf.reshape(state, (1, 1302))
+        values = basic_model.predict(reshaped_state, verbose=0)[0]
 
         return values[self.id]

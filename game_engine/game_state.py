@@ -184,6 +184,25 @@ class GameState:
 
         return winner
 
+    def get_loser(self):
+        """
+        calculate the player with the lowest worth
+        :return: Player - the player with the lowest worth
+        """
+        loser = None
+        for player in self.players:
+            if loser is None:
+                loser = player
+            elif player.get_worth() < loser.get_worth():
+                loser = player
+            elif player.get_worth() == loser.get_worth():
+                pass
+
+        if loser is None:
+            raise RuntimeError('No players were identified in the game')
+
+        return loser
+
     def update(self):
         """
         update the game state after a move
@@ -372,6 +391,23 @@ class GameState:
         for i in range(6):
             if i < len(self.players):
                 num_list.append(self.players[i].get_worth() / winner.get_worth())
+            else:
+                num_list.append(0)
+
+        return num_list
+
+    def get_end_scores_between_zero_and_one(self):
+        """
+        calculate the score of the player subtracted from the lowest score divided by the winning score
+        :return: List - function(my_worth-losers_worth/winners_worth-losers_worth)
+        """
+        winner = self.get_winner()
+        loser = self.get_loser()
+        num_list = []
+        for i in range(6):
+            if i < len(self.players):
+                num_list.append(
+                    (self.players[i].get_worth() - loser.get_worth()) / (winner.get_worth() - loser.get_worth()))
             else:
                 num_list.append(0)
 

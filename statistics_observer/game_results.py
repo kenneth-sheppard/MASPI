@@ -41,7 +41,7 @@ class GameEngineObserver:
             position -= 1
         for country_observer in self.countries.values():
             game_stats.extend(country_observer.get_finishes()[self.games_count - 1])
-        self.__append_end_scores(self.game_engine.get_state().get_normalized_end_scores())
+        self.__append_end_scores(self.game_engine.get_state().get_end_scores_between_zero_and_one())
         self.records.extend(self.buffer)
         self.buffer = []
         self.game_by_game_stats.append(game_stats)
